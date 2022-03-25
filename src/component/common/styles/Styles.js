@@ -189,3 +189,55 @@ export const useFileUploadStyles = makeStyles({
     fontSize: pxToRem(13),
   },
 });
+
+export const useDialogStyles = (isMobile) => {
+  console.log("isMobile: ", isMobile);
+  return makeStyles({
+    dialog: {
+      "& .MuiDialog-paper": {
+        width: "80%",
+        maxHeight: 430,
+        borderRadius: pxToRem(10),
+        height: pxToRem(320),
+      },
+    },
+    dialogContent: { float: "right", cursor: "pointer" },
+    closeIcon: {
+      height: pxToRem(12),
+      width: pxToRem(11),
+      position: "absolute",
+    },
+    contentWrapper: {
+      display: "flex",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+      flexDirection: "column",
+      height: "100%",
+    },
+    header: {
+      fontSize: pxToRem(30),
+      fontWeight: 800,
+      lineHeight: pxToRem(30),
+      alignSelf: "center",
+    },
+    fileTypeContainer: {
+      display: "flex",
+      justifyContent: isMobile ? "space-around" : "space-evenly",
+      alignItems: "center",
+      flexDirection: "row",
+    },
+    fileTypes: {
+      width: isMobile ? pxToRem(70) : pxToRem(100),
+      height: isMobile ? pxToRem(80) : pxToRem(100),
+      borderRadius: isMobile ? pxToRem(8.55) : pxToRem(10),
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+    },
+    fileTypeIcon: {
+      width: isMobile ? pxToRem(40) : pxToRem(47),
+      height: isMobile ? pxToRem(65) : pxToRem(76),
+    },
+  });
+};

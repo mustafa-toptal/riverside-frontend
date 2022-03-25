@@ -12,6 +12,8 @@ import { Txt } from "../../icons/Txt";
 import { Srt } from "../../icons/Srt";
 import { Vtt } from "../../icons/Vtt";
 import { Close } from "../../icons/Cross";
+import { useDialogStyles } from "./styles/Styles";
+import { pxToRem } from "../../utils/Helpers";
 
 const options = [
   { value: "transcript", label: ".txt" },
@@ -22,7 +24,7 @@ const options = [
 function ConfirmationDialogRaw(props) {
   const { onClose, value: valueProp, open, isMobile, ...other } = props;
   const [value, setValue] = useState(valueProp);
-
+  const styles = useDialogStyles(isMobile)();
   useEffect(() => {
     if (!open) {
       setValue(valueProp);
@@ -38,103 +40,43 @@ function ConfirmationDialogRaw(props) {
   };
 
   return (
-    <Dialog
-      sx={{
-        "& .MuiDialog-paper": {
-          width: "80%",
-          maxHeight: 430,
-          borderRadius: "10px",
-          height: "320px",
-        },
-      }}
-      maxWidth="xs"
-      open={open}
-      {...other}
-    >
+    <Dialog className={styles.dialog} maxWidth="xs" open={open} {...other}>
       <DialogContent dividers>
-        <Box
-          sx={{ float: "right", cursor: "pointer" }}
-          onClick={() => onClose()}
-        >
-          <Close sx={{ height: "12px", width: "11px", position: "absolute" }} />
+        <Box className={styles.dialogContent} onClick={() => onClose()}>
+          <Close className={styles.closeIcon} />
         </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-evenly",
-            alignItems: "center",
-            flexDirection: "column",
-            height: "100%",
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{
-              fontSize: "30px",
-              fontWeight: 800,
-              lineHeight: "30px",
-              alignSelf: "center",
-            }}
-          >
+        <Box className={styles.contentWrapper}>
+          <Typography variant="h6" className={styles.header}>
             Select File Type
           </Typography>
-          <Grid
-            container
-            sx={{
-              display: "flex",
-              justifyContent: isMobile ? "space-around" : "space-evenly",
-              alignItems: "center",
-              flexDirection: "row",
-            }}
-          >
+          <Grid container className={styles.fileTypeContainer}>
             {options.map((option) => {
               return (
                 <Box
                   sx={{
-                    width: isMobile ? "70px" : "100px",
-                    height: isMobile ? "80px" : "100px",
                     border:
                       option.value === value
                         ? `${isMobile ? "1.71" : "2"}px solid #9599FF`
                         : `${isMobile ? "0.85" : "2"}px solid #E4E4E4`,
-                    borderRadius: `${isMobile ? "8.55" : "10"}px`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
                   }}
+                  className={styles.fileTypes}
                   onClick={() => handleChange(option.value)}
                 >
                   {option.value === "transcript" && (
-                    <Txt
-                      sx={{
-                        width: isMobile ? "40px" : "47px",
-                        height: isMobile ? "65px" : "76px",
-                      }}
-                    />
+                    <Txt className={styles.fileTypeIcon} />
                   )}
                   {option.value === "srt" && (
-                    <Srt
-                      sx={{
-                        width: isMobile ? "40px" : "47px",
-                        height: isMobile ? "65px" : "76px",
-                      }}
-                    />
+                    <Srt className={styles.fileTypeIcon} />
                   )}
                   {option.value === "vtt" && (
-                    <Vtt
-                      sx={{
-                        width: isMobile ? "40px" : "47px",
-                        height: isMobile ? "65px" : "76px",
-                      }}
-                    />
+                    <Vtt className={styles.fileTypeIcon} />
                   )}
                 </Box>
               );
             })}
           </Grid>
           <DownloadButton
-            customButtonStyles={{ width: "190px !important" }}
+            customButtonStyles={{ width: `${pxToRem(190)} !important` }}
             customWrapperStyles={{
               width: "60% !important",
               justifyContent: "space-around !important",
@@ -169,7 +111,7 @@ export default function SelectDialog(props) {
     <Box sx={{ width: "100%", maxWidth: 360 }}>
       <List component="div" role="group">
         <ConfirmationDialogRaw
-          id="ringtone-menu"
+          id="filetype-menu"
           keepMounted
           open={props.open}
           onClose={handleClose}
