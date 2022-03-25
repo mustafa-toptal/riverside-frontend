@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Alert, Grid, Snackbar } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
@@ -16,7 +17,7 @@ const Transcription = () => {
   const [filename, setFilename] = useState("");
   const [loading, setLoading] = useState(false);
   const [isTranscriptionDone, setIsTranscriptionDone] = useState(false);
-  const [transcriptionData, setTranscriptionData] = useState({});
+  // const [transcriptionData, setTranscriptionData] = useState({});
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
