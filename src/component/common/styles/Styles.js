@@ -1,0 +1,191 @@
+import { makeStyles } from "@mui/styles";
+
+import { pxToRem } from "../../../utils/Helpers";
+
+export const useTitleStyles = makeStyles({
+  titleMain: {
+    display: "flex",
+    alignItems: "center",
+    marginTop: pxToRem(65),
+    flexDirection: "column",
+  },
+  titleWrapper: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+  },
+  mobileTitle: {
+    fontWeight: "800",
+    fontSize: pxToRem(43.2),
+    textAlign: "center",
+  },
+  subTitleWrapper: {
+    display: "flex",
+    alignItems: "center",
+    width: pxToRem(216),
+    height: pxToRem(56),
+  },
+  mobileSubtitle: {
+    fontWeight: "700",
+    fontSize: pxToRem(22),
+    textAlign: "center",
+    width: pxToRem(216),
+    height: pxToRem(56),
+    lineHeight: pxToRem(28),
+  },
+  webTitle: {
+    fontWeight: "800",
+    fontSize: pxToRem(65),
+    width: pxToRem(765),
+    textAlign: "center",
+    lineHeight: pxToRem(65),
+  },
+  webSubtitle: {
+    fontWeight: "700",
+    fontSize: pxToRem(30),
+  },
+  webTranscriptionSubtitle: {
+    fontSize: pxToRem(18),
+    fontWeight: "500",
+    textAlign: "center",
+    width: pxToRem(500),
+    marginTop: pxToRem(30),
+  },
+  mobileTranscriptionTitle: {
+    fontSize: pxToRem(32),
+    textAlign: "center",
+    fontWeight: "900",
+    lineHeight: pxToRem(34),
+    width: pxToRem(340),
+  },
+  transcriptionSubtitleWrapper: {
+    width: pxToRem(330),
+    height: pxToRem(56),
+    display: "flex",
+    alignItems: "center",
+    marginTop: pxToRem(30),
+  },
+  mobileTranscrioptionSubtitle: {
+    height: pxToRem(56),
+    fontSize: pxToRem(16),
+    textAlign: "center",
+    fontWeight: "500",
+    lineHeight: pxToRem(24),
+  },
+});
+
+export const useFileUploadStyles = makeStyles({
+  webStyles: {
+    border: `${pxToRem(2.15238)} dashed #C6CCD9`,
+    boxSizing: "border-box",
+    borderRadius: pxToRem(21.5238),
+    width: pxToRem(497),
+    height: pxToRem(205),
+    marginTop: pxToRem(44),
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+  },
+  mobileStyles: {
+    width: "343px",
+    height: "255px",
+    left: "16px",
+    top: "246px",
+    border: "2px dashed #C6CCD9",
+    boxSizing: "border-box",
+    borderRadius: "20px",
+    marginTop: pxToRem(38),
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+  },
+  webTextWrapper: {
+    display: "flex",
+    alignItems: "center",
+    height: pxToRem(40),
+    width: pxToRem(307),
+  },
+  webText: {
+    fontWeight: 400,
+    fontSize: pxToRem(14),
+    lineHeight: pxToRem(20),
+    letterSpacing: "0.01em",
+    textAlign: "center",
+  },
+  phoneText: {
+    fontWeight: 400,
+    fontSize: pxToRem(14),
+    lineHeight: pxToRem(20),
+    letterSpacing: "0.01em",
+    textAlign: "center",
+    marginTop: pxToRem(5),
+  },
+  uploadContent: {
+    fontWeight: 800,
+    fontSize: pxToRem(24),
+  },
+  progressContainer: {
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+    flexDirection: "column",
+    height: "80%",
+  },
+  progressText: {
+    fontWeight: "600",
+    fontSize: pxToRem(14),
+  },
+  rangeWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  range: {
+    width: pxToRem(184),
+    borderRadius: pxToRem(8),
+    height: pxToRem(8),
+    "& .MuiLinearProgress-colorPrimary": {
+      backgroundColor: "#FFFFFF",
+    },
+    "& .MuiLinearProgress-barColorPrimary": {
+      backgroundColor: "#161C21",
+      borderRadius: pxToRem(8),
+    },
+    marginRight: pxToRem(5),
+  },
+  cancelIcon: {
+    height: pxToRem(14),
+    width: pxToRem(14),
+    "&:hover": {
+      cursor: "pointer",
+    },
+  },
+  downloadButton: {
+    backgroundColor: "#161C21",
+    color: "#FFFFFF",
+    height: pxToRem(40),
+    width: pxToRem(270),
+    borderRadius: pxToRem(10),
+    "&:hover": {
+      backgroundColor: "#161C21",
+    },
+  },
+  buttonTextWrapper: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "40%",
+  },
+  downloadIcon: {
+    width: pxToRem(13),
+    height: pxToRem(13),
+  },
+  buttonText: {
+    fontWeight: "700",
+    fontSize: pxToRem(13),
+  },
+});

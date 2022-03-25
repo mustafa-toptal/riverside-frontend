@@ -1,0 +1,223 @@
+import React, { useState } from "react";
+import { Alert, Grid, Snackbar } from "@mui/material";
+import { useMediaQuery } from "react-responsive";
+
+import { Service } from "../../utils/Service";
+import { Title } from "../common/Title";
+import { WavToMp3 } from "../../icons/WavToMp3";
+import { DownloadMp3 } from "../../icons/DownloadMp3";
+import { Upload } from "../../icons/Upload";
+import { animatedText } from "../../utils/Helpers";
+import { convert } from "./partials/Converter";
+
+const AudioConverter = (props) => {
+  const [outputUrl, setOutputUrl] = useState("");
+  const [progress, setProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState("");
+  const [convertedAudio, setConvertedAudio] = useState({});
+
+  const inputFormat = process.env.REACT_APP_AUDIO_INPUT_FORMAT || "wav";
+  const outputFormat = process.env.REACT_APP_AUDIO_OUTPUT_FORMAT || "mp3";
+
+  const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
+  const service = new Service();
+
+  const createImportTask = async (uploadedFile) => {
+    try {
+      // const response = await service.post("import/upload", {}, true);
+      // const { data } = response;
+      // const url = data.result.form.url;
+      // const serverParams = data.result.form.parameters;
+      // const importId = data.id;
+      // setProgress((progress) => progress + 25);
+      // uploadFile(uploadedFile, url, serverParams, importId);
+      const interval = setInterval(() => {
+        setProgress((progress) => progress + 5);
+      }, 100);
+      const file = uploadedFile;
+      let targetAudioFormat = outputFormat;
+      let convertedAudioDataObj = await convert(file, targetAudioFormat);
+      setMessage("Download your MP3 file.");
+      setOutputUrl(convertedAudioDataObj.data);
+      setConvertedAudio(convertedAudioDataObj);
+      setLoading(false);
+      clearInterval(interval);
+      setProgress(100);
+    } catch (error) {
+      setErrorMessage("Failed to import file");
+      setShowErrorMessage(true);
+      setMessage("");
+      setLoading(false);
+    }
+  };
+
+  const uploadFile = async (
+    uploadedFile,
+    serverUploadURL,
+    serverParams,
+    importId
+  ) => {
+    try {
+      const form = new FormData();
+      const { expires, size_limit, max_file_count, signature } = serverParams;
+      form.append("file", uploadedFile);
+      form.append("expires", expires);
+      form.append("size_limit", size_limit);
+      form.append("max_file_count", max_file_count);
+      form.append("signature", signature);
+
+      const response = await service.post(serverUploadURL, form, false, true);
+      const { data } = response;
+      if (data && data.msg === "ok") {
+        setProgress((progress) => progress + 25);
+        createConvertTask(importId);
+      } else {
+        setLoading(false);
+        setShowErrorMessage(true);
+        setMessage("");
+        setErrorMessage("failed to upload file");
+      }
+    } catch (error) {
+      setLoading(false);
+      setShowErrorMessage(true);
+      setMessage("");
+      setErrorMessage("failed to upload file");
+    }
+  };
+
+  const createConvertTask = async (importId) => {
+    try {
+      const postData = {
+        input: importId,
+        input_format: inputFormat,
+        output_format: outputFormat,
+        options: {
+          quality: 75,
+        },
+      };
+      setMessage(animatedText("Converting file"));
+      const response = await service.post("convert", postData, true);
+      const { data } = response;
+      if (data && data.id) {
+        setProgress((progress) => progress + 25);
+        watchTask(data.id);
+      } else {
+        setLoading(false);
+        setShowErrorMessage(true);
+        setMessage("");
+        setErrorMessage("failed to convert file");
+      }
+    } catch (error) {
+      setShowErrorMessage(true);
+      setMessage("");
+      setErrorMessage("failed to convert file");
+      setLoading(false);
+    }
+  };
+
+  const watchTask = (taskId) => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await service.get(`tasks/${taskId}`, true);
+        const { data } = response;
+        if (data && data.status === "completed") {
+          clearInterval(interval);
+          setMessage("Download your MP3 file.");
+          setOutputUrl(data.result.url);
+          setLoading(false);
+          setProgress(100);
+        } else if (!data) {
+          clearInterval(interval);
+          setLoading(false);
+          setShowErrorMessage(true);
+          setMessage("");
+          setErrorMessage("failed to convert file");
+        } else {
+          if (progress < 95) {
+            setProgress((progress) => progress + 5);
+          }
+        }
+      } catch (error) {
+        clearInterval(interval);
+        setLoading(false);
+        setShowErrorMessage(true);
+        setMessage("");
+        setErrorMessage("failed to convert file");
+      }
+    }, 5000);
+  };
+
+  const handleSnackBarClose = () => {
+    setErrorMessage("");
+    setShowErrorMessage(false);
+  };
+
+  const exportFile = () => {
+    // window.location.href = outputUrl;
+    let elem = document.createElement("a");
+    elem.href = convertedAudio.data;
+    elem.download = convertedAudio.name + "." + convertedAudio.format;
+    document.body.appendChild(elem);
+    elem.click();
+    document.body.removeChild(elem);
+  };
+
+  const handleFileChange = (file) => {
+    const fileExtenstion = file.name.split(".").pop();
+    if (fileExtenstion === inputFormat) {
+      setLoading(true);
+      setMessage(animatedText("Converting file"));
+      createImportTask(file);
+    } else {
+      setShowErrorMessage(true);
+      setMessage("");
+      setErrorMessage(`please select ${inputFormat} file`);
+    }
+  };
+
+  const renderIcon = () => {
+    if (loading) {
+      return <WavToMp3 sx={{ width: "212px", height: "46px" }} />;
+    } else if (outputUrl) {
+      return <DownloadMp3 sx={{ width: "71px", height: "49px" }} />;
+    } else {
+      return <Upload />;
+    }
+  };
+
+  const cancelTask = () => {
+    window.location.reload();
+  };
+
+  return (
+    <Grid>
+      <Title
+        title="WAV to MP3"
+        subtitle="Easily Convert WAV to MP3 for Free"
+        highlightedWordIndex={3}
+        isMobile={isMobile}
+        inputFormat={`.${inputFormat}`}
+        onFileSelect={handleFileChange}
+        message={message}
+        progress={progress}
+        outputUrl={outputUrl}
+        exportFile={exportFile}
+        icon={renderIcon()}
+        cancelTask={cancelTask}
+      />
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={showErrorMessage}
+        onClose={handleSnackBarClose}
+        autoHideDuration={5000}
+      >
+        <Alert severity="error">{errorMessage}!</Alert>
+      </Snackbar>
+    </Grid>
+  );
+};
+
+export default AudioConverter;
