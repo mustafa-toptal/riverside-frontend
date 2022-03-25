@@ -12,8 +12,7 @@ export const DownloadButton = (props) => {
     customButtonStyles = {},
     ...buttonProps
   } = props;
-  console.log("customWrapperStyles: ", customWrapperStyles);
-  console.log("customButtonStyles: ", customButtonStyles);
+
   return (
     <Button
       type="primary"

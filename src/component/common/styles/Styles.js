@@ -191,7 +191,6 @@ export const useFileUploadStyles = makeStyles({
 });
 
 export const useDialogStyles = (isMobile) => {
-  console.log("isMobile: ", isMobile);
   return makeStyles({
     dialog: {
       "& .MuiDialog-paper": {

@@ -91,7 +91,7 @@ const Transcription = () => {
   const handleFileChange = (file) => {
     setFilename(file.name.split(".").join(""));
     const fileType = file.type;
-    console.log("fileType: ", fileType);
+
     if (fileType.includes("video/") || fileType.includes("audio/")) {
       const form = new FormData();
       setLoading(true);
@@ -156,7 +156,6 @@ const Transcription = () => {
   };
 
   const handleDiaglogSelect = (value) => {
-    console.log("value: ", value);
     if (value) {
       service
         .get("getTranscriptionById/" + id + "?type=" + value)
