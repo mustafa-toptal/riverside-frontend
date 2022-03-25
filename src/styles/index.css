@@ -37,27 +37,3 @@ code {
     transform: translateY(0em);
   }
 }
-
-.range {
-  background: linear-gradient(
-    to right,
-    #484c56 0%,
-    #484c56 50%,
-    #fff 50%,
-    #fff 100%
-  );
-  border-radius: 8px;
-  height: 7px;
-  width: 184px;
-  outline: none;
-  transition: background 450ms ease-in;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  width: 0;
-  height: 0;
-}
