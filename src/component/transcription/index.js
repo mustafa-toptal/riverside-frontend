@@ -102,7 +102,10 @@ const Transcription = () => {
       form.append("file", file);
       const uploadingInterval = setInterval(() => {
         setProgress((prev) => prev + 1);
-      }, 1000);
+        if (progress === 95) {
+          clearInterval(uploadingInterval);
+        }
+      }, 1500);
       service
         .post("transcribe", form)
         .then(async (res) => {
