@@ -100,12 +100,34 @@ const Transcription = () => {
       setLoading(true);
       setMessage("Uploading files");
       form.append("file", file);
+      let fileUploadLocalProgress = 0;
       const uploadingInterval = setInterval(() => {
-        setProgress((prev) => prev + 1);
-        if (progress === 95) {
+        if (fileUploadLocalProgress < 50) {
+          setProgress((prev) => prev + 1.5);
+          fileUploadLocalProgress += 1.5;
+        } else if (
+          fileUploadLocalProgress >= 50 &&
+          fileUploadLocalProgress <= 75
+        ) {
+          setProgress((prev) => prev + 1);
+          fileUploadLocalProgress += 1;
+        } else if (
+          fileUploadLocalProgress > 75 &&
+          fileUploadLocalProgress <= 80
+        ) {
+          setProgress((prev) => prev + 0.5);
+          fileUploadLocalProgress += 0.5;
+        } else if (
+          fileUploadLocalProgress > 80 &&
+          fileUploadLocalProgress < 90
+        ) {
+          setProgress((prev) => prev + 0.25);
+          fileUploadLocalProgress += 0.25;
+        }
+        if (fileUploadLocalProgress >= 90) {
           clearInterval(uploadingInterval);
         }
-      }, 1500);
+      }, 5000);
       service
         .post("transcribe", form)
         .then(async (res) => {
