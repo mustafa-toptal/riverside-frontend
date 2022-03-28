@@ -42,10 +42,10 @@ function ConfirmationDialogRaw(props) {
   return (
     <Dialog className={styles.dialog} maxWidth="xs" open={open} {...other}>
       <DialogContent dividers>
-        <Box className={styles.dialogContent} onClick={() => onClose()}>
-          <Close className={styles.closeIcon} />
-        </Box>
         <Box className={styles.contentWrapper}>
+          <Box className={styles.dialogContent} onClick={() => onClose()}>
+            <Close className={styles.closeIcon} />
+          </Box>
           <Typography variant="h6" className={styles.header}>
             Select File Type
           </Typography>

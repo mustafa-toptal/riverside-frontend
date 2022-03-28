@@ -142,14 +142,14 @@ export const useFileUploadStyles = makeStyles({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    "& .MuiLinearProgress-colorPrimary": {
+      backgroundColor: "#FFFFFF",
+    },
   },
   range: {
     width: pxToRem(184),
     borderRadius: pxToRem(8),
     height: pxToRem(8),
-    "& .MuiLinearProgress-colorPrimary": {
-      backgroundColor: "#FFFFFF",
-    },
     "& .MuiLinearProgress-barColorPrimary": {
       backgroundColor: "#161C21",
       borderRadius: pxToRem(8),
@@ -195,12 +195,20 @@ export const useDialogStyles = (isMobile) => {
     dialog: {
       "& .MuiDialog-paper": {
         width: "80%",
-        maxHeight: 430,
+        // maxHeight: 430,
         borderRadius: pxToRem(10),
         height: pxToRem(320),
       },
+      "& .MuiDialogContent-root": {
+        padding: "16px 5px",
+      },
     },
-    dialogContent: { float: "right", cursor: "pointer" },
+    dialogContent: {
+      cursor: "pointer",
+      position: "absolute",
+      top: pxToRem(12),
+      left: isMobile ? "92%" : "95%",
+    },
     closeIcon: {
       height: pxToRem(12),
       width: pxToRem(11),
@@ -221,13 +229,13 @@ export const useDialogStyles = (isMobile) => {
     },
     fileTypeContainer: {
       display: "flex",
-      justifyContent: isMobile ? "space-around" : "space-evenly",
+      justifyContent: "space-evenly",
       alignItems: "center",
       flexDirection: "row",
     },
     fileTypes: {
-      width: isMobile ? pxToRem(70) : pxToRem(100),
-      height: isMobile ? pxToRem(80) : pxToRem(100),
+      width: isMobile ? pxToRem(88) : pxToRem(100),
+      height: isMobile ? pxToRem(88) : pxToRem(100),
       borderRadius: isMobile ? pxToRem(8.55) : pxToRem(10),
       display: "flex",
       alignItems: "center",
@@ -235,7 +243,7 @@ export const useDialogStyles = (isMobile) => {
       cursor: "pointer",
     },
     fileTypeIcon: {
-      width: isMobile ? pxToRem(40) : pxToRem(47),
+      width: isMobile ? pxToRem(65) : pxToRem(47),
       height: isMobile ? pxToRem(65) : pxToRem(76),
     },
   });

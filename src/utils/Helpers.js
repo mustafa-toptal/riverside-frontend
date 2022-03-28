@@ -37,3 +37,5 @@ export const animatedText = (text) => {
     </div>
   );
 };
+
+export const delay = (ms) => new Promise((res) => setTimeout(res, ms));

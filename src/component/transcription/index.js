@@ -8,7 +8,7 @@ import { Title } from "../common/Title";
 import { TranscriptionIcon } from "../../icons/TranscriptionIcon";
 import { TranscriptionUpload } from "../../icons/TranscriptionUpload";
 import { DownloadSrt } from "../../icons/DownloadSrt";
-import { animatedText } from "../../utils/Helpers";
+import { animatedText, delay } from "../../utils/Helpers";
 import { Upload } from "../../icons/Upload";
 import SelectDialog from "../common/SelectDialog";
 
@@ -24,7 +24,7 @@ const Transcription = () => {
   const [progress, setProgress] = useState(0);
   const [changeProgress, setChangeProgress] = useState(false);
   const [openSelector, setOpenSelector] = useState(false);
-
+  const DELAY_IN_MILISECONDS = 1000;
   const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
 
   const service = new Service();
@@ -34,9 +34,12 @@ const Transcription = () => {
       const interval = setInterval(() => {
         service
           .get("getTranscriptionStatusById/" + id)
-          .then((res) => {
+          .then(async (res) => {
             if (res.data.status === "transcribed") {
               clearInterval(interval);
+              setProgress(100);
+              setMessage("File is ready.");
+              await delay(DELAY_IN_MILISECONDS);
               setMessage("Download your podcast transcription.");
               setIsTranscriptionDone(true);
               setLoading(false);
@@ -97,14 +100,24 @@ const Transcription = () => {
       setLoading(true);
       setMessage("Uploading files");
       form.append("file", file);
+      const uploadingInterval = setInterval(() => {
+        setProgress((prev) => prev + 1);
+      }, 1000);
       service
         .post("transcribe", form)
-        .then((res) => {
+        .then(async (res) => {
           setId(res.data.id);
+          if (progress < 100) {
+            setProgress(100);
+            setMessage("Files uploaded");
+            await delay(DELAY_IN_MILISECONDS);
+          }
+          clearInterval(uploadingInterval);
+          setProgress(0);
           setMessage(animatedText("Generating file"));
-          setProgress((prev) => prev + 10);
         })
         .catch((err) => {
+          clearInterval(uploadingInterval);
           setShowErrorMessage(true);
           setMessage("");
           setErrorMessage("Failed to upload file");
