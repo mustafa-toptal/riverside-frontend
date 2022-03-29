@@ -48,7 +48,7 @@ export const useTitleStyles = makeStyles({
     fontSize: pxToRem(18),
     fontWeight: "500",
     textAlign: "center",
-    width: pxToRem(500),
+    width: pxToRem(520),
     marginTop: pxToRem(30),
   },
   mobileTranscriptionTitle: {
@@ -245,6 +245,36 @@ export const useDialogStyles = (isMobile) => {
     fileTypeIcon: {
       width: isMobile ? pxToRem(65) : pxToRem(47),
       height: isMobile ? pxToRem(65) : pxToRem(76),
+    },
+  });
+};
+
+export const useAlertMessageStyles = (isMobile) => {
+  return makeStyles({
+    snackbar: {
+      width: pxToRem(270),
+      left: isMobile ? "15%" : "50%",
+      right: isMobile ? "25%" : "auto",
+      top: pxToRem(24),
+      "& .MuiPaper-root": {
+        alignItems: "center",
+        justifyContent: "center",
+        "& .MuiSnackbarContent-message": {
+          width: isMobile ? "90%" : "75%",
+        },
+      },
+    },
+    snackbarContent: {
+      height: pxToRem(52),
+      borderRadius: pxToRem(10),
+      opacity: "0.85 !important",
+    },
+    message: {
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-evenly",
+      color: "white",
     },
   });
 };

@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Alert, Grid, Snackbar } from "@mui/material";
+import { Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { useMediaQuery } from "react-responsive";
 
 import { Service } from "../../utils/Service";
 import { Title } from "../common/Title";
@@ -11,6 +10,8 @@ import { DownloadSrt } from "../../icons/DownloadSrt";
 import { animatedText, delay } from "../../utils/Helpers";
 import { Upload } from "../../icons/Upload";
 import SelectDialog from "../common/SelectDialog";
+import { AlertMessage } from "../common/AlertMessage";
+import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 
 const Transcription = () => {
   const [id, setId] = useState("");
@@ -25,7 +26,8 @@ const Transcription = () => {
   const [changeProgress, setChangeProgress] = useState(false);
   const [openSelector, setOpenSelector] = useState(false);
   const DELAY_IN_MILISECONDS = 1000;
-  const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
+  // const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
+  const isMobile = useResponsiveQuery();
 
   const service = new Service();
 
@@ -236,14 +238,11 @@ const Transcription = () => {
         isTranscription
         cancelTask={cancelTask}
       />
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      <AlertMessage
         open={showErrorMessage}
         onClose={handleSnackBarClose}
-        autoHideDuration={5000}
-      >
-        <Alert severity="error">{errorMessage}!</Alert>
-      </Snackbar>
+        message={errorMessage}
+      />
       <SelectDialog
         open={openSelector}
         isMobile={isMobile}

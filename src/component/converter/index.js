@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Alert, Grid, Snackbar } from "@mui/material";
-import { useMediaQuery } from "react-responsive";
+import { Grid } from "@mui/material";
 
 import { Title } from "../common/Title";
 import { WavToMp3 } from "../../icons/WavToMp3";
@@ -8,8 +7,10 @@ import { DownloadMp3 } from "../../icons/DownloadMp3";
 import { Upload } from "../../icons/Upload";
 import { animatedText } from "../../utils/Helpers";
 import { convert } from "./partials/Converter";
+import { AlertMessage } from "../common/AlertMessage";
+import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 
-const AudioConverter = (props) => {
+const AudioConverter = () => {
   const [outputUrl, setOutputUrl] = useState("");
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -21,7 +22,7 @@ const AudioConverter = (props) => {
   const inputFormat = process.env.REACT_APP_AUDIO_INPUT_FORMAT || "wav";
   const outputFormat = process.env.REACT_APP_AUDIO_OUTPUT_FORMAT || "mp3";
 
-  const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
+  const isMobile = useResponsiveQuery();
   // const service = new Service();
 
   const createImportTask = async (uploadedFile) => {
@@ -207,14 +208,11 @@ const AudioConverter = (props) => {
         icon={renderIcon()}
         cancelTask={cancelTask}
       />
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      <AlertMessage
         open={showErrorMessage}
         onClose={handleSnackBarClose}
-        autoHideDuration={5000}
-      >
-        <Alert severity="error">{errorMessage}!</Alert>
-      </Snackbar>
+        message={errorMessage}
+      />
     </Grid>
   );
 };
