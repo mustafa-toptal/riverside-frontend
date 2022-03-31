@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 
 import { Service } from "../../utils/Service";
 import { Title } from "../common/Title";
@@ -25,8 +26,11 @@ const Transcription = () => {
   const [progress, setProgress] = useState(0);
   const [changeProgress, setChangeProgress] = useState(false);
   const [openSelector, setOpenSelector] = useState(false);
+  const [socket, setSocket] = useState();
+
   const DELAY_IN_MILISECONDS = 1000;
-  // const isMobile = useMediaQuery({ query: `(max-width: 760px)` });
+  let uploadingInterval;
+
   const isMobile = useResponsiveQuery();
 
   const service = new Service();
@@ -75,23 +79,13 @@ const Transcription = () => {
   }, [changeProgress]);
 
   useEffect(() => {
-    if (isTranscriptionDone) {
-      // service
-      //   .get("getTranscriptionById/" + id)
-      //   .then((res) => {
-      //     setTranscriptionData(res.data);
-      //     setLoading(false);
-      //     setProgress(100);
-      //     setId("");
-      //     setIsTranscriptionDone(false);
-      //   })
-      //   .catch((err) => {
-      //     setMessage("");
-      //     setShowErrorMessage(true);
-      //     setErrorMessage("Failed to generate file");
-      //   });
-    }
-  }, [isTranscriptionDone]);
+    // const socket = io("ws://localhost:8000");
+    const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
+    // const socket = io(
+    //   "ws://ec2-18-133-197-246.eu-west-2.compute.amazonaws.com:8000"
+    // );
+    setSocket(socket);
+  }, []);
 
   const handleFileChange = (file) => {
     setFilename(file.name.split(".").join(""));
@@ -103,7 +97,7 @@ const Transcription = () => {
       setMessage("Uploading files");
       form.append("file", file);
       let fileUploadLocalProgress = 0;
-      const uploadingInterval = setInterval(() => {
+      uploadingInterval = setInterval(() => {
         if (fileUploadLocalProgress < 50) {
           setProgress((prev) => prev + 1.5);
           fileUploadLocalProgress += 1.5;
@@ -133,15 +127,30 @@ const Transcription = () => {
       service
         .post("transcribe", form)
         .then(async (res) => {
-          setId(res.data.id);
-          if (progress < 100) {
-            setProgress(100);
-            setMessage("Files uploaded");
-            await delay(DELAY_IN_MILISECONDS);
-          }
-          clearInterval(uploadingInterval);
-          setProgress(0);
-          setMessage(animatedText("Generating file"));
+          console.log("res: ", res);
+          socket.on(res.data.id, async (data) => {
+            if (data) {
+              setId(data);
+              if (progress < 100) {
+                setProgress(100);
+                setMessage("Files uploaded");
+                await delay(DELAY_IN_MILISECONDS);
+              }
+              clearInterval(uploadingInterval);
+              setProgress(0);
+              setMessage(animatedText("Generating file"));
+              socket.close();
+            }
+          });
+          // setId(res.data.id);
+          // if (progress < 100) {
+          //   setProgress(100);
+          //   setMessage("Files uploaded");
+          //   await delay(DELAY_IN_MILISECONDS);
+          // }
+          // clearInterval(uploadingInterval);
+          // setProgress(0);
+          // setMessage(animatedText("Generating file"));
         })
         .catch((err) => {
           clearInterval(uploadingInterval);
