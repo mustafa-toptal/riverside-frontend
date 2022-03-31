@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Grid } from "@mui/material";
-import Lottie from "react-lottie";
+// import Lottie from "react-lottie";
 
 import { Title } from "../common/Title";
 import { WavToMp3 } from "../../icons/WavToMp3";
@@ -11,7 +11,7 @@ import { convert } from "./partials/Converter";
 import { AlertMessage } from "../common/AlertMessage";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 
-import wavtomp3 from "../../utils/lottie-jsons/wavtomp3.json";
+// import wavtomp3 from "../../utils/lottie-jsons/wavtomp3.json";
 
 const AudioConverter = () => {
   const [outputUrl, setOutputUrl] = useState("");
@@ -182,14 +182,14 @@ const AudioConverter = () => {
   };
 
   const renderIcon = () => {
-    const defaultOptions = {
-      loop: true,
-      autoplay: true,
-      animationData: wavtomp3,
-      rendererSettings: {
-        preserveAspectRatio: "xMidYMid slice",
-      },
-    };
+    // const defaultOptions = {
+    //   loop: true,
+    //   autoplay: true,
+    //   animationData: wavtomp3,
+    //   rendererSettings: {
+    //     preserveAspectRatio: "xMidYMid slice",
+    //   },
+    // };
 
     if (loading) {
       // return <Lottie options={defaultOptions} width={212} height={46} />;

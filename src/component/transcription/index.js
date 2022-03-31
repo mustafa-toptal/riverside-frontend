@@ -2,6 +2,7 @@
 import { Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { v4 as uuidv4 } from "uuid";
 
 import { Service } from "../../utils/Service";
 import { Title } from "../common/Title";
@@ -13,20 +14,24 @@ import { Upload } from "../../icons/Upload";
 import SelectDialog from "../common/SelectDialog";
 import { AlertMessage } from "../common/AlertMessage";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
+import { uploadFile } from "../../utils/s3/ReactS3";
+
+const S3_BUCKET = "riversidefm-backend";
+const REGION = "eu-west-2";
+const ACCESS_KEY = "AKIAVPGN2AWQAO4PRSES";
+const SECRET_ACCESS_KEY = "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";
 
 const Transcription = () => {
   const [id, setId] = useState("");
   const [filename, setFilename] = useState("");
   const [loading, setLoading] = useState(false);
   const [isTranscriptionDone, setIsTranscriptionDone] = useState(false);
-  // const [transcriptionData, setTranscriptionData] = useState({});
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [progress, setProgress] = useState(0);
   const [changeProgress, setChangeProgress] = useState(false);
   const [openSelector, setOpenSelector] = useState(false);
-  const [socket, setSocket] = useState();
 
   const DELAY_IN_MILISECONDS = 1000;
   let uploadingInterval;
@@ -78,24 +83,22 @@ const Transcription = () => {
     }
   }, [changeProgress]);
 
-  useEffect(() => {
-    // const socket = io("ws://localhost:8000");
-    const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
-    // const socket = io(
-    //   "ws://ec2-18-133-197-246.eu-west-2.compute.amazonaws.com:8000"
-    // );
-    setSocket(socket);
-  }, []);
+  // useEffect(() => {
+  //   // const socket = io("ws://localhost:8000");
+  //   const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
+  //   // const socket = io(
+  //   //   "ws://ec2-18-133-197-246.eu-west-2.compute.amazonaws.com:8000"
+  //   // );
+  //   setSocket(socket);
+  // }, []);
 
   const handleFileChange = (file) => {
     setFilename(file.name.split(".").join(""));
     const fileType = file.type;
 
     if (fileType.includes("video/") || fileType.includes("audio/")) {
-      const form = new FormData();
       setLoading(true);
       setMessage("Uploading files");
-      form.append("file", file);
       let fileUploadLocalProgress = 0;
       uploadingInterval = setInterval(() => {
         if (fileUploadLocalProgress < 50) {
@@ -124,33 +127,38 @@ const Transcription = () => {
           clearInterval(uploadingInterval);
         }
       }, 5000);
-      service
-        .post("transcribe", form)
-        .then(async (res) => {
-          console.log("res: ", res);
-          socket.on(res.data.id, async (data) => {
-            if (data) {
-              setId(data);
-              if (progress < 100) {
-                setProgress(100);
-                setMessage("Files uploaded");
-                await delay(DELAY_IN_MILISECONDS);
+
+      const config = {
+        bucketName: S3_BUCKET,
+        region: REGION,
+        accessKeyId: ACCESS_KEY,
+        secretAccessKey: SECRET_ACCESS_KEY,
+        name: uuidv4() + file.name,
+      };
+      uploadFile(file, config)
+        .then((data) => {
+          const url = data.location;
+          service
+            .post("transcribe", { file: url })
+            .then(async (res) => {
+              if (res.data.id) {
+                setId(res.data.id);
+                if (progress < 100) {
+                  setProgress(100);
+                  setMessage("Files uploaded");
+                  await delay(DELAY_IN_MILISECONDS);
+                }
+                clearInterval(uploadingInterval);
+                setProgress(0);
+                setMessage(animatedText("Generating file"));
               }
+            })
+            .catch((err) => {
               clearInterval(uploadingInterval);
-              setProgress(0);
-              setMessage(animatedText("Generating file"));
-              socket.close();
-            }
-          });
-          // setId(res.data.id);
-          // if (progress < 100) {
-          //   setProgress(100);
-          //   setMessage("Files uploaded");
-          //   await delay(DELAY_IN_MILISECONDS);
-          // }
-          // clearInterval(uploadingInterval);
-          // setProgress(0);
-          // setMessage(animatedText("Generating file"));
+              setShowErrorMessage(true);
+              setMessage("");
+              setErrorMessage("Failed to upload file");
+            });
         })
         .catch((err) => {
           clearInterval(uploadingInterval);
@@ -167,16 +175,6 @@ const Transcription = () => {
 
   const downloadSrt = () => {
     setOpenSelector(true);
-    // let text = "";
-    // transcriptionData.subtitles.map((subtitle, index) => {
-    //   text += index + 1;
-    //   text += "\n";
-    //   text += subtitle.startTime + " --> " + subtitle.endTime;
-    //   text += "\n";
-    //   text += subtitle.text.trim();
-    //   text += "\n";
-    //   text += "\n";
-    // });
   };
 
   const renderIcon = () => {
