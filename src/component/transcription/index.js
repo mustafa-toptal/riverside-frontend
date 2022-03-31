@@ -14,7 +14,7 @@ import { Upload } from "../../icons/Upload";
 import SelectDialog from "../common/SelectDialog";
 import { AlertMessage } from "../common/AlertMessage";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
-import { uploadFile } from "../../utils/s3/ReactS3";
+import { deleteFile, uploadFile } from "../../utils/s3/ReactS3";
 
 const S3_BUCKET = "riversidefm-backend";
 const REGION = "eu-west-2";
@@ -102,38 +102,20 @@ const Transcription = () => {
       let fileUploadLocalProgress = 0;
       uploadingInterval = setInterval(() => {
         if (fileUploadLocalProgress < 50) {
-          setProgress((prev) => prev + 1.5);
-          fileUploadLocalProgress += 1.5;
-        } else if (
-          fileUploadLocalProgress >= 50 &&
-          fileUploadLocalProgress <= 75
-        ) {
-          setProgress((prev) => prev + 1);
-          fileUploadLocalProgress += 1;
-        } else if (
-          fileUploadLocalProgress > 75 &&
-          fileUploadLocalProgress <= 80
-        ) {
-          setProgress((prev) => prev + 0.5);
-          fileUploadLocalProgress += 0.5;
-        } else if (
-          fileUploadLocalProgress > 80 &&
-          fileUploadLocalProgress < 90
-        ) {
-          setProgress((prev) => prev + 0.25);
-          fileUploadLocalProgress += 0.25;
+          setProgress((prev) => prev + 5);
+          fileUploadLocalProgress += 5;
         }
-        if (fileUploadLocalProgress >= 90) {
+        if (fileUploadLocalProgress >= 50) {
           clearInterval(uploadingInterval);
         }
       }, 5000);
-
+      const fileName = uuidv4() + file.name;
       const config = {
         bucketName: S3_BUCKET,
         region: REGION,
         accessKeyId: ACCESS_KEY,
         secretAccessKey: SECRET_ACCESS_KEY,
-        name: uuidv4() + file.name,
+        name: fileName,
       };
       uploadFile(file, config)
         .then((data) => {
@@ -143,13 +125,10 @@ const Transcription = () => {
             .then(async (res) => {
               if (res.data.id) {
                 setId(res.data.id);
-                if (progress < 100) {
-                  setProgress(100);
-                  setMessage("Files uploaded");
-                  await delay(DELAY_IN_MILISECONDS);
-                }
+                setMessage("Files uploaded");
+                await delay(DELAY_IN_MILISECONDS);
+                deleteFile(fileName, config);
                 clearInterval(uploadingInterval);
-                setProgress(0);
                 setMessage(animatedText("Generating file"));
               }
             })
