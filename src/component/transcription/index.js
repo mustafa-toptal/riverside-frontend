@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import { v4 as uuidv4 } from "uuid";
 
 import { Service } from "../../utils/Service";
@@ -98,7 +97,7 @@ const Transcription = () => {
 
     if (fileType.includes("video/") || fileType.includes("audio/")) {
       setLoading(true);
-      setMessage("Uploading files");
+      setMessage(animatedText("Uploading files"));
       let fileUploadLocalProgress = 0;
       uploadingInterval = setInterval(() => {
         if (fileUploadLocalProgress < 50) {
