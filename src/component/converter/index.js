@@ -6,7 +6,7 @@ import { Title } from "../common/Title";
 import { WavToMp3 } from "../../icons/WavToMp3";
 import { DownloadMp3 } from "../../icons/DownloadMp3";
 import { Upload } from "../../icons/Upload";
-import { animatedText } from "../../utils/Helpers";
+import { animatedText, delay } from "../../utils/Helpers";
 import { convert } from "./partials/Converter";
 import { AlertMessage } from "../common/AlertMessage";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
@@ -37,18 +37,28 @@ const AudioConverter = () => {
       // const importId = data.id;
       // setProgress((progress) => progress + 25);
       // uploadFile(uploadedFile, url, serverParams, importId);
+
       const interval = setInterval(() => {
-        setProgress((progress) => progress + 5);
+        setProgress((progress) => {
+          if (progress < 90) {
+            return progress + 5;
+          } else {
+            clearInterval(interval);
+            return progress;
+          }
+        });
       }, 100);
       const file = uploadedFile;
       let targetAudioFormat = outputFormat;
       let convertedAudioDataObj = await convert(file, targetAudioFormat);
+      clearInterval(interval);
+      setProgress(100);
+      setMessage("File is ready.");
+      await delay(1000);
       setMessage("Download your MP3 file.");
       setOutputUrl(convertedAudioDataObj.data);
       setConvertedAudio(convertedAudioDataObj);
       setLoading(false);
-      clearInterval(interval);
-      setProgress(100);
     } catch (error) {
       setErrorMessage("Failed to import file");
       setShowErrorMessage(true);
