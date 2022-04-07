@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Button } from "@mui/material";
+
 import VideoActions from "./partials/VideoActions";
 
 export const ScreenRecorder = (porps) => {
