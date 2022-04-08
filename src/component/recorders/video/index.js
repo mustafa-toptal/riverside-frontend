@@ -6,7 +6,6 @@ import VideoActions from "../../common/VideoActions";
 export const VideoRecorder = (props) => {
   console.log("props: ", props);
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
-  const [audio, setAudio] = useState(null);
   const [stream, setStrem] = useState(null);
   const [recorder, setRecorder] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
