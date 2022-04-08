@@ -4,7 +4,6 @@ import { Box, Button } from "@mui/material";
 import VideoActions from "../../common/VideoActions";
 
 export const VideoRecorder = (props) => {
-  console.log("props: ", props);
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
   const [stream, setStrem] = useState(null);
   const [recorder, setRecorder] = useState(null);

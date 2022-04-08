@@ -1,9 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@mui/material";
-import $ from "jquery";
+import { VideoStreamMerger } from "video-stream-merger";
 
 export default function VideoRecord(props) {
   const [isLoading, setIsLoading] = useState(true);
+
+  var merger = new VideoStreamMerger();
+
+  let cameraElem = useRef(null);
+  var mediaRecorder;
+  var recordedChunks = [];
+  var videoStream;
+  var cameraStream;
+  var combinedStream;
+  var BLOB;
+
   useEffect(() => {
     async function onLoad() {
       try {
@@ -13,23 +24,9 @@ export default function VideoRecord(props) {
       }
       setIsLoading(false);
     }
-
+    console.log("cameraElem: ", cameraElem);
     onLoad();
   }, []);
-
-  var mediaRecorder;
-  var recordedChunks = [];
-  var videoStream;
-  var cameraStream;
-  var combinedStream;
-  var BLOB;
-  var cameraElem;
-  var videoElem;
-
-  $(function () {
-    cameraElem = document.querySelector("#camera");
-    videoElem = document.querySelector("#video");
-  });
 
   var videoMediaOptions = {
     video: {
@@ -58,8 +55,33 @@ export default function VideoRecord(props) {
       cameraStream = await navigator.mediaDevices.getUserMedia(
         cameraMediaOptions
       );
-      cameraElem.srcObject = cameraStream;
-      videoElem.srcObject = videoStream;
+      // Add the screen capture. Position it to fill the whole stream (the default)
+      merger.addStream(videoStream, {
+        x: 0, // position of the topleft corner
+        y: 0,
+        width: merger.width,
+        height: merger.height,
+        mute: true, // we don't want sound from the screen (if there is any)
+      });
+
+      // Add the webcam stream. Position it on the bottom left and resize it to 100x100.
+      merger.addStream(cameraStream, {
+        x: 20,
+        y: merger.height - 180,
+        width: 150,
+        height: 150,
+        mute: false,
+      });
+
+      // Start the merging. Calling this makes the result available to us
+      merger.start();
+
+      // We now have a merged MediaStream!
+
+      console.log("merger.result: ", merger.result, cameraElem);
+      cameraElem.current.srcObject = merger.result;
+      cameraElem.current.play();
+      // videoElem.srcObject = videoStream;
       startRec();
     } catch (err) {
       console.error("Error: " + err);
@@ -69,19 +91,25 @@ export default function VideoRecord(props) {
   function handleDataAvailable(event) {
     if (event.data.size > 0) {
       recordedChunks.push(event.data);
-      createBlob();
     }
   }
 
+  const stopRecording = () => {
+    createBlob();
+  };
+
   function startRec() {
     var options = { mimeType: "video/webm; codecs=vp9" };
-    combinedStream = new MediaStream([
-      ...cameraStream.getTracks(),
-      ...videoStream.getTracks(),
-    ]);
-    mediaRecorder = new MediaRecorder(combinedStream, options);
-    mediaRecorder.ondataavailable = handleDataAvailable;
-    mediaRecorder.start(300);
+    if (cameraStream && videoStream) {
+      combinedStream = new MediaStream([
+        ...cameraStream.getTracks(),
+        ...videoStream.getTracks(),
+      ]);
+      mediaRecorder = new MediaRecorder(combinedStream, options);
+      mediaRecorder.ondataavailable = handleDataAvailable;
+      mediaRecorder.onstop = stopRecording;
+      mediaRecorder.start(300);
+    }
   }
 
   function createBlob() {
@@ -91,9 +119,9 @@ export default function VideoRecord(props) {
 
     var url = URL.createObjectURL(BLOB);
 
-    videoElem.srcObject = null;
-    videoElem.src = url;
-    videoElem.muted = false;
+    // videoElem.srcObject = null;
+    // videoElem.src = url;
+    // videoElem.muted = false;
   }
 
   function stopCapture() {
@@ -108,8 +136,6 @@ export default function VideoRecord(props) {
   function renderPage() {
     return (
       <div className="videoWrapper">
-        <video preload="auto" id="video"></video>
-        <video id="camera" autoPlay muted></video>
         <Button id="startBtn" onClick={startCapture}>
           Start
         </Button>
@@ -122,8 +148,15 @@ export default function VideoRecord(props) {
 
   return (
     <div id="videoRecordID" className="VideoRecord">
-      {isLoading && <div>Loading...</div>}
-      {!isLoading && renderPage()}
+      <video
+        id="camera"
+        autoPlay
+        muted
+        ref={cameraElem}
+        width="100%"
+        height={"100%"}
+      ></video>
+      {renderPage()}
     </div>
   );
 }
