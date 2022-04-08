@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Grid } from "@mui/material";
 
 import { ScreenRecorder } from "./screen";
+import { VideoRecorder } from "./video";
 
 export function Recorders() {
   const [recorderType, setRecorderType] = useState("");
@@ -112,6 +113,7 @@ export function Recorders() {
                 border: "#FFFFF 5px solid",
               },
             }}
+            onClick={() => setRecorderType("video")}
           >
             Video
           </Box>
@@ -138,6 +140,12 @@ export function Recorders() {
       </Grid>
       {recorderType === "screen" && (
         <ScreenRecorder
+          audioDevices={audioDevices}
+          videoDevices={videoDevices}
+        />
+      )}
+      {recorderType === "video" && (
+        <VideoRecorder
           audioDevices={audioDevices}
           videoDevices={videoDevices}
         />
