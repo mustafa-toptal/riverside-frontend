@@ -135,6 +135,7 @@ export const VideoRecorder = (props) => {
           width={"50%"}
           height="50%"
           ref={videoRef}
+          style={{ borderRadius: "30px" }}
           muted
         />
       )}
@@ -145,7 +146,10 @@ export const VideoRecorder = (props) => {
         ref={recordedVideo}
         width={"50%"}
         height="50%"
-        style={{ display: recordingAvailable ? "block" : "none" }}
+        style={{
+          display: recordingAvailable ? "block" : "none",
+          borderRadius: "30px",
+        }}
       />
 
       {!isRecording && (

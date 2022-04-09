@@ -142,6 +142,7 @@ export const ScreenRecorder = (porps) => {
           width={"50%"}
           height="50%"
           ref={videoRef}
+          style={{ borderRadius: "30px" }}
         />
       )}
 
@@ -151,7 +152,10 @@ export const ScreenRecorder = (porps) => {
         ref={recordedVideo}
         width={"50%"}
         height="50%"
-        style={{ display: recordingAvailable ? "block" : "none" }}
+        style={{
+          display: recordingAvailable ? "block" : "none",
+          borderRadius: "30px",
+        }}
       />
       {!isRecording && (
         <Button
