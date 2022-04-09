@@ -3,6 +3,7 @@ import { Box, Grid } from "@mui/material";
 
 import { ScreenRecorder } from "./screen";
 import { VideoRecorder } from "./video";
+import { AudioRecorder } from "./audio";
 
 export function Recorders() {
   const [recorderType, setRecorderType] = useState("");
@@ -95,6 +96,7 @@ export function Recorders() {
                 border: "#FFFFF 5px solid",
               },
             }}
+            onClick={() => setRecorderType("audio")}
           >
             Audio
           </Box>
@@ -139,16 +141,16 @@ export function Recorders() {
         </Box>
       </Grid>
       {recorderType === "screen" && (
-        <ScreenRecorder
-          audioDevices={audioDevices}
-          videoDevices={videoDevices}
-        />
+        <ScreenRecorder audioDevices={audioDevices} />
       )}
       {recorderType === "video" && (
         <VideoRecorder
           audioDevices={audioDevices}
           videoDevices={videoDevices}
         />
+      )}
+      {recorderType === "audio" && (
+        <AudioRecorder audioDevices={audioDevices} />
       )}
     </>
   );
