@@ -92,9 +92,9 @@ export const ScreenVideo = (props) => {
           const width = 200;
           const height = 250;
           ctx.save();
-          roundedImage(ctx, x, y, width, height, 10);
+          roundedImage(ctx, x, y, width, height, 20.5333);
           ctx.strokeStyle = "#FFFFFF";
-          ctx.lineWidth = 5;
+          ctx.lineWidth = 8;
           ctx.stroke();
           // ctx.scale(-1, 1);
           ctx.clip();
