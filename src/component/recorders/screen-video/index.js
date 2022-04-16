@@ -8,6 +8,8 @@ export const ScreenVideo = (props) => {
 
   var merger = new VideoStreamMerger();
 
+  const bottomLeft = {};
+
   let cameraElem = useRef(null);
   let recordedVideo = useRef(null);
 
@@ -15,7 +17,6 @@ export const ScreenVideo = (props) => {
   var recordedChunks = [];
   var videoStream;
   var cameraStream;
-  var combinedStream;
   var BLOB;
 
   useEffect(() => {
@@ -27,17 +28,16 @@ export const ScreenVideo = (props) => {
       }
       setIsLoading(false);
     }
-    console.log("cameraElem: ", cameraElem);
     onLoad();
   }, []);
 
   var screenMediaOptions = {
     video: {
-      width: 720,
-      height: 480,
+      width: 1920,
+      height: 1080,
       aspectRatio: 1920 / 1080,
       cursor: "never",
-      frameRate: 30,
+      frameRate: 25,
     },
     audio: false,
   };
@@ -73,6 +73,9 @@ export const ScreenVideo = (props) => {
         cameraMediaOptions
       );
       // Add the screen capture. Position it to fill the whole stream (the default)
+      console.log("merger: ", merger.width);
+      merger.width = 1920;
+      merger.height = 1080;
       merger.addStream(videoStream, {
         x: 0, // position of the topleft corner
         y: 0,
@@ -84,21 +87,23 @@ export const ScreenVideo = (props) => {
       // Add the webcam stream. Position it on the bottom left and resize it to 100x100.
       merger.addStream(cameraStream, {
         draw: (ctx, frame, done) => {
-          const x = 20;
-          const y = merger.height - 180;
-          const width = 100;
-          const height = 150;
+          const x = 50;
+          const y = merger.height - 280;
+          const width = 200;
+          const height = 250;
           ctx.save();
           roundedImage(ctx, x, y, width, height, 10);
-          ctx.strokeStyle = "#fff";
+          ctx.strokeStyle = "#FFFFFF";
+          ctx.lineWidth = 5;
           ctx.stroke();
+          // ctx.scale(-1, 1);
           ctx.clip();
           ctx.drawImage(frame, x, y, width, height);
           ctx.restore();
           done();
         },
-        x: 20,
-        y: merger.height - 180,
+        x: 50,
+        y: merger.height - 280,
         width: 100,
         height: 150,
         mute: false,
@@ -108,12 +113,11 @@ export const ScreenVideo = (props) => {
       merger.start();
       var options = { mimeType: "video/webm; codecs=vp9" };
       // We now have a merged MediaStream!
-      mediaRecorder = new MediaRecorder(merger.result, options);
+      mediaRecorder = new MediaRecorder(merger.result);
       mediaRecorder.ondataavailable = handleDataAvailable;
       mediaRecorder.onstop = stopRecording;
       mediaRecorder.start(300);
 
-      console.log("merger.result: ", merger.result, cameraElem);
       cameraElem.current.srcObject = merger.result;
       cameraElem.current.play();
       // videoElem.srcObject = videoStream;
