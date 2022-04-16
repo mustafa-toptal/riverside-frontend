@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { VideoStreamMerger } from "video-stream-merger";
 
-export default function VideoRecord(props) {
+export const ScreenVideo = (props) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [recordingAvailable, setRecordingAvailable] = useState(false);
 
   var merger = new VideoStreamMerger();
 
   let cameraElem = useRef(null);
+  let recordedVideo = useRef(null);
+
   var mediaRecorder;
   var recordedChunks = [];
   var videoStream;
@@ -28,7 +31,7 @@ export default function VideoRecord(props) {
     onLoad();
   }, []);
 
-  var videoMediaOptions = {
+  var screenMediaOptions = {
     video: {
       width: 720,
       height: 480,
@@ -47,10 +50,24 @@ export default function VideoRecord(props) {
     audio: true,
   };
 
+  function roundedImage(ctx, x, y, width, height, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+  }
+
   async function startCapture() {
     try {
       videoStream = await navigator.mediaDevices.getDisplayMedia(
-        videoMediaOptions
+        screenMediaOptions
       );
       cameraStream = await navigator.mediaDevices.getUserMedia(
         cameraMediaOptions
@@ -66,17 +83,35 @@ export default function VideoRecord(props) {
 
       // Add the webcam stream. Position it on the bottom left and resize it to 100x100.
       merger.addStream(cameraStream, {
+        draw: (ctx, frame, done) => {
+          const x = 20;
+          const y = merger.height - 180;
+          const width = 100;
+          const height = 150;
+          ctx.save();
+          roundedImage(ctx, x, y, width, height, 10);
+          ctx.strokeStyle = "#fff";
+          ctx.stroke();
+          ctx.clip();
+          ctx.drawImage(frame, x, y, width, height);
+          ctx.restore();
+          done();
+        },
         x: 20,
         y: merger.height - 180,
-        width: 150,
+        width: 100,
         height: 150,
         mute: false,
       });
 
       // Start the merging. Calling this makes the result available to us
       merger.start();
-
+      var options = { mimeType: "video/webm; codecs=vp9" };
       // We now have a merged MediaStream!
+      mediaRecorder = new MediaRecorder(merger.result, options);
+      mediaRecorder.ondataavailable = handleDataAvailable;
+      mediaRecorder.onstop = stopRecording;
+      mediaRecorder.start(300);
 
       console.log("merger.result: ", merger.result, cameraElem);
       cameraElem.current.srcObject = merger.result;
@@ -99,17 +134,17 @@ export default function VideoRecord(props) {
   };
 
   function startRec() {
-    var options = { mimeType: "video/webm; codecs=vp9" };
-    if (cameraStream && videoStream) {
-      combinedStream = new MediaStream([
-        ...cameraStream.getTracks(),
-        ...videoStream.getTracks(),
-      ]);
-      mediaRecorder = new MediaRecorder(combinedStream, options);
-      mediaRecorder.ondataavailable = handleDataAvailable;
-      mediaRecorder.onstop = stopRecording;
-      mediaRecorder.start(300);
-    }
+    // var options = { mimeType: "video/webm; codecs=vp9" };
+    // if (cameraStream && videoStream) {
+    //   combinedStream = new MediaStream([
+    //     ...cameraStream.getTracks(),
+    //     ...videoStream.getTracks(),
+    //   ]);
+    //   mediaRecorder = new MediaRecorder(combinedStream, options);
+    //   mediaRecorder.ondataavailable = handleDataAvailable;
+    //   mediaRecorder.onstop = stopRecording;
+    //   mediaRecorder.start(300);
+    // }
   }
 
   function createBlob() {
@@ -117,14 +152,14 @@ export default function VideoRecord(props) {
       type: "video/webm",
     });
 
-    var url = URL.createObjectURL(BLOB);
+    recordedVideo.current.src = URL.createObjectURL(BLOB);
+    recordedVideo.current.load();
 
-    // videoElem.srcObject = null;
-    // videoElem.src = url;
-    // videoElem.muted = false;
+    setRecordingAvailable(true);
   }
 
   function stopCapture() {
+    createBlob();
     let cameraTracks = cameraStream.getTracks();
     cameraTracks.forEach((cameraTracks) => cameraTracks.stop());
 
@@ -132,6 +167,8 @@ export default function VideoRecord(props) {
     tracks.forEach((track) => track.stop());
     mediaRecorder.stop();
   }
+
+  const startRecord = () => {};
 
   function renderPage() {
     return (
@@ -142,21 +179,46 @@ export default function VideoRecord(props) {
         <Button id="stopBtn" onClick={stopCapture}>
           Stop
         </Button>
+        <Button id="stopBtn" onClick={startRecord}>
+          Record
+        </Button>
       </div>
     );
   }
 
   return (
-    <div id="videoRecordID" className="VideoRecord">
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        marginTop: "35px",
+        justifyContent: "center",
+        flexDirection: "column",
+      }}
+    >
+      {!recordingAvailable && (
+        <video
+          id="camera"
+          autoPlay
+          muted
+          ref={cameraElem}
+          width="50%"
+          height={"50%"}
+        ></video>
+      )}
+
       <video
-        id="camera"
-        autoPlay
-        muted
-        ref={cameraElem}
-        width="100%"
-        height={"100%"}
-      ></video>
+        className="recorded-video"
+        controls
+        ref={recordedVideo}
+        width={"50%"}
+        height="50%"
+        style={{
+          display: recordingAvailable ? "block" : "none",
+          borderRadius: "30px",
+        }}
+      />
       {renderPage()}
-    </div>
+    </Box>
   );
-}
+};

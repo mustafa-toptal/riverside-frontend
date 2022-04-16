@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import AudioConverter from "./component/converter";
 import Transcription from "./component/transcription";
-import Test from "./Test";
+// import Test from "./Test";
 
 import "./styles/App.css";
 import { Recorders } from "./component/recorders";
