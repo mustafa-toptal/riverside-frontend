@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import { Grid } from "@mui/material";
-// import Lottie from "react-lottie";
+import Lottie from "react-lottie";
 
 import { Title } from "../common/Title";
-import { WavToMp3 } from "../../icons/WavToMp3";
-import { DownloadMp3 } from "../../icons/DownloadMp3";
+// import { WavToMp3 } from "../../icons/WavToMp3";
+// import { DownloadMp3 } from "../../icons/DownloadMp3";
 import { Upload } from "../../icons/Upload";
 import { animatedText, delay } from "../../utils/Helpers";
 import { convert } from "./partials/Converter";
 import { AlertMessage } from "../common/AlertMessage";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 
-// import wavtomp3 from "../../utils/lottie-jsons/wavtomp3.json";
+import wavtomp3 from "../../utils/lottie-jsons/wavtomp3.json";
+import wavtomp3completed from "../../utils/lottie-jsons/wavtomp3completed.json";
 
 const AudioConverter = () => {
   const [outputUrl, setOutputUrl] = useState("");
@@ -192,20 +193,22 @@ const AudioConverter = () => {
   };
 
   const renderIcon = () => {
-    // const defaultOptions = {
-    //   loop: true,
-    //   autoplay: true,
-    //   animationData: wavtomp3,
-    //   rendererSettings: {
-    //     preserveAspectRatio: "xMidYMid slice",
-    //   },
-    // };
-
+    let defaultOptions = {
+      loop: true,
+      autoplay: true,
+      rendererSettings: {
+        preserveAspectRatio: "xMidYMid slice",
+      },
+    };
     if (loading) {
-      // return <Lottie options={defaultOptions} width={212} height={46} />;
-      return <WavToMp3 sx={{ width: "212px", height: "46px" }} />;
+      defaultOptions.animationData = wavtomp3;
+      return <Lottie options={defaultOptions} width={150} height={85} />;
+      // return <WavToMp3 sx={{ width: "212px", height: "46px" }} />;
     } else if (outputUrl) {
-      return <DownloadMp3 sx={{ width: "71px", height: "49px" }} />;
+      defaultOptions.loop = false;
+      defaultOptions.animationData = wavtomp3completed;
+      return <Lottie options={defaultOptions} width={100} height={85} />;
+      // return <DownloadMp3 sx={{ width: "71px", height: "49px" }} />;
     } else {
       return <Upload />;
     }

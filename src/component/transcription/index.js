@@ -15,10 +15,15 @@ import { AlertMessage } from "../common/AlertMessage";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 import { deleteFile, uploadFile } from "../../utils/s3/ReactS3";
 
-const S3_BUCKET = "riversidefm-backend";
-const REGION = "eu-west-2";
-const ACCESS_KEY = "AKIAVPGN2AWQAO4PRSES";
-const SECRET_ACCESS_KEY = "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";
+// const S3_BUCKET = "riversidefm-backend";
+// const REGION = "eu-west-2";
+// const ACCESS_KEY = "AKIAVPGN2AWQAO4PRSES";
+// const SECRET_ACCESS_KEY = "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";
+
+const S3_BUCKET = process.env.REACT_APP_S3_BUCKET;
+const REGION = process.env.REACT_APP_S3_REGION;
+const ACCESS_KEY = process.env.REACT_APP_S3_ACCESS_KEY;
+const SECRET_ACCESS_KEY = process.env.REACT_APP_S3_SECRET_ACCESS_KEY;
 
 const Transcription = () => {
   const [id, setId] = useState("");

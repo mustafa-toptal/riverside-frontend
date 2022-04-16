@@ -136,6 +136,7 @@ export const useFileUploadStyles = makeStyles({
   progressText: {
     fontWeight: "600",
     fontSize: pxToRem(14),
+    marginBottom: "13px",
   },
   rangeWrapper: {
     display: "flex",
