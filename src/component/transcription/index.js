@@ -2,28 +2,31 @@
 import { Grid } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import Lottie from "react-lottie";
 
 import { Service } from "../../utils/Service";
 import { Title } from "../common/Title";
-import { TranscriptionIcon } from "../../icons/TranscriptionIcon";
+// import { TranscriptionIcon } from "../../icons/TranscriptionIcon";
 import { TranscriptionUpload } from "../../icons/TranscriptionUpload";
-import { DownloadSrt } from "../../icons/DownloadSrt";
+// import { DownloadSrt } from "../../icons/DownloadSrt";
 import { animatedText, delay } from "../../utils/Helpers";
 import { Upload } from "../../icons/Upload";
 import SelectDialog from "../common/SelectDialog";
 import { AlertMessage } from "../common/AlertMessage";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 import { deleteFile, uploadFile } from "../../utils/s3/ReactS3";
+import transcriptioncompleted from "../../utils/lottie-jsons/transcriptioncompleted.json";
+import transcription from "../../utils/lottie-jsons/transcription.json";
 
-// const S3_BUCKET = "riversidefm-backend";
-// const REGION = "eu-west-2";
-// const ACCESS_KEY = "AKIAVPGN2AWQAO4PRSES";
-// const SECRET_ACCESS_KEY = "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";
+const S3_BUCKET = "riversidefm-backend";
+const REGION = "eu-west-2";
+const ACCESS_KEY = "AKIAVPGN2AWQAO4PRSES";
+const SECRET_ACCESS_KEY = "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";
 
-const S3_BUCKET = process.env.REACT_APP_S3_BUCKET;
-const REGION = process.env.REACT_APP_S3_REGION;
-const ACCESS_KEY = process.env.REACT_APP_S3_ACCESS_KEY;
-const SECRET_ACCESS_KEY = process.env.REACT_APP_S3_SECRET_ACCESS_KEY;
+// const S3_BUCKET = process.env.REACT_APP_S3_BUCKET;
+// const REGION = process.env.REACT_APP_S3_REGION;
+// const ACCESS_KEY = process.env.REACT_APP_S3_ACCESS_KEY;
+// const SECRET_ACCESS_KEY = process.env.REACT_APP_S3_SECRET_ACCESS_KEY;
 
 const Transcription = () => {
   const [id, setId] = useState("");
@@ -161,10 +164,23 @@ const Transcription = () => {
   };
 
   const renderIcon = () => {
+    let defaultOptions = {
+      loop: true,
+      autoplay: true,
+      rendererSettings: {
+        preserveAspectRatio: "xMidYMid slice",
+      },
+    };
     if (loading) {
-      return <TranscriptionIcon sx={{ width: "188px", height: "58px" }} />;
+      defaultOptions.animationData = transcription;
+      return <Lottie options={defaultOptions} width={200} height={85} />;
+
+      // return <TranscriptionIcon sx={{ width: "188px", height: "58px" }} />;
     } else if (isTranscriptionDone) {
-      return <DownloadSrt sx={{ width: "71px", height: "49px" }} />;
+      defaultOptions.loop = false;
+      defaultOptions.animationData = transcriptioncompleted;
+      return <Lottie options={defaultOptions} width={180} height={85} />;
+      // return <DownloadSrt sx={{ width: "71px", height: "49px" }} />;
     } else if (isMobile) {
       return <Upload />;
     } else {
