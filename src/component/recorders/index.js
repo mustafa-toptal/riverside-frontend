@@ -51,7 +51,7 @@ export function Recorders() {
         video: true,
       });
       setStrem(stream);
-      const audio = await navigator.mediaDevicdes.getUserMedia({
+      const audio = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
