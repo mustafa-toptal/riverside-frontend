@@ -4,12 +4,16 @@ import { Box, Grid } from "@mui/material";
 import { ScreenRecorder } from "./screen";
 import { VideoRecorder } from "./video";
 import { AudioRecorder } from "./audio";
-import { ScreenVideo } from "./screen-video";
+// import { ScreenVideo } from "./screen-video";
 
 export function Recorders() {
   const [recorderType, setRecorderType] = useState("");
   const [audioDevices, setAudioDevices] = useState([]);
   const [videoDevices, setVideoDevices] = useState([]);
+  const [audio, setAudio] = useState(null);
+  const [stream, setStrem] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isError, setError] = useState(false);
   const [audioInput] = useState("audioinput");
   const [videoInput] = useState("videoinput");
 
@@ -40,6 +44,28 @@ export function Recorders() {
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function setupStream() {
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+      });
+      setStrem(stream);
+      const audio = await navigator.mediaDevicdes.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 44100,
+        },
+      });
+      setAudio(audio);
+      setRecorderType("screen");
+    } catch (err) {
+      setRecorderType("screen");
+      setError(true);
+      setErrorMessage(`${err}`);
+    }
+  }
 
   return (
     <>
@@ -78,7 +104,7 @@ export function Recorders() {
                 border: "#FFFFF 5px solid",
               },
             }}
-            onClick={() => setRecorderType("screen")}
+            onClick={() => setupStream()}
           >
             Screen
           </Box>
@@ -143,7 +169,13 @@ export function Recorders() {
         </Box>
       </Grid>
       {recorderType === "screen" && (
-        <ScreenRecorder audioDevices={audioDevices} />
+        <ScreenRecorder
+          audioDevices={audioDevices}
+          audio={audio}
+          stream={stream}
+          isError={isError}
+          errorMessage={errorMessage}
+        />
       )}
       {recorderType === "video" && (
         <VideoRecorder
@@ -154,7 +186,7 @@ export function Recorders() {
       {recorderType === "audio" && (
         <AudioRecorder audioDevices={audioDevices} />
       )}
-      {recorderType === "screenVideo" && <ScreenVideo />}
+      {/* {recorderType === "screenVideo" && <ScreenVideo />} */}
     </>
   );
 }

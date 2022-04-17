@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Box, Button } from "@mui/material";
 
 import VideoActions from "../../common/VideoActions";
+import { DownloadButton } from "../../common/partials/DownloadButton";
+import { convert } from "../../converter/partials/Converter";
 
 export const VideoRecorder = (props) => {
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
@@ -92,7 +94,8 @@ export const VideoRecorder = (props) => {
 
   function handleStop(e) {
     const blob = new Blob(chunks, { type: "video/mp4" });
-    chunks = [];
+    console.log("chunks: ", chunks);
+
     recordedVideo.current.src = URL.createObjectURL(blob);
     recordedVideo.current.load();
     setRecordingAvailabe(true);
@@ -101,6 +104,19 @@ export const VideoRecorder = (props) => {
     stopRecording();
     console.log("Recording stopped");
   }
+
+  const download = async () => {
+    let targetAudioFormat = "mp4";
+    let fileData = await fetch(recordedVideo.current.src).then((r) => r.blob());
+    fileData.name = "Recorded Video.mp4";
+    let convertedAudio = await convert(fileData, targetAudioFormat);
+    let elem = document.createElement("a");
+    elem.href = convertedAudio.data;
+    elem.download = convertedAudio.name + "." + convertedAudio.format;
+    document.body.appendChild(elem);
+    elem.click();
+    document.body.removeChild(elem);
+  };
 
   const muteAudio = () => {
     const audioTrack = stream.getTracks();
@@ -151,8 +167,13 @@ export const VideoRecorder = (props) => {
           borderRadius: "30px",
         }}
       />
+      {recordingAvailable && (
+        <Box marginY={2}>
+          <DownloadButton onClick={download} />
+        </Box>
+      )}
 
-      {!isRecording && (
+      {!isRecording && !recordingAvailable && (
         <Box
           sx={{
             display: "flex",

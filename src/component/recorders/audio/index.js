@@ -3,6 +3,8 @@ import { Box, Button } from "@mui/material";
 
 import VideoActions from "../../common/VideoActions";
 import AudioAnalyser from "./partials/AudioAnalyser";
+import { DownloadButton } from "../../common/partials/DownloadButton";
+import { convert } from "../../converter/partials/Converter";
 
 export const AudioRecorder = (props) => {
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
@@ -40,7 +42,6 @@ export const AudioRecorder = (props) => {
     if (audioDevideId) {
       constraints.audio.deviceId = audioDevideId;
     }
-    console.log("constraints: ", constraints);
     try {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       setStrem(stream);
@@ -74,8 +75,7 @@ export const AudioRecorder = (props) => {
   }
 
   function handleStop(e) {
-    const blob = new Blob(chunks, { type: "video/mp4" });
-    chunks = [];
+    const blob = new Blob(chunks, { type: "audio/mp3" });
     recordedVideo.current.src = URL.createObjectURL(blob);
     recordedVideo.current.load();
     setRecordingAvailabe(true);
@@ -84,6 +84,19 @@ export const AudioRecorder = (props) => {
     stopRecording();
     console.log("Recording stopped");
   }
+
+  const download = async () => {
+    let targetAudioFormat = "mp3";
+    let fileData = await fetch(recordedVideo.current.src).then((r) => r.blob());
+    fileData.name = "Recorded Audio.mp3";
+    let convertedAudio = await convert(fileData, targetAudioFormat);
+    let elem = document.createElement("a");
+    elem.href = convertedAudio.data;
+    elem.download = convertedAudio.name + "." + convertedAudio.format;
+    document.body.appendChild(elem);
+    elem.click();
+    document.body.removeChild(elem);
+  };
 
   const muteAudio = () => {
     const audioTrack = stream.getTracks();
@@ -112,15 +125,19 @@ export const AudioRecorder = (props) => {
         flexDirection: "column",
       }}
     >
-      {stream && <AudioAnalyser audio={stream} />}
+      {stream && !recordingAvailable && <AudioAnalyser audio={stream} />}
       <audio
         className="recorded-video"
         controls
         ref={recordedVideo}
         style={{ display: recordingAvailable ? "block" : "none" }}
       />
-
-      {!isRecording && (
+      {recordingAvailable && (
+        <Box marginY={2}>
+          <DownloadButton onClick={download} />
+        </Box>
+      )}
+      {!isRecording && !recordingAvailable && (
         <Box
           sx={{
             display: "flex",

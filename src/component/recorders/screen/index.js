@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Alert, AlertTitle, Box, Button } from "@mui/material";
 
 import VideoActions from "../../common/VideoActions";
+import { DownloadButton } from "../../common/partials/DownloadButton";
+import { convert } from "../../converter/partials/Converter";
 
-export const ScreenRecorder = (porps) => {
+export const ScreenRecorder = (props) => {
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
   const [audio, setAudio] = useState(null);
   const [stream, setStrem] = useState(null);
@@ -11,6 +13,8 @@ export const ScreenRecorder = (porps) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isError, setError] = useState(false);
 
   let recordedVideo = useRef(null);
   let videoRef = useRef(null);
@@ -21,41 +25,34 @@ export const ScreenRecorder = (porps) => {
     audioTrack = null;
 
   useEffect(() => {
-    setupStream();
+    setStrem(props.stream);
+    setupVideoFeedback(props.stream);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.stream]);
 
-  async function setupStream() {
-    try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-      });
-      setStrem(stream);
-      const audio = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          sampleRate: 44100,
-        },
-      });
-      setAudio(audio);
-      setupVideoFeedback(stream);
-    } catch (err) {
-      console.error(err);
-    }
-  }
+  useEffect(() => {
+    setAudio(props.audio);
+  }, [props.audio]);
+
+  useEffect(() => {
+    setError(props.isError);
+    setErrorMessage(props.errorMessage);
+  }, [props.isError, props.errorMessage]);
 
   function setupVideoFeedback(stream) {
     if (stream) {
       videoRef.current.srcObject = stream;
       videoRef.current.play();
     } else {
+      setError(true);
+      setErrorMessage("No stream available");
       console.warn("No stream available");
     }
   }
 
   async function startRecording(e) {
     e.preventDefault();
+
     if (stream && audio) {
       audioTrack = audio.getTracks();
       mixedStream = new MediaStream([...stream.getTracks(), ...audioTrack]);
@@ -67,6 +64,8 @@ export const ScreenRecorder = (porps) => {
       setIsRecording(true);
       console.log("Recording started");
     } else {
+      setError(true);
+      setErrorMessage("No stream available");
       console.warn("No stream available.");
     }
   }
@@ -126,6 +125,19 @@ export const ScreenRecorder = (porps) => {
     }
   };
 
+  const download = async () => {
+    let targetAudioFormat = "mp4";
+    let fileData = await fetch(recordedVideo.current.src).then((r) => r.blob());
+    fileData.name = "Recorded Screen.mp4";
+    let convertedAudio = await convert(fileData, targetAudioFormat);
+    let elem = document.createElement("a");
+    elem.href = convertedAudio.data;
+    elem.download = convertedAudio.name + "." + convertedAudio.format;
+    document.body.appendChild(elem);
+    elem.click();
+    document.body.removeChild(elem);
+  };
+
   return (
     <Box
       sx={{
@@ -136,7 +148,7 @@ export const ScreenRecorder = (porps) => {
         flexDirection: "column",
       }}
     >
-      {!recordingAvailable && (
+      {!recordingAvailable && !isError && (
         <video
           className="video-feedback"
           width={"50%"}
@@ -157,7 +169,38 @@ export const ScreenRecorder = (porps) => {
           borderRadius: "30px",
         }}
       />
-      {!isRecording && (
+      {recordingAvailable && (
+        <Box marginY={2}>
+          <DownloadButton onClick={download} />
+        </Box>
+      )}
+      {isError && (
+        <Alert severity="error">
+          <AlertTitle>Error</AlertTitle>
+          {errorMessage}
+        </Alert>
+      )}
+
+      {isError && (
+        <Box>
+          <Button
+            type="primary"
+            sx={{
+              left: 0,
+              background: "#3c4250",
+              marginTop: "10px",
+              color: "#f5f7fd",
+              "&:hover": {
+                background: "#3c4250",
+              },
+            }}
+            onClick={() => window.location.reload()}
+          >
+            Reload
+          </Button>
+        </Box>
+      )}
+      {!isRecording && !recordingAvailable && !isError && (
         <Button
           sx={{
             height: "54px",
