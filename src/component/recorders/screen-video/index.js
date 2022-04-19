@@ -3,12 +3,12 @@ import { Box, Button } from "@mui/material";
 import { VideoStreamMerger } from "video-stream-merger";
 
 export const ScreenVideo = (props) => {
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [recordingAvailable, setRecordingAvailable] = useState(false);
 
   var merger = new VideoStreamMerger();
 
-  const bottomLeft = {};
+  // const bottomLeft = {};
 
   let cameraElem = useRef(null);
   let recordedVideo = useRef(null);
@@ -26,7 +26,7 @@ export const ScreenVideo = (props) => {
       } catch (e) {
         alert(e);
       }
-      setIsLoading(false);
+      // setIsLoading(false);
     }
     onLoad();
   }, []);
@@ -111,7 +111,7 @@ export const ScreenVideo = (props) => {
 
       // Start the merging. Calling this makes the result available to us
       merger.start();
-      var options = { mimeType: "video/webm; codecs=vp9" };
+      // var options = { mimeType: "video/webm; codecs=vp9" };
       // We now have a merged MediaStream!
       mediaRecorder = new MediaRecorder(merger.result);
       mediaRecorder.ondataavailable = handleDataAvailable;

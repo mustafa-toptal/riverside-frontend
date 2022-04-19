@@ -86,13 +86,9 @@ export const AudioRecorder = (props) => {
   }
 
   const download = async () => {
-    let targetAudioFormat = "mp3";
-    let fileData = await fetch(recordedVideo.current.src).then((r) => r.blob());
-    fileData.name = "Recorded Audio.mp3";
-    let convertedAudio = await convert(fileData, targetAudioFormat);
     let elem = document.createElement("a");
-    elem.href = convertedAudio.data;
-    elem.download = convertedAudio.name + "." + convertedAudio.format;
+    elem.href = recordedVideo.current.src;
+    elem.download = "Recorded audio.mp3";
     document.body.appendChild(elem);
     elem.click();
     document.body.removeChild(elem);

@@ -4,7 +4,7 @@ import { Box, Grid } from "@mui/material";
 import { ScreenRecorder } from "./screen";
 import { VideoRecorder } from "./video";
 import { AudioRecorder } from "./audio";
-// import { ScreenVideo } from "./screen-video";
+import { ScreenVideo } from "./screen-video";
 
 export function Recorders() {
   const [recorderType, setRecorderType] = useState("");
@@ -160,7 +160,7 @@ export function Recorders() {
                 backgroundColor: "#afb0b3",
                 border: "#FFFFF 5px solid",
               },
-              textDecoration: "line-through",
+              // textDecoration: "line-through",
             }}
             onClick={() => setRecorderType("screenVideo")}
           >
@@ -186,7 +186,7 @@ export function Recorders() {
       {recorderType === "audio" && (
         <AudioRecorder audioDevices={audioDevices} />
       )}
-      {/* {recorderType === "screenVideo" && <ScreenVideo />} */}
+      {recorderType === "screenVideo" && <ScreenVideo />}
     </>
   );
 }

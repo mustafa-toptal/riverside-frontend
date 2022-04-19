@@ -106,13 +106,9 @@ export const VideoRecorder = (props) => {
   }
 
   const download = async () => {
-    let targetAudioFormat = "mp4";
-    let fileData = await fetch(recordedVideo.current.src).then((r) => r.blob());
-    fileData.name = "Recorded Video.mp4";
-    let convertedAudio = await convert(fileData, targetAudioFormat);
     let elem = document.createElement("a");
-    elem.href = convertedAudio.data;
-    elem.download = convertedAudio.name + "." + convertedAudio.format;
+    elem.href = recordedVideo.current.src;
+    elem.download = "Recorded Video.mp4";
     document.body.appendChild(elem);
     elem.click();
     document.body.removeChild(elem);
