@@ -3,7 +3,6 @@ import { Alert, AlertTitle, Box, Button } from "@mui/material";
 
 import VideoActions from "../../common/VideoActions";
 import { DownloadButton } from "../../common/partials/DownloadButton";
-import { convert } from "../../converter/partials/Converter";
 
 export const ScreenRecorder = (props) => {
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
