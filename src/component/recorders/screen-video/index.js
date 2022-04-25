@@ -1,194 +1,154 @@
-import { useEffect, useRef, useState } from "react";
-import { Box, Button } from "@mui/material";
-import { VideoStreamMerger } from "video-stream-merger";
+import React, { useEffect, useRef, useState } from "react";
+import { Alert, AlertTitle, Box, Button } from "@mui/material";
+
+import VideoActions from "../../common/VideoActions";
+import { DownloadButton } from "../../common/partials/DownloadButton";
 
 export const ScreenVideo = (props) => {
-  // const [isLoading, setIsLoading] = useState(true);
-  const [recordingAvailable, setRecordingAvailable] = useState(false);
+  const [recordingAvailable, setRecordingAvailabe] = useState(false);
+  const [cameraStream, setCameraStream] = useState(null);
+  const [screenStream, setScreenStream] = useState(null);
 
-  var merger = new VideoStreamMerger();
+  const [stream, setStream] = useState(null);
+  const [recorder, setRecorder] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isError, setError] = useState(false);
 
-  // const bottomLeft = {};
-
-  let cameraElem = useRef(null);
   let recordedVideo = useRef(null);
+  let videoRef = useRef(null);
 
-  var mediaRecorder;
-  var recordedChunks = [];
-  var videoStream;
-  var cameraStream;
-  var BLOB;
+  let chunks = [];
 
   useEffect(() => {
-    async function onLoad() {
+    setStream(props.mergedStream);
+    setupVideoFeedback(props.mergedStream);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.mergedStream]);
+
+  useEffect(() => {
+    setCameraStream(props.cameraStream);
+  }, [props.cameraStream]);
+
+  useEffect(() => {
+    setScreenStream(props.screenStream);
+  }, [props.screenStream]);
+
+  useEffect(() => {
+    setError(props.isError);
+    setErrorMessage(props.errorMessage);
+  }, [props.isError, props.errorMessage]);
+
+  async function setupVideoFeedback(stream) {
+    if (stream) {
       try {
-        //some code
-      } catch (e) {
-        alert(e);
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      } catch (err) {
+        console.error("Error: " + err);
       }
-      // setIsLoading(false);
+    } else {
+      setError(true);
+      setErrorMessage("No stream available");
+      console.warn("No stream available");
     }
-    onLoad();
-  }, []);
-
-  var screenMediaOptions = {
-    video: {
-      width: 1920,
-      height: 1080,
-      aspectRatio: 1920 / 1080,
-      cursor: "never",
-      frameRate: 25,
-    },
-    audio: false,
-  };
-
-  var cameraMediaOptions = {
-    video: {
-      width: 300,
-      height: 300,
-    },
-    audio: true,
-  };
-
-  function roundedImage(ctx, x, y, width, height, radius) {
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.lineTo(x + width - radius, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-    ctx.lineTo(x + width, y + height - radius);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-    ctx.lineTo(x + radius, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-    ctx.lineTo(x, y + radius);
-    ctx.quadraticCurveTo(x, y, x + radius, y);
-    ctx.closePath();
   }
 
-  async function startCapture() {
+  async function startRecording(e) {
+    e.preventDefault();
+
+    if (stream) {
+      let recorder = new MediaRecorder(stream);
+      recorder.ondataavailable = handleDataAvailable;
+      recorder.onstop = handleStop;
+      recorder.start(300);
+      setRecorder(recorder);
+      setIsRecording(true);
+      console.log("Recording started");
+    } else {
+      setError(true);
+      setErrorMessage("No stream available");
+      console.warn("No stream available.");
+    }
+  }
+
+  function stopRecording() {
+    console.log("recorder: ", recorder);
+    recorder.stop();
+    setIsRecording(false);
+    // startButton.disabled = false;
+    // stopButton.disabled = true;
+  }
+
+  function handleDataAvailable(e) {
+    if (e.data.size > 0) {
+      //   console.log("e.data: ", e.data);
+      chunks.push(e.data);
+    }
+  }
+
+  function handleStop(e) {
     try {
-      videoStream = await navigator.mediaDevices.getDisplayMedia(
-        screenMediaOptions
-      );
-      cameraStream = await navigator.mediaDevices.getUserMedia(
-        cameraMediaOptions
-      );
-      // Add the screen capture. Position it to fill the whole stream (the default)
-      console.log("merger: ", merger.width);
-      merger.width = 1920;
-      merger.height = 1080;
-      merger.addStream(videoStream, {
-        x: 0, // position of the topleft corner
-        y: 0,
-        width: merger.width,
-        height: merger.height,
-        mute: true, // we don't want sound from the screen (if there is any)
-      });
+      console.log("chunks: ", chunks);
+      const blob = new Blob(chunks, { type: "video/mp4" });
+      // chunks = [];
 
-      // Add the webcam stream. Position it on the bottom left and resize it to 100x100.
-      merger.addStream(cameraStream, {
-        draw: (ctx, frame, done) => {
-          const x = 50;
-          const y = merger.height - 280;
-          const width = 200;
-          const height = 250;
-          ctx.save();
-          roundedImage(ctx, x, y, width, height, 20.5333);
-          ctx.strokeStyle = "#FFFFFF";
-          ctx.lineWidth = 8;
-          ctx.stroke();
-          // ctx.scale(-1, 1);
-          ctx.clip();
-          ctx.drawImage(frame, x, y, width, height);
-          ctx.restore();
-          done();
-        },
-        x: 50,
-        y: merger.height - 280,
-        width: 100,
-        height: 150,
-        mute: false,
-      });
+      // downloadButton.href = URL.createObjectURL(blob);
+      // downloadButton.download = "video.mp4";
+      // downloadButton.disabled = false;
 
-      // Start the merging. Calling this makes the result available to us
-      merger.start();
-      // var options = { mimeType: "video/webm; codecs=vp9" };
-      // We now have a merged MediaStream!
-      mediaRecorder = new MediaRecorder(merger.result);
-      mediaRecorder.ondataavailable = handleDataAvailable;
-      mediaRecorder.onstop = stopRecording;
-      mediaRecorder.start(300);
+      recordedVideo.current.src = URL.createObjectURL(blob);
+      recordedVideo.current.load();
+      // recordedVideo.onloadeddata = function () {
+      //   //   const rc = document.querySelector(".recorded-video-wrap");
+      //   //   rc.classList.remove("hidden");
+      //   //   rc.scrollIntoView({ behavior: "smooth", block: "start" });
+      //   recordedVideo.play();
+      // };
+      setRecordingAvailabe(true);
 
-      cameraElem.current.srcObject = merger.result;
-      cameraElem.current.play();
-      // videoElem.srcObject = videoStream;
-      startRec();
+      let cameraTracks = cameraStream.getTracks();
+      cameraTracks.forEach((cameraTracks) => cameraTracks.stop());
+
+      let tracks = screenStream.getTracks();
+      tracks.forEach((track) => track.stop());
+      stopRecording();
+      console.log("Recording stopped");
     } catch (err) {
-      console.error("Error: " + err);
+      console.log("err: ", err);
     }
   }
 
-  function handleDataAvailable(event) {
-    if (event.data.size > 0) {
-      recordedChunks.push(event.data);
-    }
-  }
-
-  const stopRecording = () => {
-    createBlob();
+  const muteAudio = () => {
+    const audioTrack = cameraStream.getTracks();
+    const newState = !audioTrack[0].enabled;
+    audioTrack[0].enabled = newState;
+    setIsMuted((muted) => !muted);
   };
 
-  function startRec() {
-    // var options = { mimeType: "video/webm; codecs=vp9" };
-    // if (cameraStream && videoStream) {
-    //   combinedStream = new MediaStream([
-    //     ...cameraStream.getTracks(),
-    //     ...videoStream.getTracks(),
-    //   ]);
-    //   mediaRecorder = new MediaRecorder(combinedStream, options);
-    //   mediaRecorder.ondataavailable = handleDataAvailable;
-    //   mediaRecorder.onstop = stopRecording;
-    //   mediaRecorder.start(300);
-    // }
-  }
+  const pauseScreen = () => {
+    // const streamInstance = stream.getTracks();
+    // const newState = !streamInstance[0].enabled;
+    // streamInstance[0].enabled = newState;
+    if (isPaused) {
+      recorder.resume();
+      setIsPaused(false);
+    } else {
+      recorder.pause();
+      setIsPaused(true);
+    }
+  };
 
-  function createBlob() {
-    BLOB = new Blob(recordedChunks, {
-      type: "video/webm",
-    });
-
-    recordedVideo.current.src = URL.createObjectURL(BLOB);
-    recordedVideo.current.load();
-
-    setRecordingAvailable(true);
-  }
-
-  function stopCapture() {
-    createBlob();
-    let cameraTracks = cameraStream.getTracks();
-    cameraTracks.forEach((cameraTracks) => cameraTracks.stop());
-
-    let tracks = videoStream.getTracks();
-    tracks.forEach((track) => track.stop());
-    mediaRecorder.stop();
-  }
-
-  const startRecord = () => {};
-
-  function renderPage() {
-    return (
-      <div className="videoWrapper">
-        <Button id="startBtn" onClick={startCapture}>
-          Start
-        </Button>
-        <Button id="stopBtn" onClick={stopCapture}>
-          Stop
-        </Button>
-        <Button id="stopBtn" onClick={startRecord}>
-          Record
-        </Button>
-      </div>
-    );
-  }
+  const download = async () => {
+    let elem = document.createElement("a");
+    elem.href = recordedVideo.current.src;
+    elem.download = "Recorded Screen.mp4";
+    document.body.appendChild(elem);
+    elem.click();
+    document.body.removeChild(elem);
+  };
 
   return (
     <Box
@@ -200,15 +160,15 @@ export const ScreenVideo = (props) => {
         flexDirection: "column",
       }}
     >
-      {!recordingAvailable && (
+      {!recordingAvailable && !isError && (
         <video
-          id="camera"
-          autoPlay
+          className="video-feedback"
+          width={"50%"}
+          height="50%"
+          ref={videoRef}
           muted
-          ref={cameraElem}
-          width="50%"
-          height={"50%"}
-        ></video>
+          style={{ borderRadius: "30px" }}
+        />
       )}
 
       <video
@@ -222,7 +182,80 @@ export const ScreenVideo = (props) => {
           borderRadius: "30px",
         }}
       />
-      {renderPage()}
+      {recordingAvailable && (
+        <Box marginY={2}>
+          <DownloadButton onClick={download} />
+        </Box>
+      )}
+      {isError && (
+        <Alert severity="error">
+          <AlertTitle>Error</AlertTitle>
+          {errorMessage}
+        </Alert>
+      )}
+
+      {isError && (
+        <Box>
+          <Button
+            type="primary"
+            sx={{
+              left: 0,
+              background: "#3c4250",
+              marginTop: "10px",
+              color: "#f5f7fd",
+              "&:hover": {
+                background: "#3c4250",
+              },
+            }}
+            onClick={() => window.location.reload()}
+          >
+            Reload
+          </Button>
+        </Box>
+      )}
+      {!isRecording && !recordingAvailable && !isError && (
+        <Button
+          sx={{
+            height: "54px",
+            width: "54px",
+            padding: "0px",
+            borderRadius: "50%",
+            backgroundColor: "rgb(255, 255, 255)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            transition: "all 0.5s ease 0s",
+            border: "6px solid rgb(60, 66, 80)",
+            pointerEvents: "auto",
+            "&:hover": {
+              border: "6px solid rgb(255, 84, 84)",
+            },
+            margin: "15px 15px",
+            minWidth: "0",
+          }}
+          onClick={startRecording}
+        >
+          <span
+            style={{
+              height: "20px",
+              width: "20px",
+              borderRadius: "50%",
+              backgroundColor: "rgb(255, 84, 84)",
+              borderColor: "rgb(255, 84, 84)",
+              transition: "all 0.5s ease 0s",
+            }}
+          ></span>
+        </Button>
+      )}
+      {isRecording && (
+        <VideoActions
+          stop={stopRecording}
+          mute={muteAudio}
+          pause={pauseScreen}
+          isPaused={isPaused}
+          isMuted={isMuted}
+        />
+      )}
     </Box>
   );
 };

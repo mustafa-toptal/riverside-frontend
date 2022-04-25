@@ -197,8 +197,8 @@ const Transcription = () => {
   const cancelTask = async () => {
     if (id) {
       await service.delete(`deleteJob/${id}`);
-      window.location.reload();
     }
+    window.location.reload();
   };
 
   const handleDiaglogSelect = (value) => {

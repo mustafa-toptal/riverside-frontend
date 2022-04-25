@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid } from "@mui/material";
+import { VideoStreamMerger } from "video-stream-merger";
 
 import { ScreenRecorder } from "./screen";
 import { VideoRecorder } from "./video";
@@ -14,6 +15,9 @@ export function Recorders() {
   const [stream, setStrem] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [isError, setError] = useState(false);
+  const [screenStream, setScreenStream] = useState(null);
+  const [cameraStream, setCameraStream] = useState(null);
+  const [mergedStream, setMergedStream] = useState(null);
   const [audioInput] = useState("audioinput");
   const [videoInput] = useState("videoinput");
 
@@ -64,6 +68,101 @@ export function Recorders() {
       setRecorderType("screen");
       setError(true);
       setErrorMessage(`${err}`);
+    }
+  }
+
+  async function setupScreenAndCamera(stream) {
+    function roundedImage(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(
+        x + width,
+        y + height,
+        x + width - radius,
+        y + height
+      );
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    let merger = new VideoStreamMerger();
+    const screenMediaOptions = {
+      video: {
+        width: 1920,
+        height: 1080,
+        aspectRatio: 1920 / 1080,
+        cursor: "never",
+        frameRate: 25,
+      },
+      audio: false,
+    };
+
+    const cameraMediaOptions = {
+      video: {
+        width: 300,
+        height: 300,
+      },
+      audio: true,
+    };
+    try {
+      const screenStream = await navigator.mediaDevices.getDisplayMedia(
+        screenMediaOptions
+      );
+      const cameraStream = await navigator.mediaDevices.getUserMedia(
+        cameraMediaOptions
+      );
+      // Add the screen capture. Position it to fill the whole stream (the default)
+      merger.width = 1920;
+      merger.height = 1080;
+      merger.addStream(screenStream, {
+        x: 0, // position of the topleft corner
+        y: 0,
+        width: merger.width,
+        height: merger.height,
+        mute: true, // we don't want sound from the screen (if there is any)
+      });
+
+      // Add the webcam stream. Position it on the bottom left and resize it to 100x100.
+      merger.addStream(cameraStream, {
+        draw: (ctx, frame, done) => {
+          const x = 50;
+          const y = merger.height - 280;
+          const width = 200;
+          const height = 250;
+          ctx.save();
+          roundedImage(ctx, x, y, width, height, 20.5333);
+          ctx.strokeStyle = "#FFFFFF";
+          ctx.lineWidth = 8;
+          ctx.stroke();
+          // ctx.scale(-1, 1);
+          ctx.clip();
+          ctx.drawImage(frame, x, y, width, height);
+          ctx.restore();
+          done();
+        },
+        x: 50,
+        y: merger.height - 280,
+        width: 100,
+        height: 150,
+        mute: false,
+      });
+
+      // Start the merging. Calling this makes the result available to us
+      merger.start();
+
+      setCameraStream(cameraStream);
+      setScreenStream(screenStream);
+      setMergedStream(merger.result);
+      setRecorderType("ScreenVideo");
+    } catch (err) {
+      setRecorderType("ScreenVideo");
+      console.error("Error: " + err);
     }
   }
 
@@ -162,7 +261,7 @@ export function Recorders() {
               },
               // textDecoration: "line-through",
             }}
-            onClick={() => setRecorderType("screenVideo")}
+            onClick={() => setupScreenAndCamera()}
           >
             Screen & Video
           </Box>
@@ -186,7 +285,13 @@ export function Recorders() {
       {recorderType === "audio" && (
         <AudioRecorder audioDevices={audioDevices} />
       )}
-      {recorderType === "screenVideo" && <ScreenVideo />}
+      {recorderType === "ScreenVideo" && (
+        <ScreenVideo
+          mergedStream={mergedStream}
+          screenStream={screenStream}
+          cameraStream={cameraStream}
+        />
+      )}
     </>
   );
 }
