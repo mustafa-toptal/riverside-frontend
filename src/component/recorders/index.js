@@ -71,7 +71,7 @@ export function Recorders() {
     }
   }
 
-  async function setupScreenAndCamera(stream) {
+  async function setupScreenAndCamera() {
     function roundedImage(ctx, x, y, width, height, radius) {
       ctx.beginPath();
       ctx.moveTo(x + radius, y);
@@ -161,6 +161,8 @@ export function Recorders() {
       setMergedStream(merger.result);
       setRecorderType("ScreenVideo");
     } catch (err) {
+      setError(true);
+      setErrorMessage(`${err}`);
       setRecorderType("ScreenVideo");
       console.error("Error: " + err);
     }
@@ -290,6 +292,8 @@ export function Recorders() {
           mergedStream={mergedStream}
           screenStream={screenStream}
           cameraStream={cameraStream}
+          isError={isError}
+          errorMessage={errorMessage}
         />
       )}
     </>
