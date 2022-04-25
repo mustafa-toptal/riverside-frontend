@@ -21,7 +21,6 @@ export const ScreenRecorder = (props) => {
 
   let mixedStream = null,
     chunks = [],
-    // recorder = null,
     audioTrack = null;
 
   useEffect(() => {
@@ -80,8 +79,6 @@ export const ScreenRecorder = (props) => {
   function stopRecording() {
     recorder.stop();
     setIsRecording(false);
-    // startButton.disabled = false;
-    // stopButton.disabled = true;
   }
 
   function handleDataAvailable(e) {
@@ -92,18 +89,8 @@ export const ScreenRecorder = (props) => {
     const blob = new Blob(chunks, { type: "video/mp4" });
     chunks = [];
 
-    // downloadButton.href = URL.createObjectURL(blob);
-    // downloadButton.download = "video.mp4";
-    // downloadButton.disabled = false;
-
     recordedVideo.current.src = URL.createObjectURL(blob);
     recordedVideo.current.load();
-    // recordedVideo.onloadeddata = function () {
-    //   //   const rc = document.querySelector(".recorded-video-wrap");
-    //   //   rc.classList.remove("hidden");
-    //   //   rc.scrollIntoView({ behavior: "smooth", block: "start" });
-    //   recordedVideo.play();
-    // };
     setRecordingAvailabe(true);
 
     stream.getTracks().forEach((track) => track.stop());
@@ -120,9 +107,6 @@ export const ScreenRecorder = (props) => {
   };
 
   const pauseScreen = () => {
-    // const streamInstance = stream.getTracks();
-    // const newState = !streamInstance[0].enabled;
-    // streamInstance[0].enabled = newState;
     if (isPaused) {
       recorder.resume();
       setIsPaused(false);

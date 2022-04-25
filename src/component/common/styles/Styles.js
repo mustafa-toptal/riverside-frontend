@@ -88,13 +88,13 @@ export const useFileUploadStyles = makeStyles({
     flexDirection: "column",
   },
   mobileStyles: {
-    width: "343px",
-    height: "255px",
-    left: "16px",
-    top: "246px",
+    width: pxToRem(343),
+    height: pxToRem(255),
+    left: pxToRem(16),
+    top: pxToRem(246),
     border: "2px dashed #C6CCD9",
     boxSizing: "border-box",
-    borderRadius: "20px",
+    borderRadius: pxToRem(20),
     marginTop: pxToRem(38),
     display: "flex",
     alignItems: "center",
@@ -136,7 +136,7 @@ export const useFileUploadStyles = makeStyles({
   progressText: {
     fontWeight: "600",
     fontSize: pxToRem(14),
-    marginBottom: "13px",
+    marginBottom: pxToRem(13),
   },
   rangeWrapper: {
     display: "flex",
@@ -201,7 +201,7 @@ export const useDialogStyles = (isMobile) => {
         height: pxToRem(320),
       },
       "& .MuiDialogContent-root": {
-        padding: "16px 5px",
+        padding: `${pxToRem(16)} ${pxToRem(5)}`,
       },
     },
     dialogContent: {
