@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Grid } from "@mui/material";
+import { Alert, Box, Grid } from "@mui/material";
 import { VideoStreamMerger } from "video-stream-merger";
 
 import { ScreenRecorder } from "./screen";
@@ -18,6 +18,7 @@ export function Recorders() {
   const [screenStream, setScreenStream] = useState(null);
   const [cameraStream, setCameraStream] = useState(null);
   const [mergedStream, setMergedStream] = useState(null);
+  const [showInfo, setShowInfo] = useState(false);
   const [audioInput] = useState("audioinput");
   const [videoInput] = useState("videoinput");
 
@@ -49,6 +50,13 @@ export function Recorders() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (recorderType === "ScreenVideo") {
+      setShowInfo(true);
+    } else {
+      setShowInfo(false);
+    }
+  }, [recorderType]);
   async function setupStream() {
     try {
       const stream = await navigator.mediaDevices.getDisplayMedia({
@@ -72,6 +80,7 @@ export function Recorders() {
   }
 
   async function setupScreenAndCamera() {
+    setShowInfo(true);
     function roundedImage(ctx, x, y, width, height, radius) {
       ctx.beginPath();
       ctx.moveTo(x + radius, y);
@@ -168,8 +177,32 @@ export function Recorders() {
     }
   }
 
+  const isSafari =
+    /constructor/i.test(window.HTMLElement) ||
+    (function (p) {
+      return p.toString() === "[object SafariRemoteNotification]";
+    })(
+      !window["safari"] ||
+        (typeof safari !== "undefined" && window["safari"].pushNotification)
+    );
+
   return (
     <>
+      {isSafari && showInfo && (
+        <Alert
+          severity="info"
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            position: "fixed",
+            width: "100%",
+          }}
+        >
+          While using Safari don't minimize the browser for better user
+          experience.
+        </Alert>
+      )}
+
       <Grid
         container
         sx={{
