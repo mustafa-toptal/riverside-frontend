@@ -14,6 +14,7 @@ export const ScreenRecorder = (props) => {
   const [isMuted, setIsMuted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isError, setError] = useState(false);
+  const [audioDevideId, setAudioDeviceId] = useState("");
 
   let recordedVideo = useRef(null);
   let videoRef = useRef(null);
@@ -37,6 +38,13 @@ export const ScreenRecorder = (props) => {
     setError(props.isError);
     setErrorMessage(props.errorMessage);
   }, [props.isError, props.errorMessage]);
+
+  useEffect(() => {
+    if (audioDevideId !== "") {
+      props.changeAudioDevice(audioDevideId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioDevideId]);
 
   function setupVideoFeedback(stream) {
     if (stream) {
@@ -165,8 +173,30 @@ export const ScreenRecorder = (props) => {
         }}
       />
       {recordingAvailable && (
-        <Box marginY={2}>
+        <Box
+          marginY={2}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <DownloadButton onClick={download} />
+          <Button
+            type="primary"
+            sx={{
+              left: 0,
+              background: "#3c4250",
+              marginTop: "10px",
+              color: "#f5f7fd",
+              "&:hover": {
+                background: "#3c4250",
+              },
+            }}
+            onClick={() => props.retake()}
+          >
+            Retake
+          </Button>
         </Box>
       )}
       {isError && (
@@ -196,38 +226,61 @@ export const ScreenRecorder = (props) => {
         </Box>
       )}
       {!isRecording && !recordingAvailable && !isError && (
-        <Button
+        <Box
           sx={{
-            height: "54px",
-            width: "54px",
-            padding: "0px",
-            borderRadius: "50%",
-            backgroundColor: "rgb(255, 255, 255)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            transition: "all 0.5s ease 0s",
-            border: "6px solid rgb(60, 66, 80)",
-            pointerEvents: "auto",
-            "&:hover": {
-              border: "6px solid rgb(255, 84, 84)",
-            },
-            margin: "15px 15px",
-            minWidth: "0",
           }}
-          onClick={startRecording}
         >
-          <span
-            style={{
-              height: "20px",
-              width: "20px",
+          <Button
+            sx={{
+              height: "54px",
+              width: "54px",
+              padding: "0px",
               borderRadius: "50%",
-              backgroundColor: "rgb(255, 84, 84)",
-              borderColor: "rgb(255, 84, 84)",
+              backgroundColor: "rgb(255, 255, 255)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
               transition: "all 0.5s ease 0s",
+              border: "6px solid rgb(60, 66, 80)",
+              pointerEvents: "auto",
+              "&:hover": {
+                border: "6px solid rgb(255, 84, 84)",
+              },
+              margin: "15px 15px",
+              minWidth: "0",
             }}
-          ></span>
-        </Button>
+            onClick={startRecording}
+          >
+            <span
+              style={{
+                height: "20px",
+                width: "20px",
+                borderRadius: "50%",
+                backgroundColor: "rgb(255, 84, 84)",
+                borderColor: "rgb(255, 84, 84)",
+                transition: "all 0.5s ease 0s",
+              }}
+            ></span>
+          </Button>
+          <select
+            className="deviceDropDown"
+            onChange={(e) => {
+              setAudioDeviceId(e.target.value);
+            }}
+          >
+            {props.audioDevices &&
+              props.audioDevices.map((device) => {
+                return (
+                  <option value={device.deviceId} key={device.deviceId}>
+                    {device.label}
+                  </option>
+                );
+              })}
+          </select>
+        </Box>
       )}
       {isRecording && (
         <VideoActions

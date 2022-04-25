@@ -8,7 +8,8 @@ export const ScreenVideo = (props) => {
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
   const [cameraStream, setCameraStream] = useState(null);
   const [screenStream, setScreenStream] = useState(null);
-
+  const [audioDevideId, setAudioDeviceId] = useState("");
+  const [videoDeviceId, setVideoDeviceId] = useState("");
   const [stream, setStream] = useState(null);
   const [recorder, setRecorder] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -40,6 +41,13 @@ export const ScreenVideo = (props) => {
     setError(props.isError);
     setErrorMessage(props.errorMessage);
   }, [props.isError, props.errorMessage]);
+
+  useEffect(() => {
+    if (videoDeviceId !== "" || audioDevideId !== "") {
+      props.changeDevice(videoDeviceId, audioDevideId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoDeviceId, audioDevideId]);
 
   async function setupVideoFeedback(stream) {
     if (stream) {
@@ -78,13 +86,10 @@ export const ScreenVideo = (props) => {
     console.log("recorder: ", recorder);
     recorder.stop();
     setIsRecording(false);
-    // startButton.disabled = false;
-    // stopButton.disabled = true;
   }
 
   function handleDataAvailable(e) {
     if (e.data.size > 0) {
-      //   console.log("e.data: ", e.data);
       chunks.push(e.data);
     }
   }
@@ -93,20 +98,9 @@ export const ScreenVideo = (props) => {
     try {
       console.log("chunks: ", chunks);
       const blob = new Blob(chunks, { type: "video/mp4" });
-      // chunks = [];
-
-      // downloadButton.href = URL.createObjectURL(blob);
-      // downloadButton.download = "video.mp4";
-      // downloadButton.disabled = false;
-
       recordedVideo.current.src = URL.createObjectURL(blob);
       recordedVideo.current.load();
-      // recordedVideo.onloadeddata = function () {
-      //   //   const rc = document.querySelector(".recorded-video-wrap");
-      //   //   rc.classList.remove("hidden");
-      //   //   rc.scrollIntoView({ behavior: "smooth", block: "start" });
-      //   recordedVideo.play();
-      // };
+
       setRecordingAvailabe(true);
 
       let cameraTracks = cameraStream.getTracks();
@@ -129,9 +123,6 @@ export const ScreenVideo = (props) => {
   };
 
   const pauseScreen = () => {
-    // const streamInstance = stream.getTracks();
-    // const newState = !streamInstance[0].enabled;
-    // streamInstance[0].enabled = newState;
     if (isPaused) {
       recorder.resume();
       setIsPaused(false);
@@ -183,8 +174,30 @@ export const ScreenVideo = (props) => {
         }}
       />
       {recordingAvailable && (
-        <Box marginY={2}>
+        <Box
+          marginY={2}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <DownloadButton onClick={download} />
+          <Button
+            type="primary"
+            sx={{
+              left: 0,
+              background: "#3c4250",
+              marginTop: "10px",
+              color: "#f5f7fd",
+              "&:hover": {
+                background: "#3c4250",
+              },
+            }}
+            onClick={() => props.retake()}
+          >
+            Retake
+          </Button>
         </Box>
       )}
       {isError && (
@@ -214,38 +227,77 @@ export const ScreenVideo = (props) => {
         </Box>
       )}
       {!isRecording && !recordingAvailable && !isError && (
-        <Button
+        <Box
           sx={{
-            height: "54px",
-            width: "54px",
-            padding: "0px",
-            borderRadius: "50%",
-            backgroundColor: "rgb(255, 255, 255)",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            transition: "all 0.5s ease 0s",
-            border: "6px solid rgb(60, 66, 80)",
-            pointerEvents: "auto",
-            "&:hover": {
-              border: "6px solid rgb(255, 84, 84)",
-            },
-            margin: "15px 15px",
-            minWidth: "0",
           }}
-          onClick={startRecording}
         >
-          <span
-            style={{
-              height: "20px",
-              width: "20px",
-              borderRadius: "50%",
-              backgroundColor: "rgb(255, 84, 84)",
-              borderColor: "rgb(255, 84, 84)",
-              transition: "all 0.5s ease 0s",
+          <select
+            className="deviceDropDown"
+            onChange={(e) => {
+              setVideoDeviceId(e.target.value);
             }}
-          ></span>
-        </Button>
+          >
+            {props.videoDevices &&
+              props.videoDevices.map((device) => {
+                return (
+                  <option value={device.deviceId} key={device.deviceId}>
+                    {device.label}
+                  </option>
+                );
+              })}
+          </select>
+          <Button
+            sx={{
+              height: "54px",
+              width: "54px",
+              padding: "0px",
+              borderRadius: "50%",
+              backgroundColor: "rgb(255, 255, 255)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              transition: "all 0.5s ease 0s",
+              border: "6px solid rgb(60, 66, 80)",
+              pointerEvents: "auto",
+              "&:hover": {
+                border: "6px solid rgb(255, 84, 84)",
+              },
+              margin: "15px 15px",
+              minWidth: "0",
+            }}
+            onClick={startRecording}
+          >
+            <span
+              style={{
+                height: "20px",
+                width: "20px",
+                borderRadius: "50%",
+                backgroundColor: "rgb(255, 84, 84)",
+                borderColor: "rgb(255, 84, 84)",
+                transition: "all 0.5s ease 0s",
+              }}
+            ></span>
+          </Button>
+
+          <select
+            className="deviceDropDown"
+            onChange={(e) => {
+              setAudioDeviceId(e.target.value);
+            }}
+          >
+            {props.audioDevices &&
+              props.audioDevices.map((device) => {
+                return (
+                  <option value={device.deviceId} key={device.deviceId}>
+                    {device.label}
+                  </option>
+                );
+              })}
+          </select>
+        </Box>
       )}
       {isRecording && (
         <VideoActions

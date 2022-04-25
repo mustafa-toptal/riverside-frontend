@@ -128,8 +128,30 @@ export const AudioRecorder = (props) => {
         style={{ display: recordingAvailable ? "block" : "none" }}
       />
       {recordingAvailable && (
-        <Box marginY={2}>
+        <Box
+          marginY={2}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <DownloadButton onClick={download} />
+          <Button
+            type="primary"
+            sx={{
+              left: 0,
+              background: "#3c4250",
+              marginTop: "10px",
+              color: "#f5f7fd",
+              "&:hover": {
+                background: "#3c4250",
+              },
+            }}
+            onClick={() => props.retake()}
+          >
+            Retake
+          </Button>
         </Box>
       )}
       {!isRecording && !recordingAvailable && (

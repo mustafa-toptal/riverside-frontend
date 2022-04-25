@@ -6,6 +6,8 @@ import { ScreenRecorder } from "./screen";
 import { VideoRecorder } from "./video";
 import { AudioRecorder } from "./audio";
 import { ScreenVideo } from "./screen-video";
+import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
+import { delay } from "../../utils/Helpers";
 
 export function Recorders() {
   const [recorderType, setRecorderType] = useState("");
@@ -21,6 +23,8 @@ export function Recorders() {
   const [showInfo, setShowInfo] = useState(false);
   const [audioInput] = useState("audioinput");
   const [videoInput] = useState("videoinput");
+
+  const isMobile = useResponsiveQuery();
 
   useEffect(() => {
     let audioDevices = [];
@@ -51,27 +55,36 @@ export function Recorders() {
   }, []);
 
   useEffect(() => {
-    if (recorderType === "ScreenVideo") {
+    if (recorderType === "screenVideo") {
       setShowInfo(true);
     } else {
       setShowInfo(false);
     }
   }, [recorderType]);
-  async function setupStream() {
+
+  async function setupStream(audioDevice) {
     try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-      });
-      setStrem(stream);
+      if (!audioDevice) {
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+        });
+        setStrem(stream);
+      }
+      let audioConstraints = {
+        echoCancellation: true,
+        noiseSuppression: true,
+        sampleRate: 44100,
+      };
+      if (audioDevice) {
+        audioConstraints.deviceId = audioDevice;
+      }
       const audio = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          sampleRate: 44100,
-        },
+        audio: audioConstraints,
       });
       setAudio(audio);
       setRecorderType("screen");
+      setError(false);
+      setErrorMessage(``);
     } catch (err) {
       setRecorderType("screen");
       setError(true);
@@ -79,7 +92,7 @@ export function Recorders() {
     }
   }
 
-  async function setupScreenAndCamera() {
+  async function setupScreenAndCamera(videoDevice, audioDevice) {
     setShowInfo(true);
     function roundedImage(ctx, x, y, width, height, radius) {
       ctx.beginPath();
@@ -112,24 +125,37 @@ export function Recorders() {
       audio: false,
     };
 
-    const cameraMediaOptions = {
+    let cameraMediaOptions = {
       video: {
         width: 300,
         height: 300,
       },
-      audio: true,
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        sampleRate: 44100,
+      },
     };
+    if (videoDevice) {
+      cameraMediaOptions.video.deviceId = videoDevice;
+    }
+    if (audioDevice) {
+      cameraMediaOptions.audio.deviceId = audioDevice;
+    }
     try {
-      const screenStream = await navigator.mediaDevices.getDisplayMedia(
-        screenMediaOptions
-      );
+      let localScreenStream = null;
+      if (!audioDevice && !videoDevice) {
+        localScreenStream = await navigator.mediaDevices.getDisplayMedia(
+          screenMediaOptions
+        );
+      }
       const cameraStream = await navigator.mediaDevices.getUserMedia(
         cameraMediaOptions
       );
       // Add the screen capture. Position it to fill the whole stream (the default)
       merger.width = 1920;
       merger.height = 1080;
-      merger.addStream(screenStream, {
+      merger.addStream(localScreenStream ? localScreenStream : screenStream, {
         x: 0, // position of the topleft corner
         y: 0,
         width: merger.width,
@@ -166,17 +192,26 @@ export function Recorders() {
       merger.start();
 
       setCameraStream(cameraStream);
-      setScreenStream(screenStream);
+      setScreenStream(localScreenStream ? localScreenStream : screenStream);
       setMergedStream(merger.result);
-      setRecorderType("ScreenVideo");
+      setRecorderType("screenVideo");
+      setError(false);
+      setErrorMessage(``);
     } catch (err) {
       setError(true);
       setErrorMessage(`${err}`);
-      setRecorderType("ScreenVideo");
+      setRecorderType("screenVideo");
       console.error("Error: " + err);
     }
   }
 
+  const changeDevice = (videoDevice, audioDevice) => {
+    setupScreenAndCamera(videoDevice, audioDevice);
+  };
+
+  const changeAudioDevice = (audioDevice) => {
+    setupStream(audioDevice);
+  };
   const isSafari =
     /constructor/i.test(window.HTMLElement) ||
     (function (p) {
@@ -186,22 +221,37 @@ export function Recorders() {
         (typeof safari !== "undefined" && window["safari"].pushNotification)
     );
 
+  const retake = async () => {
+    const prevState = recorderType;
+    setRecorderType("");
+    await delay(200);
+    if (prevState === "screenVideo") {
+      setupScreenAndCamera();
+    } else if (prevState === "screen") {
+      setupStream();
+    }
+    setRecorderType(prevState);
+  };
+
   return (
     <>
-      {isSafari && showInfo && (
-        <Alert
-          severity="info"
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            position: "fixed",
-            width: "100%",
-          }}
-        >
-          While using Safari don't minimize the browser for better user
-          experience.
-        </Alert>
-      )}
+      {(isSafari && showInfo) ||
+        (isMobile && (
+          <Alert
+            severity="info"
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              position: "fixed",
+              width: "100%",
+              padding: 0,
+            }}
+          >
+            {isMobile
+              ? "Some features are not available in Mobile Browsers"
+              : "While using Safari don't minimize the browser for better user experience."}
+          </Alert>
+        ))}
 
       <Grid
         container
@@ -223,25 +273,27 @@ export function Recorders() {
             marginTop: "80px",
           }}
         >
-          <Box
-            sx={{
-              width: "150px",
-              height: "150px",
-              borderRadius: "10px",
-              border: "0.13452375rem dashed #C6CCD9",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              "&:hover": {
-                cursor: "pointer",
-                backgroundColor: "#afb0b3",
-                border: "#FFFFF 5px solid",
-              },
-            }}
-            onClick={() => setupStream()}
-          >
-            Screen
-          </Box>
+          {!isMobile && (
+            <Box
+              sx={{
+                width: "150px",
+                height: "150px",
+                borderRadius: "10px",
+                border: "0.13452375rem dashed #C6CCD9",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                "&:hover": {
+                  cursor: "pointer",
+                  backgroundColor: "#afb0b3",
+                  border: "#FFFFF 5px solid",
+                },
+              }}
+              onClick={() => (recorderType !== "screen" ? setupStream() : "")}
+            >
+              Screen
+            </Box>
+          )}
           <Box
             sx={{
               width: "150px",
@@ -280,26 +332,30 @@ export function Recorders() {
           >
             Video
           </Box>
-          <Box
-            sx={{
-              width: "150px",
-              height: "150px",
-              borderRadius: "10px",
-              border: "0.13452375rem dashed #C6CCD9",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              "&:hover": {
-                cursor: "pointer",
-                backgroundColor: "#afb0b3",
-                border: "#FFFFF 5px solid",
-              },
-              // textDecoration: "line-through",
-            }}
-            onClick={() => setupScreenAndCamera()}
-          >
-            Screen & Video
-          </Box>
+          {!isMobile && (
+            <Box
+              sx={{
+                width: "150px",
+                height: "150px",
+                borderRadius: "10px",
+                border: "0.13452375rem dashed #C6CCD9",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                "&:hover": {
+                  cursor: "pointer",
+                  backgroundColor: "#afb0b3",
+                  border: "#FFFFF 5px solid",
+                },
+                // textDecoration: "line-through",
+              }}
+              onClick={() =>
+                recorderType !== "screenVideo" ? setupScreenAndCamera() : ""
+              }
+            >
+              Screen & Video
+            </Box>
+          )}
         </Box>
       </Grid>
       {recorderType === "screen" && (
@@ -308,25 +364,32 @@ export function Recorders() {
           audio={audio}
           stream={stream}
           isError={isError}
+          retake={retake}
           errorMessage={errorMessage}
+          changeAudioDevice={changeAudioDevice}
         />
       )}
       {recorderType === "video" && (
         <VideoRecorder
           audioDevices={audioDevices}
           videoDevices={videoDevices}
+          retake={retake}
         />
       )}
       {recorderType === "audio" && (
-        <AudioRecorder audioDevices={audioDevices} />
+        <AudioRecorder audioDevices={audioDevices} retake={retake} />
       )}
-      {recorderType === "ScreenVideo" && (
+      {recorderType === "screenVideo" && (
         <ScreenVideo
           mergedStream={mergedStream}
           screenStream={screenStream}
           cameraStream={cameraStream}
           isError={isError}
           errorMessage={errorMessage}
+          audioDevices={audioDevices}
+          videoDevices={videoDevices}
+          changeDevice={changeDevice}
+          retake={retake}
         />
       )}
     </>

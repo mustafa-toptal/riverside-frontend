@@ -21,7 +21,7 @@ function VideoActions(props) {
   };
   return (
     <div className="jGbqEh">
-      <button className="joGUys" onClick={props.stop} disabled={props.isPaused}>
+      <button className="joGUys" onClick={props.stop}>
         <span className="kZIiFT"></span>
       </button>
       <div className="dqrcjX">
