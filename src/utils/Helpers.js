@@ -75,7 +75,6 @@ export const deleteFile = async ({
   signature,
   contentType,
 }) => {
-  console.log("signature: ", signature);
   const fd = new FormData();
   fd.append("Date", date);
   fd.append("X-Amz-Date", amzDate);
@@ -88,7 +87,6 @@ export const deleteFile = async ({
       fd,
     },
   };
-  console.log("params: ", params);
 
   const deleteResult = await fetch(url, params);
   if (!deleteResult.ok) return Promise.reject(deleteResult);
