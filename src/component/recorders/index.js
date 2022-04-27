@@ -7,7 +7,7 @@ import { VideoRecorder } from "./video";
 import { AudioRecorder } from "./audio";
 import { ScreenVideo } from "./screen-video";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
-import { delay } from "../../utils/Helpers";
+import { delay, isMobileBrowser } from "../../utils/Helpers";
 
 export function Recorders() {
   const [recorderType, setRecorderType] = useState("");
@@ -212,6 +212,23 @@ export function Recorders() {
   const changeAudioDevice = (audioDevice) => {
     setupStream(audioDevice);
   };
+
+  const renderAlert = (message) => {
+    return (
+      <Alert
+        severity="info"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          position: "fixed",
+          width: "100%",
+          padding: 0,
+        }}
+      >
+        {message}
+      </Alert>
+    );
+  };
   const isSafari =
     /constructor/i.test(window.HTMLElement) ||
     (function (p) {
@@ -232,27 +249,16 @@ export function Recorders() {
     }
     setRecorderType(prevState);
   };
-
   return (
     <>
-      {(isSafari && showInfo) ||
-        (isMobile && (
-          <Alert
-            severity="info"
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              position: "fixed",
-              width: "100%",
-              padding: 0,
-            }}
-          >
-            {isMobile
-              ? "Some features are not available in Mobile Browsers"
-              : "While using Safari don't minimize the browser for better user experience."}
-          </Alert>
-        ))}
+      {isSafari &&
+        showInfo &&
+        renderAlert(
+          "While using Safari don't minimize the browser for better user experience."
+        )}
 
+      {isMobileBrowser &&
+        renderAlert("Some features are not available in Mobile Browsers")}
       <Grid
         container
         sx={{
@@ -273,7 +279,7 @@ export function Recorders() {
             marginTop: "80px",
           }}
         >
-          {!isMobile && (
+          {!isMobileBrowser && (
             <Box
               sx={{
                 width: "150px",
@@ -332,7 +338,7 @@ export function Recorders() {
           >
             Video
           </Box>
-          {!isMobile && (
+          {!isMobileBrowser && (
             <Box
               sx={{
                 width: "150px",
