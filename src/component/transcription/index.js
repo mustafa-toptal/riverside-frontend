@@ -6,27 +6,24 @@ import Lottie from "react-lottie";
 
 import { Service } from "../../utils/Service";
 import { Title } from "../common/Title";
-// import { TranscriptionIcon } from "../../icons/TranscriptionIcon";
 import { TranscriptionUpload } from "../../icons/TranscriptionUpload";
-// import { DownloadSrt } from "../../icons/DownloadSrt";
-import { animatedText, delay } from "../../utils/Helpers";
+import {
+  animatedText,
+  delay,
+  uploadFile,
+  deleteFile,
+} from "../../utils/Helpers";
 import { Upload } from "../../icons/Upload";
 import SelectDialog from "../common/SelectDialog";
 import { AlertMessage } from "../common/AlertMessage";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
-import { deleteFile, uploadFile } from "../../utils/s3/ReactS3";
 import transcriptioncompleted from "../../utils/lottie-jsons/transcriptioncompleted.json";
 import transcription from "../../utils/lottie-jsons/transcription.json";
 
-const S3_BUCKET = "riversidefm-backend";
-const REGION = "eu-west-2";
-const ACCESS_KEY = "AKIAVPGN2AWQAO4PRSES";
-const SECRET_ACCESS_KEY = "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";
-
-// const S3_BUCKET = process.env.REACT_APP_S3_BUCKET;
-// const REGION = process.env.REACT_APP_S3_REGION;
-// const ACCESS_KEY = process.env.REACT_APP_S3_ACCESS_KEY;
-// const SECRET_ACCESS_KEY = process.env.REACT_APP_S3_SECRET_ACCESS_KEY;
+// const S3_BUCKET = "riversidefm-backend";
+// const REGION = "eu-west-2";
+// const ACCESS_KEY = "AKIAVPGN2AWQAO4PRSES";
+// const SECRET_ACCESS_KEY = "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";
 
 const Transcription = () => {
   const [id, setId] = useState("");
@@ -62,19 +59,13 @@ const Transcription = () => {
               setIsTranscriptionDone(true);
               setLoading(false);
             } else if (res.data.status === "failed") {
-              clearInterval(interval);
-              setMessage("");
-              setShowErrorMessage(true);
-              setErrorMessage("Failed to generate file");
+              handleError("Failed to generate file", interval);
             } else {
               setChangeProgress((prev) => !prev);
             }
           })
           .catch((err) => {
-            clearInterval(interval);
-            setMessage("");
-            setShowErrorMessage(true);
-            setErrorMessage("Failed to generate file");
+            handleError("Failed to generate file", interval);
           });
       }, 10000);
     }
@@ -91,13 +82,24 @@ const Transcription = () => {
   }, [changeProgress]);
 
   // useEffect(() => {
-  //   // const socket = io("ws://localhost:8000");
-  //   const socket = io(process.env.REACT_APP_SOCKET_CONNECTION);
-  //   // const socket = io(
-  //   //   "ws://ec2-18-133-197-246.eu-west-2.compute.amazonaws.com:8000"
-  //   // );
-  //   setSocket(socket);
+  //   service
+  //     .delete(
+  //       `deleteMediaS3/9cb7f0a0-0db4-4aa3-9f43-c6beaae1c621Scent%20of%20a%20Woman%20_%20_I'll%20Show%20You%20Out%20of%20Order!_.mp4`
+  //     )
+  //     .then((res) => {
+  //       console.log("res.data.headers: ", res.data.headers);
+  //       deleteFile(res.data.headers);
+  //     });
   // }, []);
+
+  const handleError = (errorMessage, uploadingInterval) => {
+    if (uploadingInterval) {
+      clearInterval(uploadingInterval);
+    }
+    setShowErrorMessage(true);
+    setMessage("");
+    setErrorMessage(errorMessage ? errorMessage : "Failed to upload file");
+  };
 
   const handleFileChange = (file) => {
     setFilename(file.name.split(".").join(""));
@@ -117,45 +119,42 @@ const Transcription = () => {
         }
       }, 5000);
       const fileName = uuidv4() + file.name;
-      const config = {
-        bucketName: S3_BUCKET,
-        region: REGION,
-        accessKeyId: ACCESS_KEY,
-        secretAccessKey: SECRET_ACCESS_KEY,
-        name: fileName,
-      };
-      uploadFile(file, config)
-        .then((data) => {
-          const url = data.location;
-          service
-            .post("transcribe", { file: url })
-            .then(async (res) => {
-              if (res.data.id) {
-                setId(res.data.id);
-                setMessage("Files uploaded");
-                await delay(DELAY_IN_MILISECONDS);
-                deleteFile(fileName, config);
-                clearInterval(uploadingInterval);
-                setMessage(animatedText("Generating file"));
-              }
+      service
+        .get(`getPostURL/${fileName}`)
+        .then((res) => {
+          const { headers } = res.data;
+          uploadFile(file, headers)
+            .then(async () => {
+              const {
+                data: { url },
+              } = await service.get(`getMediaURL/${fileName}`);
+              service
+                .post("transcribe", { file: url })
+                .then(async (res) => {
+                  if (res.data.id) {
+                    setId(res.data.id);
+                    setMessage("File uploaded");
+                    await delay(DELAY_IN_MILISECONDS);
+                    service.delete(`deleteMediaS3/${fileName}`).then((res) => {
+                      deleteFile(res.data.headers);
+                    });
+                    clearInterval(uploadingInterval);
+                    setMessage(animatedText("Generating file"));
+                  }
+                })
+                .catch((err) => {
+                  handleError(undefined, uploadingInterval);
+                });
             })
             .catch((err) => {
-              clearInterval(uploadingInterval);
-              setShowErrorMessage(true);
-              setMessage("");
-              setErrorMessage("Failed to upload file");
+              handleError(undefined, uploadingInterval);
             });
         })
         .catch((err) => {
-          clearInterval(uploadingInterval);
-          setShowErrorMessage(true);
-          setMessage("");
-          setErrorMessage("Failed to upload file");
+          handleError(undefined, uploadingInterval);
         });
     } else {
-      setShowErrorMessage(true);
-      setMessage("");
-      setErrorMessage("Please select a valid file");
+      handleError("Please select a valid file");
     }
   };
 
@@ -218,9 +217,7 @@ const Transcription = () => {
           document.body.removeChild(elem);
         })
         .catch((err) => {
-          setMessage("");
-          setShowErrorMessage(true);
-          setErrorMessage("Failed to generate file");
+          handleError("Failed to generate file");
         });
     }
     setOpenSelector(false);

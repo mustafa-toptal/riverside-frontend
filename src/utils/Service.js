@@ -8,8 +8,6 @@ export class Service {
     this.get = (endpoint, isConverter = false) => {
       let token = process.env.REACT_APP_TRANSCRIPTION_TOKEN;
       let url = process.env.REACT_APP_TRANSCRIPTION_BASE_URL;
-      // let url =
-      // "http://ec2-18-133-197-246.eu-west-2.compute.amazonaws.com:8000/";
       if (isConverter) {
         token = process.env.REACT_APP_CONVERTER_TOKEN;
         url = process.env.REACT_APP_CONVERTER_BASE_URL;
@@ -39,6 +37,8 @@ export class Service {
     this.delete = (endpoint, isConverter = false) => {
       let token = process.env.REACT_APP_TRANSCRIPTION_TOKEN;
       let url = process.env.REACT_APP_TRANSCRIPTION_BASE_URL;
+      // let url = "http://localhost:4000/";
+
       if (isConverter) {
         token = process.env.REACT_APP_CONVERTER_TOKEN;
         url = process.env.REACT_APP_CONVERTER_BASE_URL;
