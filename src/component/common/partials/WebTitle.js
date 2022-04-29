@@ -5,11 +5,17 @@ import { renderTitle } from "../../../utils/Helpers";
 import { useTitleStyles } from "../styles/Styles";
 
 export const WebTitle = (props) => {
-  const { title, subtitle, highlightedWordIndex, isTranscription } = props;
+  const {
+    title,
+    subtitle,
+    highlightedWordIndex,
+    isTranscription,
+    ...restProps
+  } = props;
   const styles = useTitleStyles();
 
   return (
-    <Grid container className={styles.titleWrapper}>
+    <Grid container className={styles.titleWrapper} {...restProps}>
       <Typography variant="h1" className={styles.webTitle}>
         {renderTitle(title, highlightedWordIndex)}
       </Typography>
