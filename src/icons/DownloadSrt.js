@@ -73,9 +73,9 @@ export const DownloadSrt = (props) => {
       <path
         d="M15 17L8.07692 23.93L6 21.8531"
         stroke="white"
-        stroke-width="1.38462"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.38462"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <defs>
         <filter
@@ -85,9 +85,9 @@ export const DownloadSrt = (props) => {
           width="22.1236"
           height="23.2806"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"

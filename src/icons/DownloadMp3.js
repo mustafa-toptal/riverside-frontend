@@ -39,9 +39,9 @@ export const DownloadMp3 = (props) => {
       <path
         d="M15 21.2856L8.07692 28.2156L6 26.1387"
         stroke="white"
-        stroke-width="1.38462"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.38462"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <defs>
         <filter
@@ -51,9 +51,9 @@ export const DownloadMp3 = (props) => {
           width="22.7594"
           height="24.0958"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"

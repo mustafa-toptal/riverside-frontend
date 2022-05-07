@@ -90,7 +90,7 @@ export const WavToMp3 = (props) => {
         d="M99.1884 33.566V16.4902L99.1966 16.4336L99.1884 16.4352V16.4336L99.1714 16.4364L82.5574 18.6615H82.5562V32.1536C81.8982 31.9428 81.158 31.8585 80.3874 31.934C77.9461 32.171 76.1183 33.9091 76.3032 35.814C76.4887 37.7213 78.6164 39.0754 81.0572 38.8384C83.4997 38.6013 85.3274 36.8641 85.1426 34.9562C85.1386 34.9233 85.1474 34.8617 85.1474 34.8617V23.1572L96.5984 21.4848V30.8582C95.9411 30.648 95.2019 30.5624 94.4296 30.637C91.9883 30.8737 90.1605 32.6126 90.3446 34.5192C90.5307 36.427 92.6592 37.7798 95.0991 37.5432C97.5404 37.3049 99.3694 35.5681 99.1833 33.6615C99.1807 33.6294 99.1888 33.5662 99.1888 33.5662L99.1884 33.566Z"
         fill="#373A41"
       />
-      <line x1="50" y1="34" x2="62" y2="34" stroke="#252A30" stroke-width="2" />
+      <line x1="50" y1="34" x2="62" y2="34" stroke="#252A30" strokeWidth="2" />
       <defs>
         <filter
           id="filter0_d_0_1"
@@ -99,9 +99,9 @@ export const WavToMp3 = (props) => {
           width="22.8612"
           height="22.8612"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -134,9 +134,9 @@ export const WavToMp3 = (props) => {
           width="23.0232"
           height="23.0231"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"

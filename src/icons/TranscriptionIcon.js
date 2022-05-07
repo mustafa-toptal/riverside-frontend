@@ -85,7 +85,7 @@ export const TranscriptionIcon = (props) => {
         x2="128"
         y2="34"
         stroke="#252A30"
-        stroke-width="2"
+        strokeWidth="2"
       />
       <rect
         x="69.0004"
@@ -107,9 +107,9 @@ export const TranscriptionIcon = (props) => {
           width="22.8612"
           height="22.8612"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"

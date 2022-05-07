@@ -14,16 +14,16 @@ export const Cross = (props) => {
       <path
         d="M9.5 4.5L4.5 9.5"
         stroke="#484C56"
-        stroke-width="0.935065"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="0.935065"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M4.5 4.5L9.5 9.5"
         stroke="#484C56"
-        stroke-width="0.935065"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="0.935065"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </SvgIcon>
   );
@@ -41,16 +41,16 @@ export const Close = (props) => {
       <path
         d="M9.60015 1.53003L0.900146 10.23"
         stroke="#161C21"
-        stroke-width="1.74"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.74"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M0.900146 1.53003L9.60015 10.23"
         stroke="#161C21"
-        stroke-width="1.74"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.74"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </SvgIcon>
   );
