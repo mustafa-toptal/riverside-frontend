@@ -3,6 +3,7 @@ import { Alert, AlertTitle, Box, Button } from "@mui/material";
 
 import VideoActions from "../../common/VideoActions";
 import { DownloadButton } from "../../common/partials/DownloadButton";
+import Recorder from "../../common/Recorder";
 
 export const ScreenRecorder = (props) => {
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
@@ -135,146 +136,25 @@ export const ScreenRecorder = (props) => {
         flexDirection: "column",
       }}
     >
-      {!recordingAvailable && !isError && (
-        <video
-          className="video-feedback"
-          width={"50%"}
-          height="50%"
-          ref={videoRef}
-          style={{ borderRadius: "30px" }}
-        />
-      )}
-
-      <video
-        className="recorded-video"
-        controls
-        ref={recordedVideo}
-        width={"50%"}
-        height="50%"
-        style={{
-          display: recordingAvailable ? "block" : "none",
-          borderRadius: "30px",
-        }}
+      <Recorder
+        stop={stopRecording}
+        mute={muteAudio}
+        pause={pauseScreen}
+        isPaused={isPaused}
+        isMuted={isMuted}
+        setAudioDeviceId={setAudioDeviceId}
+        startRecording={startRecording}
+        retake={props.retake}
+        videoDevices={props.videoDevices}
+        audioDevices={props.audioDevices}
+        isRecording={isRecording}
+        recordingAvailable={recordingAvailable}
+        videoRef={videoRef}
+        recordedVideoRef={recordedVideo}
+        downloadVideo={download}
+        isError={isError}
+        errorMessage={errorMessage}
       />
-      {recordingAvailable && (
-        <Box
-          marginY={2}
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <DownloadButton onClick={download} />
-          <Button
-            type="primary"
-            sx={{
-              left: 0,
-              background: "#3c4250",
-              marginTop: "10px",
-              color: "#f5f7fd",
-              "&:hover": {
-                background: "#3c4250",
-              },
-            }}
-            onClick={() => props.retake()}
-          >
-            Retake
-          </Button>
-        </Box>
-      )}
-      {isError && (
-        <Alert severity="error">
-          <AlertTitle>Error</AlertTitle>
-          {errorMessage}
-        </Alert>
-      )}
-
-      {isError && (
-        <Box>
-          <Button
-            type="primary"
-            sx={{
-              left: 0,
-              background: "#3c4250",
-              marginTop: "10px",
-              color: "#f5f7fd",
-              "&:hover": {
-                background: "#3c4250",
-              },
-            }}
-            onClick={() => window.location.reload()}
-          >
-            Reload
-          </Button>
-        </Box>
-      )}
-      {!isRecording && !recordingAvailable && !isError && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Button
-            sx={{
-              height: "54px",
-              width: "54px",
-              padding: "0px",
-              borderRadius: "50%",
-              backgroundColor: "rgb(255, 255, 255)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              transition: "all 0.5s ease 0s",
-              border: "6px solid rgb(60, 66, 80)",
-              pointerEvents: "auto",
-              "&:hover": {
-                border: "6px solid rgb(255, 84, 84)",
-              },
-              margin: "15px 15px",
-              minWidth: "0",
-            }}
-            onClick={startRecording}
-          >
-            <span
-              style={{
-                height: "20px",
-                width: "20px",
-                borderRadius: "50%",
-                backgroundColor: "rgb(255, 84, 84)",
-                borderColor: "rgb(255, 84, 84)",
-                transition: "all 0.5s ease 0s",
-              }}
-            ></span>
-          </Button>
-          <select
-            className="deviceDropDown"
-            onChange={(e) => {
-              setAudioDeviceId(e.target.value);
-            }}
-          >
-            {props.audioDevices &&
-              props.audioDevices.map((device) => {
-                return (
-                  <option value={device.deviceId} key={device.deviceId}>
-                    {device.label}
-                  </option>
-                );
-              })}
-          </select>
-        </Box>
-      )}
-      {isRecording && (
-        <VideoActions
-          stop={stopRecording}
-          mute={muteAudio}
-          pause={pauseScreen}
-          isPaused={isPaused}
-          isMuted={isMuted}
-        />
-      )}
     </Box>
   );
 };

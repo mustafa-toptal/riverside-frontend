@@ -10,6 +10,7 @@ import { Stop } from "../../icons/Stop";
 import { Play } from "../../icons/Play";
 import { Download } from "../../icons/Download";
 import { Retake } from "../../icons/Retake";
+import { AudioPlay, AudioRecorderWaves } from "../../icons/AudioWaves";
 
 const Recorder = (props) => {
   const [showCountDown, setShowCountDown] = useState(4);
@@ -107,15 +108,56 @@ const Recorder = (props) => {
           </Typography>
         </Box>
       )}
+      {props.isAudio && (showCountDown <= 0 || showCountDown > 3) && (
+        <Box
+          sx={{
+            width: "250px",
+            position: "absolute",
+            transform: "translate(-50%, 50%)",
+            top: "25%",
+            left: "50%",
+            color: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            "&:hover": {
+              cursor: "pointer",
+            },
+          }}
+        >
+          {props.recordingAvailable && (
+            <AudioPlay
+              sx={{
+                width: "58px",
+                height: "58px",
+                position: "absolute",
+              }}
+            />
+          )}
+          <AudioRecorderWaves
+            sx={{
+              width: "221px",
+              height: "78px",
+              opacity: props.recordingAvailable ? "30%" : "1",
+            }}
+          />
+        </Box>
+      )}
       <Box
         sx={{
           width: "753px",
           height: "471px",
-          backgroundColor: !isVideoAvailable() ? "#000000" : "#161C21",
+          backgroundColor: props.isAudio
+            ? "#9599FF"
+            : !isVideoAvailable()
+            ? "#000000"
+            : "#161C21",
           borderRadius: "16px 16px 0 0",
+          opacity: props.isAudio && props.recordingAvailable ? "30%" : "100%",
         }}
+        onClick={props.playAudio}
       >
-        {!props.recordingAvailable && (
+        {!props.recordingAvailable && !props.isAudio && (
           <video
             ref={props.videoRef}
             muted
@@ -126,14 +168,23 @@ const Recorder = (props) => {
             }}
           />
         )}
+
         <video
           ref={props.recordedVideoRef}
           controls
           style={{
             borderRadius: "16px 16px 0 0",
             width: "100%",
-            display: props.recordingAvailable ? "block" : "none",
+            display:
+              props.recordingAvailable && !props.isAudio ? "block" : "none",
           }}
+        />
+
+        <audio
+          className="recorded-video"
+          controls
+          ref={props.recordedAudioRef}
+          style={{ display: "none" }}
         />
       </Box>
       <Box
@@ -146,7 +197,7 @@ const Recorder = (props) => {
           display: "flex",
           alignItems: "center",
           flexDirection: "row",
-          marginTop: "-47px",
+          marginTop: props.isAudio ? "0" : "-47px",
         }}
       >
         <Typography
@@ -169,13 +220,15 @@ const Recorder = (props) => {
           <>
             <Box
               sx={{
-                width: "460px",
+                width: props.videoDevices ? "460px" : "300px",
                 height: "40px",
                 display: "flex",
                 alignItems: "center",
                 flexDirection: "row",
-                justifyContent: "space-between",
-                marginLeft: "70px",
+                justifyContent: props.videoDevices
+                  ? "space-between"
+                  : "space-evenly",
+                marginLeft: props.videoDevices ? "70px" : "155px",
               }}
             >
               <Box
@@ -218,6 +271,7 @@ const Recorder = (props) => {
                     width: "121px",
                     height: "18px",
                     color: "#FFFFFF",
+                    cursor: "pointer",
                   }}
                   onChange={(e) => {
                     props.setAudioDeviceId(e.target.value);
@@ -233,50 +287,53 @@ const Recorder = (props) => {
                     })}
                 </select>
               </Box>
-              <Box
-                sx={{
-                  width: "180px",
-                  height: "40px",
-                  borderRadius: "10px",
-                  backgroundColor: "#232323",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-evenly",
-                }}
-              >
-                <Camera sx={{ width: "21px", height: "15px" }} />
-                <select
-                  style={{
-                    "-moz-appearance": "none",
-                    "-webkit-appearance": "none",
-                    appearance: "none",
-                    border: "0px",
-                    outline: "0px",
+              {props.videoDevices && (
+                <Box
+                  sx={{
+                    width: "180px",
+                    height: "40px",
+                    borderRadius: "10px",
                     backgroundColor: "#232323",
-                    width: "121px",
-                    height: "18px",
-                    color: "#FFFFFF",
-                  }}
-                  onChange={(e) => {
-                    props.setVideoDeviceId(e.target.value);
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-evenly",
                   }}
                 >
-                  {props.videoDevices &&
-                    props.videoDevices.map((device) => {
-                      return (
-                        <option value={device.deviceId} key={device.deviceId}>
-                          {device.label}
-                        </option>
-                      );
-                    })}
-                </select>
-              </Box>
+                  <Camera sx={{ width: "21px", height: "15px" }} />
+                  <select
+                    style={{
+                      "-moz-appearance": "none",
+                      "-webkit-appearance": "none",
+                      appearance: "none",
+                      border: "0px",
+                      outline: "0px",
+                      backgroundColor: "#232323",
+                      width: "121px",
+                      height: "18px",
+                      color: "#FFFFFF",
+                      cursor: "pointer",
+                    }}
+                    onChange={(e) => {
+                      props.setVideoDeviceId(e.target.value);
+                    }}
+                  >
+                    {props.videoDevices &&
+                      props.videoDevices.map((device) => {
+                        return (
+                          <option value={device.deviceId} key={device.deviceId}>
+                            {device.label}
+                          </option>
+                        );
+                      })}
+                  </select>
+                </Box>
+              )}
             </Box>
             <Setting
               sx={{
                 width: "40px",
                 height: "40px",
-                marginLeft: "90px",
+                marginLeft: props.videoDevices ? "90px" : "165px",
                 "&:hover": {
                   cursor: "pointer",
                 },

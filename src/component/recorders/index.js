@@ -214,13 +214,45 @@ export function Recorders() {
   }
 
   const disableOptions = (type) => {
-    if (type !== "audio") audioRef.current.style = "opacity: 25%";
-    if (type !== "multiMedia") multiMediaRef.current.style = "opacity: 25%";
-    if (type !== "video") videoRef.current.style = "opacity: 25%";
-    if (type !== "screen") screenRef.current.style = "opacity: 25%";
+    if (type === "audio") {
+      multiMediaRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      videoRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      screenRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      audioRef.current.style = "opacity: 1";
+    }
+    if (type === "multiMedia") {
+      videoRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      screenRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      audioRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      multiMediaRef.current.style = "opacity: 1";
+    }
+    if (type === "video") {
+      multiMediaRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      screenRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      audioRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      videoRef.current.style = "opacity: 1";
+    }
+    if (type === "screen") {
+      multiMediaRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      videoRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      audioRef.current.style.animation =
+        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+      screenRef.current.style = "opacity: 1";
+    }
   };
 
-  const enableOption = (type) => {
+  const enableOption = () => {
     audioRef.current.style = "opacity: 1";
     multiMediaRef.current.style = "opacity: 1";
     videoRef.current.style = "opacity: 1";
@@ -503,6 +535,7 @@ export function Recorders() {
                 "&:hover": {
                   cursor: "pointer",
                 },
+                animationFillMode: "forwards",
               }}
               ref={multiMediaRef}
               onClick={() =>
@@ -553,6 +586,7 @@ export function Recorders() {
                 "&:hover": {
                   cursor: "pointer",
                 },
+                animationFillMode: "forwards",
               }}
               onClick={() => setRecorderType("audio")}
               ref={audioRef}
@@ -585,6 +619,7 @@ export function Recorders() {
                 "&:hover": {
                   cursor: "pointer",
                 },
+                animationFillMode: "forwards",
               }}
               onClick={() => setRecorderType("video")}
               ref={videoRef}
@@ -608,6 +643,7 @@ export function Recorders() {
                 "&:hover": {
                   cursor: "pointer",
                 },
+                animationFillMode: "forwards",
               }}
               ref={screenRef}
               onClick={() => (recorderType !== "screen" ? setupStream() : "")}

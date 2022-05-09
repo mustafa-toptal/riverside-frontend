@@ -134,3 +134,59 @@ code {
   background-color: inherit;
   padding: 5px;
 }
+
+@-webkit-keyframes screenAnimation {
+  0% {
+    opacity: 100%;
+  }
+
+  15% {
+    opacity: 45%;
+  }
+
+  100% {
+    opacity: 25%;
+  }
+}
+
+@-moz-keyframes screenAnimation {
+  0% {
+    opacity: 100%;
+  }
+
+  15% {
+    opacity: 45%;
+  }
+
+  100% {
+    opacity: 25%;
+  }
+}
+
+@-o-keyframes screenAnimation {
+  0% {
+    opacity: 100%;
+  }
+
+  15% {
+    opacity: 45%;
+  }
+
+  100% {
+    opacity: 25%;
+  }
+}
+
+@keyframes screenAnimation {
+  0% {
+    opacity: 100%;
+  }
+
+  15% {
+    opacity: 45%;
+  }
+
+  100% {
+    opacity: 25%;
+  }
+}

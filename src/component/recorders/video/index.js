@@ -3,6 +3,7 @@ import { Box, Button } from "@mui/material";
 
 import VideoActions from "../../common/VideoActions";
 import { DownloadButton } from "../../common/partials/DownloadButton";
+import Recorder from "../../common/Recorder";
 
 export const VideoRecorder = (props) => {
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
@@ -38,10 +39,13 @@ export const VideoRecorder = (props) => {
         noiseSuppression: true,
         sampleRate: 44100,
       },
-      video: true,
+      video: {
+        width: 320,
+        height: 180,
+      },
     };
     if (videoDevideId) {
-      delete constraints.video;
+      // delete constraints.video;
       constraints.video = {
         deviceId: videoDevideId,
       };
@@ -140,7 +144,26 @@ export const VideoRecorder = (props) => {
         flexDirection: "column",
       }}
     >
-      {!recordingAvailable && (
+      <Recorder
+        stop={stopRecording}
+        mute={muteAudio}
+        pause={pauseScreen}
+        isPaused={isPaused}
+        isMuted={isMuted}
+        setAudioDeviceId={setAudioDeviceId}
+        startRecording={startRecording}
+        setVideoDeviceId={setVideoDeviceId}
+        retake={props.retake}
+        videoDevices={props.videoDevices}
+        audioDevices={props.audioDevices}
+        isRecording={isRecording}
+        recordingAvailable={recordingAvailable}
+        videoRef={videoRef}
+        recordedVideoRef={recordedVideo}
+        downloadVideo={download}
+        addHeight
+      />
+      {/* {!recordingAvailable && (
         <video
           className="video-feedback"
           width={"50%"}
@@ -271,7 +294,7 @@ export const VideoRecorder = (props) => {
           isPaused={isPaused}
           isMuted={isMuted}
         />
-      )}
+      )} */}
     </Box>
   );
 };

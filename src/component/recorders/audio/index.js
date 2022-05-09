@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 
-import VideoActions from "../../common/VideoActions";
-import AudioAnalyser from "./partials/AudioAnalyser";
-import { DownloadButton } from "../../common/partials/DownloadButton";
+import Recorder from "../../common/Recorder";
 
 export const AudioRecorder = (props) => {
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
@@ -13,6 +11,7 @@ export const AudioRecorder = (props) => {
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [audioDevideId, setAudioDeviceId] = useState("");
+  const [audioElement, setAudioElement] = useState(null);
 
   let recordedVideo = useRef(null);
 
@@ -110,6 +109,10 @@ export const AudioRecorder = (props) => {
     }
   };
 
+  const playAudio = () => {
+    recordedVideo.current.play();
+  };
+
   return (
     <Box
       sx={{
@@ -120,7 +123,25 @@ export const AudioRecorder = (props) => {
         flexDirection: "column",
       }}
     >
-      {stream && !recordingAvailable && <AudioAnalyser audio={stream} />}
+      <Recorder
+        stop={stopRecording}
+        mute={muteAudio}
+        pause={pauseScreen}
+        isPaused={isPaused}
+        isMuted={isMuted}
+        setAudioDeviceId={setAudioDeviceId}
+        startRecording={startRecording}
+        retake={props.retake}
+        videoDevices={props.videoDevices}
+        audioDevices={props.audioDevices}
+        isRecording={isRecording}
+        recordingAvailable={recordingAvailable}
+        recordedAudioRef={recordedVideo}
+        downloadVideo={download}
+        isAudio={true}
+        playAudio={playAudio}
+      />
+      {/* {stream && !recordingAvailable && <AudioAnalyser audio={stream} />}
       <audio
         className="recorded-video"
         controls
@@ -219,7 +240,7 @@ export const AudioRecorder = (props) => {
           isPaused={isPaused}
           isMuted={isMuted}
         />
-      )}
+      )} */}
     </Box>
   );
 };
