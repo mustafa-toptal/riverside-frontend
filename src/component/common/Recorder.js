@@ -197,7 +197,7 @@ const Recorder = (props) => {
           display: "flex",
           alignItems: "center",
           flexDirection: "row",
-          marginTop: props.isAudio ? "0" : "-47px",
+          marginTop: props.isAudio ? "0" : "-48px",
         }}
       >
         <Typography

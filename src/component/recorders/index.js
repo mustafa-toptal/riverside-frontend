@@ -216,38 +216,38 @@ export function Recorders() {
   const disableOptions = (type) => {
     if (type === "audio") {
       multiMediaRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       videoRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       screenRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       audioRef.current.style = "opacity: 1";
     }
     if (type === "multiMedia") {
       videoRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       screenRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       audioRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       multiMediaRef.current.style = "opacity: 1";
     }
     if (type === "video") {
       multiMediaRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       screenRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       audioRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       videoRef.current.style = "opacity: 1";
     }
     if (type === "screen") {
       multiMediaRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       videoRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       audioRef.current.style.animation =
-        "0.5s ease-in 0s 1 normal forwards running screenAnimation";
+        "0.2s ease-in 0s 1 normal forwards running screenAnimation";
       screenRef.current.style = "opacity: 1";
     }
   };
