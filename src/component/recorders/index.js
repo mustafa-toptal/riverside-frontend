@@ -267,30 +267,30 @@ export function Recorders() {
     setupStream(audioDevice);
   };
 
-  const renderAlert = (message) => {
-    return (
-      <Alert
-        severity="info"
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          position: "fixed",
-          width: "100%",
-          padding: 0,
-        }}
-      >
-        {message}
-      </Alert>
-    );
-  };
-  const isSafari =
-    /constructor/i.test(window.HTMLElement) ||
-    (function (p) {
-      return p.toString() === "[object SafariRemoteNotification]";
-    })(
-      !window["safari"] ||
-        (typeof safari !== "undefined" && window["safari"].pushNotification)
-    );
+  // const renderAlert = (message) => {
+  //   return (
+  //     <Alert
+  //       severity="info"
+  //       sx={{
+  //         display: "flex",
+  //         justifyContent: "center",
+  //         position: "fixed",
+  //         width: "100%",
+  //         padding: 0,
+  //       }}
+  //     >
+  //       {message}
+  //     </Alert>
+  //   );
+  // };
+  // const isSafari =
+  //   /constructor/i.test(window.HTMLElement) ||
+  //   (function (p) {
+  //     return p.toString() === "[object SafariRemoteNotification]";
+  //   })(
+  //     !window["safari"] ||
+  //       (typeof safari !== "undefined" && window["safari"].pushNotification)
+  //   );
 
   const retake = async () => {
     const prevState = recorderType;
