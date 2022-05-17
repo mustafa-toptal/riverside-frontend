@@ -216,7 +216,6 @@ export const ScreenVideo = (props) => {
       sx={{
         display: "flex",
         alignItems: "center",
-        marginTop: "35px",
         justifyContent: "center",
         flexDirection: "column",
       }}

@@ -81,7 +81,13 @@ const Recorder = (props) => {
             justifyContent: "center",
           }}
         >
-          <Typography variant="h1" sx={{ width: "33px !important" }}>
+          <Typography
+            variant="h1"
+            sx={{
+              width: "33px !important",
+              marginLeft: showCountDown === 1 ? "5px !important" : 0,
+            }}
+          >
             {showCountDown}
           </Typography>
         </Box>
@@ -441,12 +447,12 @@ const Recorder = (props) => {
         {props.recordingAvailable && (
           <Box
             sx={{
-              width: "250px",
+              width: "240px",
               height: "40px",
               display: "flex",
               flexDirection: "row",
               justifyContent: "space-between",
-              marginLeft: "160px",
+              marginLeft: "190px",
             }}
           >
             <Button
@@ -455,8 +461,9 @@ const Recorder = (props) => {
                 height: "40px",
                 backgroundColor: "#232323",
                 color: "#FFFFFF",
+                borderRadius: "10px",
                 "&: hover": {
-                  backgroundColor: "#232323",
+                  backgroundColor: "#656565",
                 },
               }}
               onClick={props.downloadVideo}
@@ -494,9 +501,10 @@ const Recorder = (props) => {
                 width: "112px",
                 height: "40px",
                 backgroundColor: "#232323",
+                borderRadius: "10px",
                 color: "#FFFFFF",
                 "&: hover": {
-                  backgroundColor: "#232323",
+                  backgroundColor: "#656565",
                 },
               }}
               type="default"

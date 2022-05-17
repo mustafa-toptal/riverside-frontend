@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 
-import VideoActions from "../../common/VideoActions";
-import { DownloadButton } from "../../common/partials/DownloadButton";
 import Recorder from "../../common/Recorder";
 
 export const VideoRecorder = (props) => {
@@ -138,7 +136,6 @@ export const VideoRecorder = (props) => {
       sx={{
         display: "flex",
         alignItems: "center",
-        marginTop: "35px",
         justifyContent: "center",
         flexDirection: "column",
       }}

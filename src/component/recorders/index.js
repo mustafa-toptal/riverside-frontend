@@ -350,364 +350,236 @@ export function Recorders() {
       </Typography>
     );
   };
-  // return (
-  //   <>
-  //     {isSafari &&
-  //       showInfo &&
-  //       renderAlert(
-  //         "While using Safari don't minimize the browser for better user experience."
-  //       )}
 
-  //     {isMobileBrowser &&
-  //       renderAlert("Some features are not available in Mobile Browsers")}
-  //     <Grid
-  //       container
-  //       sx={{
-  //         display: "flex",
-  //         width: "100%",
-  //         height: "100%",
-  //         alignItems: "center",
-  //         justifyContent: "center",
-  //       }}
-  //     >
-  //       <Box
-  //         sx={{
-  //           display: "flex",
-  //           flexDirection: "row",
-  //           alignItems: "center",
-  //           justifyContent: "space-evenly",
-  //           width: "850px",
-  //           marginTop: "80px",
-  //         }}
-  //       >
-  //         {!isMobileBrowser && (
-  //           <Box
-  //             sx={{
-  //               width: "150px",
-  //               height: "150px",
-  //               borderRadius: "10px",
-  //               border: "0.13452375rem dashed #C6CCD9",
-  //               display: "flex",
-  //               alignItems: "center",
-  //               justifyContent: "center",
-  //               "&:hover": {
-  //                 cursor: "pointer",
-  //                 backgroundColor: "#afb0b3",
-  //                 border: "#FFFFF 5px solid",
-  //               },
-  //             }}
-  //             onClick={() => (recorderType !== "screen" ? setupStream() : "")}
-  //           >
-  //             Screen
-  //           </Box>
-  //         )}
-  //         <Box
-  //           sx={{
-  //             width: "150px",
-  //             height: "150px",
-  //             borderRadius: "10px",
-  //             border: "0.13452375rem dashed #C6CCD9",
-  //             display: "flex",
-  //             alignItems: "center",
-  //             justifyContent: "center",
-  //             "&:hover": {
-  //               cursor: "pointer",
-  //               backgroundColor: "#afb0b3",
-  //               border: "#FFFFF 5px solid",
-  //             },
-  //           }}
-  //           onClick={() => setRecorderType("audio")}
-  //         >
-  //           Audio
-  //         </Box>
-  //         <Box
-  //           sx={{
-  //             width: "150px",
-  //             height: "150px",
-  //             borderRadius: "10px",
-  //             border: "0.13452375rem dashed #C6CCD9",
-  //             display: "flex",
-  //             alignItems: "center",
-  //             justifyContent: "center",
-  //             "&:hover": {
-  //               cursor: "pointer",
-  //               backgroundColor: "#afb0b3",
-  //               border: "#FFFFF 5px solid",
-  //             },
-  //           }}
-  //           onClick={() => setRecorderType("video")}
-  //         >
-  //           Video
-  //         </Box>
-  //         {!isMobileBrowser && (
-  //           <Box
-  //             sx={{
-  //               width: "150px",
-  //               height: "150px",
-  //               borderRadius: "10px",
-  //               border: "0.13452375rem dashed #C6CCD9",
-  //               display: "flex",
-  //               alignItems: "center",
-  //               justifyContent: "center",
-  //               "&:hover": {
-  //                 cursor: "pointer",
-  //                 backgroundColor: "#afb0b3",
-  //                 border: "#FFFFF 5px solid",
-  //               },
-  //               // textDecoration: "line-through",
-  //             }}
-  //             onClick={() =>
-  //               recorderType !== "screenVideo" ? setupScreenAndCamera() : ""
-  //             }
-  //           >
-  //             Screen & Video
-  //           </Box>
-  //         )}
-  //       </Box>
-  //     </Grid>
-  //     {recorderType === "screen" && (
-  //       <ScreenRecorder
-  //         audioDevices={audioDevices}
-  //         audio={audio}
-  //         stream={stream}
-  //         isError={isError}
-  //         retake={retake}
-  //         errorMessage={errorMessage}
-  //         changeAudioDevice={changeAudioDevice}
-  //       />
-  //     )}
-  //     {recorderType === "video" && (
-  //       <VideoRecorder
-  //         audioDevices={audioDevices}
-  //         videoDevices={videoDevices}
-  //         retake={retake}
-  //       />
-  //     )}
-  //     {recorderType === "audio" && (
-  //       <AudioRecorder audioDevices={audioDevices} retake={retake} />
-  //     )}
-  //
-  //   </>
-  // );
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        marginTop: "76px",
-        "& .MuiTypography-h1": {
-          fontSize: " 50px",
-          lineHeight: "55px",
-          width: "440px",
-          fontWeight: 900,
-        },
-        "& .MuiTypography-h6": {
-          fontSize: "24px",
-          lineHeight: "30px",
-          fontWeight: 400,
-          marginTop: "11px",
-        },
-      }}
-    >
-      {!recorderType && (
-        <>
-          <WebTitle
-            sx={{ color: "#FFFFFF" }}
-            title="Multi-Layout Online Recorder"
-            subtitle="Pick a Layout for Recording"
-          />
-          <Box
-            ref={mainRef}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginTop: "74px",
-              width: "970px",
-            }}
-          >
+    <>
+      <style>
+        {`#root {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}`}
+      </style>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          "& .MuiTypography-h1": {
+            fontSize: " 50px",
+            lineHeight: "55px",
+            width: "440px",
+            fontWeight: 900,
+          },
+          "& .MuiTypography-h6": {
+            fontSize: "24px",
+            lineHeight: "30px",
+            fontWeight: 400,
+            marginTop: "11px",
+          },
+        }}
+      >
+        {!recorderType && (
+          <>
+            <WebTitle
+              sx={{ color: "#FFFFFF" }}
+              title="Multi-Layout Online Recorder"
+              subtitle="Pick a Layout for Recording"
+            />
             <Box
+              ref={mainRef}
               sx={{
                 display: "flex",
                 alignItems: "center",
-                flexDirection: "column",
-                "&:hover": {
-                  cursor: "pointer",
-                },
-                animationFillMode: "forwards",
+                justifyContent: "space-between",
+                marginTop: "74px",
+                width: "970px",
               }}
-              ref={multiMediaRef}
-              onClick={() =>
-                recorderType !== "screenVideo" ? setupScreenAndCamera() : ""
-              }
             >
               <Box
                 sx={{
-                  height: "148px",
-                  width: "220px",
-                  borderRadius: "8px",
-                  backgroundColor: "#9599FF",
-                  backgroundImage: `url(${require("../../utils/images/BgPattern.png")})`,
-                  backgroundRepeat: "no-repeat",
-                }}
-              >
-                <FileFolders
-                  sx={{
-                    width: "26px",
-                    height: "120px",
-                    float: "right",
-                    marginRight: "10px",
-                    marginTop: "38px",
-                  }}
-                  viewBox="0 0 22 120"
-                />
-                <Box
-                  sx={{
-                    backgroundSize: "contain",
-                    backgroundImage: `url(${require("../../utils/images/ScreenWebcam.png")})`,
-                    width: "79px",
-                    height: "53px",
-                    margin: "85px 0 15px 5px",
-                    borderRadius: "5px",
-                    "&:hover": {
-                      cursor: "pointer",
-                    },
-                  }}
-                ></Box>
-              </Box>
-              {renderLabel("Screen & Webcam Rec")}
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "column",
-                "&:hover": {
-                  cursor: "pointer",
-                },
-                animationFillMode: "forwards",
-              }}
-              onClick={() => setRecorderType("audio")}
-              ref={audioRef}
-            >
-              <Box
-                sx={{
-                  height: "148px",
-                  width: "220px",
-                  borderRadius: "8px",
-                  backgroundColor: "#7D7AFF",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
+                  flexDirection: "column",
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
+                  animationFillMode: "forwards",
                 }}
+                ref={multiMediaRef}
+                onClick={() =>
+                  recorderType !== "screenVideo" ? setupScreenAndCamera() : ""
+                }
               >
-                <AudioWaves
+                <Box
                   sx={{
-                    width: "52px",
-                    height: "38px",
+                    height: "148px",
+                    width: "220px",
+                    borderRadius: "8px",
+                    backgroundColor: "#9599FF",
+                    backgroundImage: `url(${require("../../utils/images/BgPattern.png")})`,
+                    backgroundRepeat: "no-repeat",
                   }}
-                />
+                >
+                  <FileFolders
+                    sx={{
+                      width: "26px",
+                      height: "120px",
+                      float: "right",
+                      marginRight: "10px",
+                      marginTop: "38px",
+                    }}
+                    viewBox="0 0 22 120"
+                  />
+                  <Box
+                    sx={{
+                      backgroundSize: "contain",
+                      backgroundImage: `url(${require("../../utils/images/ScreenWebcam.png")})`,
+                      width: "79px",
+                      height: "53px",
+                      margin: "85px 0 15px 5px",
+                      borderRadius: "5px",
+                      "&:hover": {
+                        cursor: "pointer",
+                      },
+                    }}
+                  ></Box>
+                </Box>
+                {renderLabel("Screen & Webcam Rec")}
               </Box>
-              {renderLabel("Audio Rec")}
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "column",
-                "&:hover": {
-                  cursor: "pointer",
-                },
-                animationFillMode: "forwards",
-              }}
-              onClick={() => setRecorderType("video")}
-              ref={videoRef}
-            >
               <Box
                 sx={{
-                  height: "148px",
-                  width: "220px",
-                  borderRadius: "8px",
-                  backgroundColor: "#9599FF",
-                  backgroundImage: `url(${require("../../utils/images/VideoRecording.png")})`,
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
+                  animationFillMode: "forwards",
                 }}
-              ></Box>
-              {renderLabel("Webcam Rec")}
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                flexDirection: "column",
-                "&:hover": {
-                  cursor: "pointer",
-                },
-                animationFillMode: "forwards",
-              }}
-              ref={screenRef}
-              onClick={() => (recorderType !== "screen" ? setupStream() : "")}
-            >
+                onClick={() => setRecorderType("audio")}
+                ref={audioRef}
+              >
+                <Box
+                  sx={{
+                    height: "148px",
+                    width: "220px",
+                    borderRadius: "8px",
+                    backgroundColor: "#7D7AFF",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <AudioWaves
+                    sx={{
+                      width: "52px",
+                      height: "38px",
+                    }}
+                  />
+                </Box>
+                {renderLabel("Audio Rec")}
+              </Box>
               <Box
                 sx={{
-                  height: "148px",
-                  width: "220px",
-                  borderRadius: "8px",
-                  backgroundColor: "#9599FF",
-                  backgroundImage: `url(${require("../../utils/images/BgPattern.png")})`,
-                  backgroundRepeat: "no-repeat",
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
+                  animationFillMode: "forwards",
                 }}
+                onClick={() => setRecorderType("video")}
+                ref={videoRef}
               >
-                <FileFolders
+                <Box
                   sx={{
-                    width: "26px",
-                    height: "120px",
-                    float: "right",
-                    marginRight: "10px",
-                    marginTop: "38px",
+                    height: "148px",
+                    width: "220px",
+                    borderRadius: "8px",
+                    backgroundColor: "#9599FF",
+                    backgroundImage: `url(${require("../../utils/images/VideoRecording.png")})`,
                   }}
-                  viewBox="0 0 22 120"
-                />
+                ></Box>
+                {renderLabel("Webcam Rec")}
               </Box>
-              {renderLabel("Screen Rec")}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
+                  animationFillMode: "forwards",
+                }}
+                ref={screenRef}
+                onClick={() => (recorderType !== "screen" ? setupStream() : "")}
+              >
+                <Box
+                  sx={{
+                    height: "148px",
+                    width: "220px",
+                    borderRadius: "8px",
+                    backgroundColor: "#9599FF",
+                    backgroundImage: `url(${require("../../utils/images/BgPattern.png")})`,
+                    backgroundRepeat: "no-repeat",
+                  }}
+                >
+                  <FileFolders
+                    sx={{
+                      width: "26px",
+                      height: "120px",
+                      float: "right",
+                      marginRight: "10px",
+                      marginTop: "38px",
+                    }}
+                    viewBox="0 0 22 120"
+                  />
+                </Box>
+                {renderLabel("Screen Rec")}
+              </Box>
             </Box>
-          </Box>
-        </>
-      )}
-      {recorderType === "screenVideo" && (
-        <ScreenVideo
-          mergedStream={mergedStream}
-          screenStream={screenStream}
-          cameraStream={cameraStream}
-          isError={isError}
-          errorMessage={errorMessage}
-          audioDevices={audioDevices}
-          videoDevices={videoDevices}
-          changeDevice={changeDevice}
-          retake={retake}
-        />
-      )}
-      {recorderType === "audio" && (
-        <AudioRecorder audioDevices={audioDevices} retake={retake} />
-      )}
-      {recorderType === "video" && (
-        <VideoRecorder
-          audioDevices={audioDevices}
-          videoDevices={videoDevices}
-          retake={retake}
-        />
-      )}
-      {recorderType === "screen" && (
-        <ScreenRecorder
-          audioDevices={audioDevices}
-          audio={audio}
-          stream={stream}
-          isError={isError}
-          retake={retake}
-          errorMessage={errorMessage}
-          changeAudioDevice={changeAudioDevice}
-        />
-      )}
-    </Box>
+          </>
+        )}
+        {recorderType === "screenVideo" && (
+          <ScreenVideo
+            mergedStream={mergedStream}
+            screenStream={screenStream}
+            cameraStream={cameraStream}
+            isError={isError}
+            errorMessage={errorMessage}
+            audioDevices={audioDevices}
+            videoDevices={videoDevices}
+            changeDevice={changeDevice}
+            retake={retake}
+          />
+        )}
+        {recorderType === "audio" && (
+          <AudioRecorder audioDevices={audioDevices} retake={retake} />
+        )}
+        {recorderType === "video" && (
+          <VideoRecorder
+            audioDevices={audioDevices}
+            videoDevices={videoDevices}
+            retake={retake}
+          />
+        )}
+        {recorderType === "screen" && (
+          <ScreenRecorder
+            audioDevices={audioDevices}
+            audio={audio}
+            stream={stream}
+            isError={isError}
+            retake={retake}
+            errorMessage={errorMessage}
+            changeAudioDevice={changeAudioDevice}
+          />
+        )}
+      </Box>{" "}
+    </>
   );
 }
