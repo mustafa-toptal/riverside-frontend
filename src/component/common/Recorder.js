@@ -59,6 +59,7 @@ const Recorder = (props) => {
         console.log("videoLoaded", !videoLoaded);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.videoRef]);
 
   const getSeconds = () => {
@@ -599,6 +600,7 @@ const Recorder = (props) => {
               retake={props.retake}
               isVideo={props.isVideo}
               setVideoResolution={props.setVideoResolution}
+              videoResolution={props.videoResolution}
             />
           </>
         )}

@@ -176,6 +176,7 @@ export const VideoRecorder = (props) => {
     setVideoResolution(res);
     setupStream(videoDeviceId, audioDeviceId, res);
   };
+  console.log(videoResolution);
   return (
     <Box
       sx={{
@@ -209,6 +210,7 @@ export const VideoRecorder = (props) => {
         videoLabelName={videoLabelName}
         setVideoLabelName={setVideoLabelName}
         isVideo={true}
+        videoResolution={videoResolution}
         setVideoResolution={changeResolution}
       />
     </Box>

@@ -6,36 +6,27 @@ import Slider from "./Slider";
 import { isSafari } from "../../utils/Helpers";
 
 export const Settings = (props) => {
+  console.log("props.videoResolution: ", props.videoResolution);
   return (
     <>
       {props.open && (
         <Box
           sx={{
             width: "249px",
-            height: "162px",
+            height: props.isVideo ? "185px" : "162px",
             backgroundColor: "#FFFFFF",
             borderRadius: "10px",
             filter: "drop-shadow(0px 4px 14px rgba(0, 0, 0, 0.15))",
             marginBottom: "9px",
             position: "absolute !important",
-            overflow: props.isVideo ? "scroll" : "hidden",
-            overflowX: "hidden",
-            "::-webkit-scrollbar": {
-              width: "3px",
-            },
-            "::-webkit-scrollbar-track": {
-              boxShadow: "inset 0 0 5px grey",
-              borderRadius: "10px",
-            },
-            "::-webkit-scrollbar-thumb": {
-              background: "#000000",
-              borderRadius: "10px",
-            },
+
             left: "65%",
             top: props.audio
               ? "58%"
               : props.isVideo && !isSafari
-              ? "64%"
+              ? "61%"
+              : props.isVideo && isSafari
+              ? "50%"
               : "54%",
           }}
         >
@@ -52,7 +43,27 @@ export const Settings = (props) => {
             }}
             onClick={() => props.openSettings(false)}
           />
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              overflow: props.isVideo ? "scroll" : "hidden",
+              height: "inherit",
+              overflowX: "hidden",
+              "::-webkit-scrollbar": {
+                width: "4px",
+                display: "none",
+              },
+              "::-webkit-scrollbar-track": {
+                // boxShadow: "inset 0 0 5px #FFFFFF",
+                borderRadius: "10px",
+              },
+              "::-webkit-scrollbar-thumb": {
+                background: "grey",
+                borderRadius: "10px",
+              },
+            }}
+          >
             <Typography
               variant="h3"
               sx={{
@@ -153,7 +164,7 @@ export const Settings = (props) => {
                 variant="h12"
                 sx={{
                   fontSize: "14px",
-                  fontWeight: "400",
+                  fontWeight: props.videoResolution === "720P" ? "bold" : "400",
                   lineHeight: "16.94px",
                   marginLeft: "15px",
                   marginTop: "9px",
@@ -162,7 +173,9 @@ export const Settings = (props) => {
                   },
                 }}
                 onClick={() => {
-                  props.setVideoResolution("720P");
+                  if (props.videoResolution !== "720P") {
+                    props.setVideoResolution("720P");
+                  }
                 }}
               >
                 Change to 720p
@@ -173,7 +186,8 @@ export const Settings = (props) => {
                 variant="h12"
                 sx={{
                   fontSize: "14px",
-                  fontWeight: "400",
+                  fontWeight:
+                    props.videoResolution === "1080P" ? "bold" : "400",
                   lineHeight: "16.94px",
                   marginLeft: "15px",
                   marginTop: "9px",
@@ -182,7 +196,9 @@ export const Settings = (props) => {
                   },
                 }}
                 onClick={() => {
-                  props.setVideoResolution("1080P");
+                  if (props.videoResolution !== "1080P") {
+                    props.setVideoResolution("1080P");
+                  }
                 }}
               >
                 Change to 1080p
@@ -193,7 +209,7 @@ export const Settings = (props) => {
                 variant="h12"
                 sx={{
                   fontSize: "14px",
-                  fontWeight: "400",
+                  fontWeight: props.videoResolution === "4K" ? "bold" : "400",
                   lineHeight: "16.94px",
                   marginLeft: "15px",
                   marginTop: "9px",
@@ -202,7 +218,9 @@ export const Settings = (props) => {
                   },
                 }}
                 onClick={() => {
-                  props.setVideoResolution("4K");
+                  if (props.videoResolution !== "4K") {
+                    props.setVideoResolution("4K");
+                  }
                 }}
               >
                 Change to 4K

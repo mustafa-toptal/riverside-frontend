@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Box, Grid, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { VideoStreamMerger } from "video-stream-merger";
 
 import { ScreenRecorder } from "./screen";
 import { VideoRecorder } from "./video";
 import { AudioRecorder } from "./audio";
 import { ScreenVideo } from "./screen-video";
-import { delay, isMobileBrowser } from "../../utils/Helpers";
+import { delay } from "../../utils/Helpers";
 import { WebTitle } from "../common/partials/WebTitle";
 import { FileFolders } from "../../icons/FileFolders";
 import { AudioWaves } from "../../icons/AudioWaves";
@@ -22,6 +22,7 @@ export function Recorders() {
   const [screenStream, setScreenStream] = useState(null);
   const [cameraStream, setCameraStream] = useState(null);
   const [mergedStream, setMergedStream] = useState(null);
+  // eslint-disable-next-line
   const [showInfo, setShowInfo] = useState(false);
   const [audioInput] = useState("audioinput");
   const [videoInput] = useState("videoinput");

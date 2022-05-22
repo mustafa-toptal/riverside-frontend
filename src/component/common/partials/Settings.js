@@ -22,6 +22,7 @@ const Settings = (props) => {
         isVideo={props.isVideo}
         setVideoResolution={props.setVideoResolution}
         isAudio={props.isAudio}
+        videoResolution={props.videoResolution}
       />
       <Setting
         sx={{
