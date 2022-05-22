@@ -146,6 +146,8 @@ export function Recorders() {
     };
     if (videoDevice) {
       cameraMediaOptions.video.deviceId = videoDevice;
+    } else {
+      cameraMediaOptions.video.deviceId = videoDevices[0].deviceId;
     }
     if (audioDevice) {
       cameraMediaOptions.audio.deviceId = audioDevice;

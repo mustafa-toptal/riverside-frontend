@@ -7,6 +7,7 @@ import Transcription from "./component/transcription";
 
 import "./styles/App.css";
 import { Recorders } from "./component/recorders";
+import Settings from "./component/common/Settings";
 
 function App() {
   useEffect(() => {
@@ -32,6 +33,7 @@ function App() {
         <Route path="transcription" element={<Transcription />} />
         <Route path="converter" element={<AudioConverter />} />
         <Route path="recorder" element={<Recorders />} />
+        <Route path="setting" element={<Settings />} />
       </Routes>
     </BrowserRouter>
   );

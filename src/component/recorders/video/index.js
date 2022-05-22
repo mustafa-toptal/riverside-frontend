@@ -3,6 +3,23 @@ import { Box } from "@mui/material";
 
 import Recorder from "../../common/Recorder";
 
+const RESOLUTIONS = {
+  "720P": {
+    width: 1280,
+    height: 720,
+  },
+
+  "1080P": {
+    width: 1920,
+    height: 1080,
+  },
+
+  "4K": {
+    width: 4096,
+    height: 2160,
+  },
+};
+
 export const VideoRecorder = (props) => {
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
   const [stream, setStrem] = useState(null);
@@ -10,8 +27,11 @@ export const VideoRecorder = (props) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [videoDevideId, setVideoDeviceId] = useState("");
-  const [audioDevideId, setAudioDeviceId] = useState("");
+  const [videoDeviceId, setVideoDeviceId] = useState("");
+  const [audioDeviceId, setAudioDeviceId] = useState("");
+  const [audioLabelName, setAudioLabelName] = useState("");
+  const [videoResolution, setVideoResolution] = useState("720P");
+  const [videoLabelName, setVideoLabelName] = useState("");
 
   let recordedVideo = useRef(null);
   let videoRef = useRef(null);
@@ -24,13 +44,32 @@ export const VideoRecorder = (props) => {
   }, []);
 
   useEffect(() => {
-    if (videoDevideId || audioDevideId) {
-      setupStream(videoDevideId, audioDevideId);
+    if (videoDeviceId || audioDeviceId) {
+      setupStream(videoDeviceId, audioDeviceId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoDevideId, audioDevideId]);
+  }, [videoDeviceId, audioDeviceId]);
 
-  async function setupStream(videoDevideId, audioDevideId) {
+  useEffect(() => {
+    if (
+      props.audioDevices &&
+      props.audioDevices.length &&
+      audioLabelName === ""
+    ) {
+      setAudioLabelName(props.audioDevices[0].label);
+    }
+
+    if (
+      props.videoDevices &&
+      props.videoDevices.length &&
+      videoLabelName === ""
+    ) {
+      setVideoLabelName(props.videoDevices[0].label);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.audioDevices, props.videoDevices]);
+
+  async function setupStream(videoDeviceId, audioDeviceId, resolution) {
     let constraints = {
       audio: {
         echoCancellation: true,
@@ -38,18 +77,20 @@ export const VideoRecorder = (props) => {
         sampleRate: 44100,
       },
       video: {
-        width: 320,
-        height: 180,
+        ...RESOLUTIONS[resolution ? resolution : videoResolution],
+        deviceId: props.videoDevices[0].deviceId,
+        // width: 320,
+        // height: 180,
       },
     };
-    if (videoDevideId) {
-      // delete constraints.video;
+    if (videoDeviceId) {
       constraints.video = {
-        deviceId: videoDevideId,
+        ...constraints.video,
+        deviceId: videoDeviceId,
       };
     }
-    if (audioDevideId) {
-      constraints.audio.deviceId = audioDevideId;
+    if (audioDeviceId) {
+      constraints.audio.deviceId = audioDeviceId;
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -108,7 +149,7 @@ export const VideoRecorder = (props) => {
   const download = async () => {
     let elem = document.createElement("a");
     elem.href = recordedVideo.current.src;
-    elem.download = "Recorded Video.mp4";
+    elem.download = `Riverside_${new Date().getTime()}.mp4`;
     document.body.appendChild(elem);
     elem.click();
     document.body.removeChild(elem);
@@ -131,6 +172,10 @@ export const VideoRecorder = (props) => {
     }
   };
 
+  const changeResolution = async (res) => {
+    setVideoResolution(res);
+    setupStream(videoDeviceId, audioDeviceId, res);
+  };
   return (
     <Box
       sx={{
@@ -147,6 +192,7 @@ export const VideoRecorder = (props) => {
         isPaused={isPaused}
         isMuted={isMuted}
         setAudioDeviceId={setAudioDeviceId}
+        audioDeviceId={audioDeviceId}
         startRecording={startRecording}
         setVideoDeviceId={setVideoDeviceId}
         retake={props.retake}
@@ -158,6 +204,12 @@ export const VideoRecorder = (props) => {
         recordedVideoRef={recordedVideo}
         downloadVideo={download}
         addHeight
+        audioLabelName={audioLabelName}
+        setAudioLabelName={setAudioLabelName}
+        videoLabelName={videoLabelName}
+        setVideoLabelName={setVideoLabelName}
+        isVideo={true}
+        setVideoResolution={changeResolution}
       />
     </Box>
   );

@@ -20,3 +20,22 @@ export const Setting = (props) => {
     </SvgIcon>
   );
 };
+
+export const DropdownArrow = (props) => {
+  return (
+    <SvgIcon
+      {...props}
+      style={{ fill: props.fill || "transparent" }}
+      viewBox={props.viewBox || "0 0 8 5"}
+      width="8"
+      height="5"
+    >
+      <path
+        d="M7.25 3.875L4.25 0.875L1.25 3.875"
+        stroke="white"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </SvgIcon>
+  );
+};

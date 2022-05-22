@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, AlertTitle, Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 
-import VideoActions from "../../common/VideoActions";
-import { DownloadButton } from "../../common/partials/DownloadButton";
 import Recorder from "../../common/Recorder";
 
 export const ScreenRecorder = (props) => {
@@ -16,6 +14,7 @@ export const ScreenRecorder = (props) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isError, setError] = useState(false);
   const [audioDevideId, setAudioDeviceId] = useState("");
+  const [audioLabelName, setAudioLabelName] = useState("");
 
   let recordedVideo = useRef(null);
   let videoRef = useRef(null);
@@ -45,6 +44,17 @@ export const ScreenRecorder = (props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audioDevideId]);
+
+  useEffect(() => {
+    if (
+      props.audioDevices &&
+      props.audioDevices.length &&
+      audioLabelName === ""
+    ) {
+      setAudioLabelName(props.audioDevices[0].label);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.audioDevices, props.videoDevices]);
 
   function setupVideoFeedback(stream) {
     if (stream) {
@@ -120,7 +130,7 @@ export const ScreenRecorder = (props) => {
   const download = async () => {
     let elem = document.createElement("a");
     elem.href = recordedVideo.current.src;
-    elem.download = "Recorded Screen.mp4";
+    elem.download = `Riverside_${new Date().getTime()}.mp4`;
     document.body.appendChild(elem);
     elem.click();
     document.body.removeChild(elem);
@@ -153,6 +163,9 @@ export const ScreenRecorder = (props) => {
         downloadVideo={download}
         isError={isError}
         errorMessage={errorMessage}
+        isScreenOnly={true}
+        audioLabelName={audioLabelName}
+        setAudioLabelName={setAudioLabelName}
       />
     </Box>
   );

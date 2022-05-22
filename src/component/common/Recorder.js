@@ -4,18 +4,25 @@ import { Box, Typography, Button, Grid } from "@mui/material";
 import { Record } from "../../icons/Record";
 import { Mic } from "../../icons/Mic";
 import { Camera } from "../../icons/Camera";
-import { Setting } from "../../icons/Setting";
 import { Pause } from "../../icons/Pause";
 import { Stop } from "../../icons/Stop";
 import { Play } from "../../icons/Play";
 import { Download } from "../../icons/Download";
 import { Retake } from "../../icons/Retake";
 import { AudioPlay, AudioRecorderWaves } from "../../icons/AudioWaves";
+import Settings from "./partials/Settings";
+import { DropdownArrow } from "../../icons/Setting";
+import { isSafari } from "../../utils/Helpers";
 
 const Recorder = (props) => {
   const [showCountDown, setShowCountDown] = useState(4);
   const [startTimer, setStartTimer] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [openSettings, setSettings] = useState(false);
+  const [openAudio, setOpenAudio] = useState(false);
+  const [mirrorChecked, setMirrorChecked] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [openVideo, setOpenVideo] = useState(false);
 
   const record = (e) => {
     let count = 3;
@@ -36,18 +43,35 @@ const Recorder = (props) => {
     if (startTimer) {
       timerInterval = setInterval(() => {
         if (!props.isPaused) {
-          setTimer((seconds) => seconds + 1);
+          setTimer((seconds) => seconds + 100);
         }
-      }, [1000]);
+      }, [100]);
     }
     return () => {
       clearInterval(timerInterval);
     };
   }, [props.isPaused, startTimer]);
 
+  useEffect(() => {
+    if (props.videoRef) {
+      props.videoRef.current.addEventListener("loadeddata", () => {
+        setVideoLoaded((val) => !val);
+        console.log("videoLoaded", !videoLoaded);
+      });
+    }
+  }, [props.videoRef]);
+
   const getSeconds = () => {
-    const result2 = new Date(timer * 1000).toISOString().slice(14, 19);
-    return result2;
+    let milliseconds = parseInt((timer % 1000) / 100);
+    let seconds = parseInt((timer / 1000) % 60);
+    let minutes = parseInt((timer / (1000 * 60)) % 60);
+    let hours = parseInt((timer / (1000 * 60 * 60)) % 24);
+
+    hours = hours < 10 ? "0" + hours : hours;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    return hours + ":" + minutes + ":" + seconds + ":" + milliseconds + "0";
   };
 
   const isVideoAvailable = () => {
@@ -59,6 +83,11 @@ const Recorder = (props) => {
         props.recordedVideoRef.current &&
         props.recordedVideoRef.current.src)
     );
+  };
+
+  const handleChangeRecordingType = () => {
+    setOpenAudio(true);
+    setSettings(false);
   };
 
   return (
@@ -171,6 +200,10 @@ const Recorder = (props) => {
             style={{
               borderRadius: "16px 16px 0 0",
               width: "753px",
+              transform:
+                mirrorChecked && !(showCountDown > 0 && showCountDown <= 3)
+                  ? "scaleX(-1)"
+                  : "",
             }}
           />
         )}
@@ -183,6 +216,7 @@ const Recorder = (props) => {
             width: "100%",
             display:
               props.recordingAvailable && !props.isAudio ? "block" : "none",
+            transform: mirrorChecked ? "scaleX(-1)" : "",
           }}
         />
 
@@ -203,7 +237,11 @@ const Recorder = (props) => {
           display: "flex",
           alignItems: "center",
           flexDirection: "row",
-          marginTop: props.isAudio ? "0" : "-48px",
+          marginTop: props.isAudio
+            ? "0"
+            : props.isVideo && !isSafari && isVideoAvailable()
+            ? "93px"
+            : "-48px",
         }}
       >
         <Typography
@@ -254,46 +292,151 @@ const Recorder = (props) => {
               >
                 <Record sx={{ width: "46px", height: "12px" }} />
               </Box>
-              <Box
-                sx={{
-                  width: "180px",
-                  height: "40px",
-                  borderRadius: "10px",
-                  backgroundColor: "#232323",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-evenly",
-                }}
-              >
-                <Mic sx={{ width: "14px", height: "22px" }} />
-                <select
-                  style={{
-                    "-moz-appearance": "none",
-                    "-webkit-appearance": "none",
-                    appearance: "none",
-                    border: "0px",
-                    outline: "0px",
+              {openAudio && (
+                <Box
+                  sx={{
+                    width: "180px",
+                    height: "170px",
+                    borderRadius: "10px",
                     backgroundColor: "#232323",
-                    width: "121px",
-                    height: "18px",
-                    color: "#FFFFFF",
-                    cursor: "pointer",
-                  }}
-                  onChange={(e) => {
-                    props.setAudioDeviceId(e.target.value);
+                    position: "absolute",
+                    left: props.videoDevices ? "30%" : "43.7%",
+                    top: props.videoDevices
+                      ? props.isVideo && !isSafari
+                        ? "70.5%"
+                        : "62.5%"
+                      : props.isScreenOnly
+                      ? "61.5%"
+                      : "65.5%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-evenly",
                   }}
                 >
                   {props.audioDevices &&
                     props.audioDevices.map((device) => {
                       return (
-                        <option value={device.deviceId} key={device.deviceId}>
-                          {device.label}
-                        </option>
+                        <Box
+                          sx={{
+                            height: "25px",
+                            textOverflow: "ellipsis",
+                            width: "80%",
+                            overflow: "hidden",
+
+                            marginLeft: "20px",
+                            whiteSpace: "nowrap",
+                            "&:hover": {
+                              backgroundColor: "#393939",
+                              borderRadius: "4px",
+                              cursor: "pointer",
+                            },
+                          }}
+                          onClick={() => {
+                            setOpenAudio(false);
+                            props.setAudioDeviceId(device.deviceId);
+                            props.setAudioLabelName(device.label);
+                          }}
+                        >
+                          <Typography
+                            variant="h12"
+                            sx={{
+                              width: "25px",
+
+                              fontWeight: 400,
+                              fontSize: "10px",
+                              lineHeight: "10px",
+                            }}
+                            key={device.deviceId}
+                          >
+                            {device.label}
+                          </Typography>
+                        </Box>
                       );
                     })}
-                </select>
-              </Box>
-              {props.videoDevices && (
+                  <Box
+                    sx={{
+                      width: "180px",
+                      height: "40px",
+                      borderRadius: "0 0 10px 10px",
+                      backgroundColor: "#232323",
+                      display: "flex",
+                      alignItems: "center",
+                      "&:hover": {
+                        cursor: "pointer",
+                      },
+                    }}
+                    onClick={() => setOpenAudio((open) => !open)}
+                  >
+                    <Mic
+                      sx={{ width: "14px", height: "22px", marginLeft: "20px" }}
+                    />
+                    <Typography
+                      variant="h12"
+                      sx={{
+                        fontSize: "10px",
+                        fontWeight: 400,
+                        marginLeft: "10px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        width: "80px",
+                      }}
+                    >
+                      {props.audioLabelName}
+                    </Typography>
+                    <DropdownArrow
+                      sx={{ width: "20px", height: "7px", marginLeft: "25px" }}
+                    />
+                  </Box>
+                </Box>
+              )}
+              {(!openAudio || !props.videoDevices) && (
+                <Box
+                  sx={{
+                    width: "180px",
+                    height: "40px",
+                    backgroundColor: "#232323",
+                    display: "flex",
+                    alignItems: "center",
+                    borderRadius: "10px",
+                    "&:hover": {
+                      cursor: "pointer",
+                    },
+                  }}
+                  onClick={() =>
+                    setOpenAudio((open) =>
+                      props.audioDevices && props.audioDevices.length > 1
+                        ? !open
+                        : false
+                    )
+                  }
+                >
+                  <Mic
+                    sx={{ width: "14px", height: "22px", marginLeft: "20px" }}
+                  />
+                  <Typography
+                    variant="h12"
+                    sx={{
+                      fontSize: "10px",
+                      fontWeight: 400,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      marginLeft: "10px",
+                      width: "80px",
+                    }}
+                  >
+                    {props.audioLabelName}
+                  </Typography>
+                  {props.audioDevices && props.audioDevices.length > 1 && (
+                    <DropdownArrow
+                      sx={{ width: "20px", height: "7px", marginLeft: "25px" }}
+                    />
+                  )}
+                </Box>
+              )}
+
+              {/* {props.videoDevices && (
                 <Box
                   sx={{
                     width: "180px",
@@ -333,17 +476,129 @@ const Recorder = (props) => {
                       })}
                   </select>
                 </Box>
+              )} */}
+              {props.videoDevices && (
+                <Box
+                  sx={{
+                    width: "180px",
+                    height: "40px",
+                    backgroundColor: "#232323",
+                    display: "flex",
+                    alignItems: "center",
+                    borderRadius:
+                      openVideo &&
+                      props.videoDevices &&
+                      props.videoDevices.length > 1
+                        ? "0 0 10px 10px"
+                        : "10px",
+                    "&:hover": {
+                      cursor: "pointer",
+                    },
+                  }}
+                  onClick={() => setOpenVideo((open) => !open)}
+                >
+                  {openVideo &&
+                    props.videoDevices &&
+                    props.videoDevices.length > 1 && (
+                      <Box
+                        sx={{
+                          width: "180px",
+                          height: "130px",
+                          borderRadius: "10px 10px 0 0",
+                          backgroundColor: "#232323",
+                          position: "absolute",
+                          left: "55.50%",
+                          top: props.videoDevices
+                            ? props.isVideo && !isSafari
+                              ? "70.5%"
+                              : "63.5%"
+                            : props.isScreenOnly
+                            ? "61.5%"
+                            : "65.5%",
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "space-evenly",
+                        }}
+                      >
+                        {props.videoDevices &&
+                          props.videoDevices.map((device) => {
+                            return (
+                              <Box
+                                sx={{
+                                  height: "25px",
+                                  textOverflow: "ellipsis",
+                                  width: "80%",
+                                  overflow: "hidden",
+
+                                  marginLeft: "20px",
+                                  whiteSpace: "nowrap",
+                                  "&:hover": {
+                                    backgroundColor: "#393939",
+                                    borderRadius: "4px",
+                                    cursor: "pointer",
+                                  },
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenVideo(false);
+                                  props.setVideoDeviceId(device.deviceId);
+                                  props.setVideoLabelName(device.label);
+                                }}
+                              >
+                                <Typography
+                                  variant="h12"
+                                  sx={{
+                                    width: "25px",
+
+                                    fontWeight: 400,
+                                    fontSize: "10px",
+                                    lineHeight: "10px",
+                                  }}
+                                  key={device.deviceId}
+                                >
+                                  {device.label}
+                                </Typography>
+                              </Box>
+                            );
+                          })}
+                      </Box>
+                    )}
+                  <Camera
+                    sx={{ width: "21px", height: "15px", marginLeft: "20px" }}
+                  />
+                  <Typography
+                    variant="h12"
+                    sx={{
+                      fontSize: "10px",
+                      fontWeight: 400,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      marginLeft: "10px",
+                      width: "80px",
+                    }}
+                  >
+                    {props.videoLabelName}
+                  </Typography>
+                  {props.videoDevices && props.videoDevices.length > 1 && (
+                    <DropdownArrow
+                      sx={{ width: "20px", height: "7px", marginLeft: "25px" }}
+                    />
+                  )}
+                </Box>
               )}
             </Box>
-            <Setting
-              sx={{
-                width: "40px",
-                height: "40px",
-                marginLeft: props.videoDevices ? "90px" : "165px",
-                "&:hover": {
-                  cursor: "pointer",
-                },
-              }}
+            <Settings
+              changeRecordingType={handleChangeRecordingType}
+              setSettings={setSettings}
+              isAudio={props.isAudio}
+              openSettings={openSettings}
+              marginLeft={props.videoDevices ? "90px" : "165px"}
+              checked={mirrorChecked}
+              setMirrorChecked={setMirrorChecked}
+              retake={props.retake}
+              isVideo={props.isVideo}
+              setVideoResolution={props.setVideoResolution}
             />
           </>
         )}
@@ -383,7 +638,12 @@ const Recorder = (props) => {
                     backgroundColor: "#FF3636",
                   }}
                 ></Box>
-                <Typography variant="h12">{getSeconds()} </Typography>
+                <Typography
+                  variant="h12"
+                  sx={{ fontSize: "12px", fontWeight: 400, width: "70px" }}
+                >
+                  {getSeconds()}
+                </Typography>
               </Box>
               {!props.isPaused && (
                 <Pause
@@ -432,112 +692,127 @@ const Recorder = (props) => {
                 onClick={props.stop}
               />
             </Box>
-            <Setting
-              sx={{
-                width: "40px",
-                height: "40px",
-                marginLeft: "200px",
-                "&:hover": {
-                  cursor: "pointer",
-                },
-              }}
+
+            <Settings
+              setSettings={setSettings}
+              isAudio={props.isAudio}
+              openSettings={openSettings}
+              marginLeft={"200px"}
+              checked={mirrorChecked}
+              setMirrorChecked={setMirrorChecked}
+              retake={props.retake}
+              changeRecordingType={handleChangeRecordingType}
             />
           </>
         )}
         {props.recordingAvailable && (
-          <Box
-            sx={{
-              width: "240px",
-              height: "40px",
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginLeft: "190px",
-            }}
-          >
-            <Button
+          <>
+            <Box
               sx={{
-                width: "112px",
+                width: "240px",
                 height: "40px",
-                backgroundColor: "#232323",
-                color: "#FFFFFF",
-                borderRadius: "10px",
-                "&: hover": {
-                  backgroundColor: "#656565",
-                },
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginLeft: "190px",
               }}
-              onClick={props.downloadVideo}
-              type="default"
             >
-              <Grid
+              <Button
                 sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  width: "112px",
+                  height: "40px",
+                  backgroundColor: "#232323",
+                  color: "#FFFFFF",
+                  borderRadius: "10px",
+                  "&: hover": {
+                    backgroundColor: "#656565",
+                  },
+                  textTransform: "none !important",
                 }}
+                onClick={props.downloadVideo}
+                variant="default"
               >
-                <Download
+                <Grid
                   sx={{
-                    width: "12px",
-                    height: "12px",
-                  }}
-                />
-                <Typography
-                  variant="subtitle1"
-                  sx={{
-                    fontWeight: 400,
-                    fontSize: "12px",
-                    lineHeight: "14.52px",
-                    marginLeft: "10px",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
                 >
-                  Download
-                </Typography>
-              </Grid>
-            </Button>
-            <Button
-              sx={{
-                width: "112px",
-                height: "40px",
-                backgroundColor: "#232323",
-                borderRadius: "10px",
-                color: "#FFFFFF",
-                "&: hover": {
-                  backgroundColor: "#656565",
-                },
-              }}
-              type="default"
-              onClick={props.retake}
-            >
-              <Grid
+                  <Download
+                    sx={{
+                      width: "12px",
+                      height: "12px",
+                    }}
+                  />
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 400,
+                      fontSize: "12px",
+                      lineHeight: "14.52px",
+                      marginLeft: "10px",
+                    }}
+                  >
+                    Download
+                  </Typography>
+                </Grid>
+              </Button>
+              <Button
                 sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  width: "112px",
+                  height: "40px",
+                  backgroundColor: "#232323",
+                  borderRadius: "10px",
+                  color: "#FFFFFF",
+                  "&: hover": {
+                    backgroundColor: "#656565",
+                  },
+                  textTransform: "none !important",
                 }}
+                variant="default"
+                onClick={props.retake}
               >
-                <Retake
+                <Grid
                   sx={{
-                    width: "12px",
-                    height: "12px",
-                  }}
-                />
-                <Typography
-                  variant="subtitle1"
-                  sx={{
-                    fontWeight: 400,
-                    fontSize: "12px",
-                    lineHeight: "14.52px",
-                    marginLeft: "10px",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
                 >
-                  Retake
-                </Typography>
-              </Grid>
-            </Button>
-          </Box>
+                  <Retake
+                    sx={{
+                      width: "12px",
+                      height: "12px",
+                    }}
+                  />
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 400,
+                      fontSize: "12px",
+                      lineHeight: "14.52px",
+                      marginLeft: "10px",
+                    }}
+                  >
+                    Retake
+                  </Typography>
+                </Grid>
+              </Button>
+            </Box>
+            <Settings
+              setSettings={setSettings}
+              isAudio={props.isAudio}
+              openSettings={openSettings}
+              marginLeft={"190px"}
+              checked={mirrorChecked}
+              setMirrorChecked={setMirrorChecked}
+              retake={props.retake}
+              changeRecordingType={handleChangeRecordingType}
+            />
+          </>
         )}
       </Box>
     </Box>

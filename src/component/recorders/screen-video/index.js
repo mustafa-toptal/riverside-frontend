@@ -1,15 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, AlertTitle, Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 
-import VideoActions from "../../common/VideoActions";
-import { DownloadButton } from "../../common/partials/DownloadButton";
 import Recorder from "../../common/Recorder";
 
 export const ScreenVideo = (props) => {
   const [recordingAvailable, setRecordingAvailabe] = useState(false);
   const [cameraStream, setCameraStream] = useState(null);
   const [screenStream, setScreenStream] = useState(null);
-  const [audioDevideId, setAudioDeviceId] = useState("");
+  const [audioDeviceId, setAudioDeviceId] = useState("");
   const [videoDeviceId, setVideoDeviceId] = useState("");
   const [stream, setStream] = useState(null);
   const [recorder, setRecorder] = useState(null);
@@ -18,6 +16,8 @@ export const ScreenVideo = (props) => {
   const [isMuted, setIsMuted] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isError, setError] = useState(false);
+  const [audioLabelName, setAudioLabelName] = useState("");
+  const [videoLabelName, setVideoLabelName] = useState("");
 
   let recordedVideoRef = useRef(null);
   let videoRef = useRef(null);
@@ -44,11 +44,30 @@ export const ScreenVideo = (props) => {
   }, [props.isError, props.errorMessage]);
 
   useEffect(() => {
-    if (videoDeviceId !== "" || audioDevideId !== "") {
-      props.changeDevice(videoDeviceId, audioDevideId);
+    if (videoDeviceId !== "" || audioDeviceId !== "") {
+      props.changeDevice(videoDeviceId, audioDeviceId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoDeviceId, audioDevideId]);
+  }, [videoDeviceId, audioDeviceId]);
+
+  useEffect(() => {
+    if (
+      props.audioDevices &&
+      props.audioDevices.length &&
+      audioLabelName === ""
+    ) {
+      setAudioLabelName(props.audioDevices[0].label);
+    }
+
+    if (
+      props.videoDevices &&
+      props.videoDevices.length &&
+      videoLabelName === ""
+    ) {
+      setVideoLabelName(props.videoDevices[0].label);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.audioDevices, props.videoDevices]);
 
   async function setupVideoFeedback(stream) {
     if (stream) {
@@ -136,7 +155,7 @@ export const ScreenVideo = (props) => {
   const download = async () => {
     let elem = document.createElement("a");
     elem.href = recordedVideoRef.current.src;
-    elem.download = "Recorded Screen.mp4";
+    elem.download = `Riverside_${new Date().getTime()}.mp4`;
     document.body.appendChild(elem);
     elem.click();
     document.body.removeChild(elem);
@@ -170,6 +189,10 @@ export const ScreenVideo = (props) => {
         downloadVideo={download}
         isError={isError}
         errorMessage={errorMessage}
+        audioLabelName={audioLabelName}
+        setAudioLabelName={setAudioLabelName}
+        videoLabelName={videoLabelName}
+        setVideoLabelName={setVideoLabelName}
       />
     </Box>
   );

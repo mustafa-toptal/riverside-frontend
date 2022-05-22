@@ -10,8 +10,8 @@ export const AudioRecorder = (props) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [audioDevideId, setAudioDeviceId] = useState("");
-  const [audioElement, setAudioElement] = useState(null);
+  const [audioDeviceId, setAudioDeviceId] = useState("");
+  const [audioLabelName, setAudioLabelName] = useState("");
 
   let recordedVideo = useRef(null);
 
@@ -23,13 +23,24 @@ export const AudioRecorder = (props) => {
   }, []);
 
   useEffect(() => {
-    if (audioDevideId) {
-      setupStream(audioDevideId);
+    if (audioDeviceId) {
+      setupStream(audioDeviceId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [audioDevideId]);
+  }, [audioDeviceId]);
 
-  async function setupStream(audioDevideId) {
+  useEffect(() => {
+    if (
+      props.audioDevices &&
+      props.audioDevices.length &&
+      audioLabelName === ""
+    ) {
+      setAudioLabelName(props.audioDevices[0].label);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.audioDevices]);
+
+  async function setupStream(audioDeviceId) {
     let constraints = {
       audio: {
         echoCancellation: true,
@@ -37,8 +48,8 @@ export const AudioRecorder = (props) => {
         sampleRate: 44100,
       },
     };
-    if (audioDevideId) {
-      constraints.audio.deviceId = audioDevideId;
+    if (audioDeviceId) {
+      constraints.audio.deviceId = audioDeviceId;
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -86,7 +97,7 @@ export const AudioRecorder = (props) => {
   const download = async () => {
     let elem = document.createElement("a");
     elem.href = recordedVideo.current.src;
-    elem.download = "Recorded audio.mp3";
+    elem.download = `Riverside_${new Date().getTime()}.mp3`;
     document.body.appendChild(elem);
     elem.click();
     document.body.removeChild(elem);
@@ -139,6 +150,8 @@ export const AudioRecorder = (props) => {
         downloadVideo={download}
         isAudio={true}
         playAudio={playAudio}
+        audioLabelName={audioLabelName}
+        setAudioLabelName={setAudioLabelName}
       />
     </Box>
   );
