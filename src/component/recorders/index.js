@@ -297,14 +297,11 @@ export function Recorders() {
 
   const retake = async () => {
     const prevState = recorderType;
-    setRecorderType("");
-    await delay(200);
     if (prevState === "screenVideo") {
       setupScreenAndCamera();
     } else if (prevState === "screen") {
       setupStream();
     }
-    setRecorderType(prevState);
   };
 
   const setupListeners = () => {
@@ -356,20 +353,12 @@ export function Recorders() {
 
   return (
     <>
-      <style>
-        {`#root {
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}`}
-      </style>
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          marginTop: "-6%",
           "& .MuiTypography-h1": {
             fontSize: " 50px",
             lineHeight: "55px",
@@ -397,7 +386,7 @@ export function Recorders() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                marginTop: "74px",
+                marginTop: "7%",
                 width: "970px",
               }}
             >

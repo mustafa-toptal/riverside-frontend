@@ -161,6 +161,14 @@ export const ScreenVideo = (props) => {
     document.body.removeChild(elem);
   };
 
+  const onRetakeClick = () => {
+    props.retake();
+    setIsPaused(false);
+    setIsMuted(false);
+    setIsRecording(false);
+    setRecordingAvailabe(false);
+  };
+
   return (
     <Box
       sx={{
@@ -179,7 +187,7 @@ export const ScreenVideo = (props) => {
         setAudioDeviceId={setAudioDeviceId}
         startRecording={startRecording}
         setVideoDeviceId={setVideoDeviceId}
-        retake={props.retake}
+        retake={onRetakeClick}
         videoDevices={props.videoDevices}
         audioDevices={props.audioDevices}
         isRecording={isRecording}

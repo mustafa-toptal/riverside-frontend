@@ -9,6 +9,7 @@ const Settings = (props) => {
     <Box
       sx={{
         color: "#000000",
+        position: "relative",
       }}
     >
       <SettingCommon
@@ -33,7 +34,7 @@ const Settings = (props) => {
             cursor: "pointer",
           },
         }}
-        onClick={() => props.setSettings(true)}
+        onClick={() => props.setSettings(!props.openSettings)}
       />
     </Box>
   );

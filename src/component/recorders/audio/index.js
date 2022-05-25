@@ -62,11 +62,12 @@ export const AudioRecorder = (props) => {
   async function startRecording(e) {
     e.preventDefault();
     if (stream) {
-      let recorder = new MediaRecorder(stream);
-      recorder.ondataavailable = handleDataAvailable;
-      recorder.onstop = handleStop;
-      recorder.start(1000);
-      setRecorder(recorder);
+      let recorderObj = new MediaRecorder(stream);
+      console.log("recorderObj", recorderObj);
+      recorderObj.ondataavailable = handleDataAvailable;
+      recorderObj.onstop = handleStop;
+      recorderObj.start(1000);
+      setRecorder(recorderObj);
       setIsRecording(true);
       console.log("Recording started");
     } else {
@@ -75,8 +76,10 @@ export const AudioRecorder = (props) => {
   }
 
   function stopRecording() {
-    recorder.stop();
+    recorder && recorder.stop();
     setIsRecording(false);
+    setStrem(null);
+    setupStream(audioDeviceId);
   }
 
   function handleDataAvailable(e) {
@@ -124,6 +127,14 @@ export const AudioRecorder = (props) => {
     recordedVideo.current.play();
   };
 
+  const onRetakeClick = () => {
+    props.retake();
+    setIsPaused(false);
+    setIsMuted(false);
+    setIsRecording(false);
+    setRecordingAvailabe(false);
+  };
+
   return (
     <Box
       sx={{
@@ -141,7 +152,7 @@ export const AudioRecorder = (props) => {
         isMuted={isMuted}
         setAudioDeviceId={setAudioDeviceId}
         startRecording={startRecording}
-        retake={props.retake}
+        retake={onRetakeClick}
         videoDevices={props.videoDevices}
         audioDevices={props.audioDevices}
         isRecording={isRecording}

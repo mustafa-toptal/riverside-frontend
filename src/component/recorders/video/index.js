@@ -172,6 +172,15 @@ export const VideoRecorder = (props) => {
     }
   };
 
+  const onRetakeClick = () => {
+    props.retake();
+    setIsPaused(false);
+    setIsMuted(false);
+    setIsRecording(false);
+    setRecordingAvailabe(false);
+    setupStream(videoDeviceId, audioDeviceId, videoResolution);
+  };
+
   const changeResolution = async (res) => {
     setVideoResolution(res);
     setupStream(videoDeviceId, audioDeviceId, res);
@@ -196,7 +205,7 @@ export const VideoRecorder = (props) => {
         audioDeviceId={audioDeviceId}
         startRecording={startRecording}
         setVideoDeviceId={setVideoDeviceId}
-        retake={props.retake}
+        retake={onRetakeClick}
         videoDevices={props.videoDevices}
         audioDevices={props.audioDevices}
         isRecording={isRecording}

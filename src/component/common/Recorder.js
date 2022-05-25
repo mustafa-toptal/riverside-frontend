@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography, Button, Grid } from "@mui/material";
 
 import { Record } from "../../icons/Record";
@@ -23,6 +23,9 @@ const Recorder = (props) => {
   const [mirrorChecked, setMirrorChecked] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [openVideo, setOpenVideo] = useState(false);
+  const [containerHeight, setContainerHeight] = useState(471);
+
+  const intervalRef = useRef();
 
   const record = (e) => {
     let count = 3;
@@ -31,6 +34,7 @@ const Recorder = (props) => {
       count = count - 1;
       setShowCountDown((prev) => prev - 1);
       if (count === 0) {
+        console.log("Count is 0");
         props.startRecording(e);
         setStartTimer(true);
         clearInterval(countInterval);
@@ -39,28 +43,49 @@ const Recorder = (props) => {
   };
 
   useEffect(() => {
-    let timerInterval = null;
+    if (props.audioLabelName) {
+      setOpenAudio(false);
+    }
+  }, [props.audioLabelName]);
+
+  useEffect(() => {
+    if (props.videoLabelName) {
+      setOpenVideo(false);
+    }
+  }, [props.videoLabelName]);
+
+  useEffect(() => {
     if (startTimer) {
-      timerInterval = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         if (!props.isPaused) {
           setTimer((seconds) => seconds + 100);
         }
       }, [100]);
     }
     return () => {
-      clearInterval(timerInterval);
+      clearInterval(intervalRef.current);
     };
   }, [props.isPaused, startTimer]);
 
   useEffect(() => {
     if (props.videoRef) {
       props.videoRef.current.addEventListener("loadeddata", () => {
+        setContainerHeight(props.videoRef.current.clientHeight);
         setVideoLoaded((val) => !val);
         console.log("videoLoaded", !videoLoaded);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.videoRef]);
+
+  useEffect(() => {
+    if (props.recordedVideoRef) {
+      props.recordedVideoRef.current.addEventListener("loadeddata", () => {
+        setContainerHeight(props.recordedVideoRef.current.clientHeight);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.recordedVideoRef]);
 
   const getSeconds = () => {
     let milliseconds = parseInt((timer % 1000) / 100);
@@ -73,6 +98,15 @@ const Recorder = (props) => {
     seconds = seconds < 10 ? "0" + seconds : seconds;
 
     return hours + ":" + minutes + ":" + seconds + ":" + milliseconds + "0";
+  };
+
+  const onClickStop = () => {
+    props.stop();
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    setTimer(0);
+    setStartTimer(false);
   };
 
   const isVideoAvailable = () => {
@@ -89,6 +123,12 @@ const Recorder = (props) => {
   const handleChangeRecordingType = () => {
     setOpenAudio(true);
     setSettings(false);
+  };
+
+  const changeSelectedAudio = (device) => {
+    setOpenAudio(false);
+    props.setAudioDeviceId(device.deviceId);
+    props.setAudioLabelName(device.label);
   };
 
   return (
@@ -150,7 +190,7 @@ const Recorder = (props) => {
             width: "250px",
             position: "absolute",
             transform: "translate(-50%, 50%)",
-            top: "25%",
+            top: "32%",
             left: "50%",
             color: "#FFFFFF",
             display: "flex",
@@ -182,12 +222,8 @@ const Recorder = (props) => {
       <Box
         sx={{
           width: "753px",
-          height: "471px",
-          backgroundColor: props.isAudio
-            ? "#9599FF"
-            : !isVideoAvailable()
-            ? "#000000"
-            : "#161C21",
+          height: `${containerHeight}px`,
+          backgroundColor: props.isAudio ? "#9599FF" : "#000000",
           borderRadius: "16px 16px 0 0",
           opacity: props.isAudio && props.recordingAvailable ? "30%" : "100%",
         }}
@@ -238,29 +274,37 @@ const Recorder = (props) => {
           display: "flex",
           alignItems: "center",
           flexDirection: "row",
-          marginTop: props.isAudio
-            ? "0"
-            : props.isVideo && !isSafari && isVideoAvailable()
-            ? "93px"
-            : "-48px",
+          marginTop: 0,
         }}
       >
-        <Typography
-          variant="h12"
+        <Box
           sx={{
-            marginLeft: "35px",
-            fontSize: "10px",
-            fontWeight: "400",
-            lineHeight: "12px",
-            textAlign: "left",
+            marginLeft: "10px",
+            padding: "0 16px",
+            height: "40px",
+            borderRadius: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
             "&:hover": {
               cursor: "pointer",
+              backgroundColor: "#656565",
             },
           }}
-          onClick={() => window.location.reload()}
         >
-          {"< Back"}
-        </Typography>
+          <Typography
+            variant="h12"
+            sx={{
+              fontSize: "0.825rem",
+              fontWeight: "400",
+              lineHeight: "12px",
+              textAlign: "left",
+            }}
+            onClick={() => window.location.reload()}
+          >
+            {"< Back"}
+          </Typography>
+        </Box>
         {!props.isRecording && !props.recordingAvailable && (
           <>
             <Box
@@ -293,105 +337,7 @@ const Recorder = (props) => {
               >
                 <Record sx={{ width: "46px", height: "12px" }} />
               </Box>
-              {openAudio && (
-                <Box
-                  sx={{
-                    width: "180px",
-                    height: "170px",
-                    borderRadius: "10px",
-                    backgroundColor: "#232323",
-                    position: "absolute",
-                    left: props.videoDevices ? "30%" : "43.7%",
-                    top: props.videoDevices
-                      ? props.isVideo && !isSafari
-                        ? "70.5%"
-                        : "62.5%"
-                      : props.isScreenOnly
-                      ? "61.5%"
-                      : "65.5%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-evenly",
-                  }}
-                >
-                  {props.audioDevices &&
-                    props.audioDevices.map((device) => {
-                      return (
-                        <Box
-                          sx={{
-                            height: "25px",
-                            textOverflow: "ellipsis",
-                            width: "80%",
-                            overflow: "hidden",
-
-                            marginLeft: "20px",
-                            whiteSpace: "nowrap",
-                            "&:hover": {
-                              backgroundColor: "#393939",
-                              borderRadius: "4px",
-                              cursor: "pointer",
-                            },
-                          }}
-                          onClick={() => {
-                            setOpenAudio(false);
-                            props.setAudioDeviceId(device.deviceId);
-                            props.setAudioLabelName(device.label);
-                          }}
-                        >
-                          <Typography
-                            variant="h12"
-                            sx={{
-                              width: "25px",
-
-                              fontWeight: 400,
-                              fontSize: "10px",
-                              lineHeight: "10px",
-                            }}
-                            key={device.deviceId}
-                          >
-                            {device.label}
-                          </Typography>
-                        </Box>
-                      );
-                    })}
-                  <Box
-                    sx={{
-                      width: "180px",
-                      height: "40px",
-                      borderRadius: "0 0 10px 10px",
-                      backgroundColor: "#232323",
-                      display: "flex",
-                      alignItems: "center",
-                      "&:hover": {
-                        cursor: "pointer",
-                      },
-                    }}
-                    onClick={() => setOpenAudio((open) => !open)}
-                  >
-                    <Mic
-                      sx={{ width: "14px", height: "22px", marginLeft: "20px" }}
-                    />
-                    <Typography
-                      variant="h12"
-                      sx={{
-                        fontSize: "10px",
-                        fontWeight: 400,
-                        marginLeft: "10px",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        width: "80px",
-                      }}
-                    >
-                      {props.audioLabelName}
-                    </Typography>
-                    <DropdownArrow
-                      sx={{ width: "20px", height: "7px", marginLeft: "25px" }}
-                    />
-                  </Box>
-                </Box>
-              )}
-              {(!openAudio || !props.videoDevices) && (
+              {!!props.audioDevices.length && (
                 <Box
                   sx={{
                     width: "180px",
@@ -399,10 +345,11 @@ const Recorder = (props) => {
                     backgroundColor: "#232323",
                     display: "flex",
                     alignItems: "center",
-                    borderRadius: "10px",
+                    borderRadius: openAudio ? "0 0 10px 10px" : "10px",
                     "&:hover": {
                       cursor: "pointer",
                     },
+                    position: "relative",
                   }}
                   onClick={() =>
                     setOpenAudio((open) =>
@@ -425,14 +372,76 @@ const Recorder = (props) => {
                       whiteSpace: "nowrap",
                       marginLeft: "10px",
                       width: "80px",
+                      userSelect: "none",
                     }}
                   >
                     {props.audioLabelName}
                   </Typography>
                   {props.audioDevices && props.audioDevices.length > 1 && (
                     <DropdownArrow
-                      sx={{ width: "20px", height: "7px", marginLeft: "25px" }}
+                      sx={{
+                        width: "20px",
+                        height: "7px",
+                        marginLeft: "25px",
+                        marginRight: "8px",
+                      }}
                     />
+                  )}
+                  {openAudio && (
+                    <Box
+                      sx={{
+                        width: "172px",
+                        maxHeight: "170px",
+                        borderRadius: "10px 10px 0 0",
+                        backgroundColor: "#232323",
+                        position: "absolute",
+                        bottom: "40px",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "flex-end",
+                        padding: "12px 4px 4px 4px",
+                      }}
+                    >
+                      {props.audioDevices &&
+                        props.audioDevices
+                          .filter(
+                            (device) => props.audioLabelName !== device.label
+                          )
+                          .map((device) => {
+                            return (
+                              <Box
+                                sx={{
+                                  height: "25px",
+                                  textOverflow: "ellipsis",
+                                  width: "calc(100% - 24px)",
+                                  overflow: "hidden",
+                                  padding: "4px 12px",
+                                  whiteSpace: "nowrap",
+                                  borderRadius: "4px",
+                                  "&:hover": {
+                                    backgroundColor: "#393939",
+                                    cursor: "pointer",
+                                  },
+                                }}
+                                onClick={() => changeSelectedAudio(device)}
+                              >
+                                <Typography
+                                  variant="h12"
+                                  sx={{
+                                    width: "25px",
+
+                                    fontWeight: 400,
+                                    fontSize: "10px",
+                                    userSelect: "none",
+                                  }}
+                                  key={device.deviceId}
+                                >
+                                  {device.label}
+                                </Typography>
+                              </Box>
+                            );
+                          })}
+                    </Box>
                   )}
                 </Box>
               )}
@@ -495,6 +504,7 @@ const Recorder = (props) => {
                     "&:hover": {
                       cursor: "pointer",
                     },
+                    position: "relative",
                   }}
                   onClick={() => setOpenVideo((open) => !open)}
                 >
@@ -503,65 +513,63 @@ const Recorder = (props) => {
                     props.videoDevices.length > 1 && (
                       <Box
                         sx={{
-                          width: "180px",
-                          height: "130px",
+                          width: "172px",
+                          maxHeight: "130px",
                           borderRadius: "10px 10px 0 0",
                           backgroundColor: "#232323",
                           position: "absolute",
-                          left: "55.50%",
-                          top: props.videoDevices
-                            ? props.isVideo && !isSafari
-                              ? "70.5%"
-                              : "63.5%"
-                            : props.isScreenOnly
-                            ? "61.5%"
-                            : "65.5%",
+                          bottom: "40px",
                           display: "flex",
                           flexDirection: "column",
                           justifyContent: "space-evenly",
+                          padding: "12px 4px 4px 4px",
                         }}
                       >
                         {props.videoDevices &&
-                          props.videoDevices.map((device) => {
-                            return (
-                              <Box
-                                sx={{
-                                  height: "25px",
-                                  textOverflow: "ellipsis",
-                                  width: "80%",
-                                  overflow: "hidden",
-
-                                  marginLeft: "20px",
-                                  whiteSpace: "nowrap",
-                                  "&:hover": {
-                                    backgroundColor: "#393939",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  },
-                                }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setOpenVideo(false);
-                                  props.setVideoDeviceId(device.deviceId);
-                                  props.setVideoLabelName(device.label);
-                                }}
-                              >
-                                <Typography
-                                  variant="h12"
+                          props.videoDevices
+                            .filter(
+                              (device) => props.videoLabelName !== device.label
+                            )
+                            .map((device) => {
+                              return (
+                                <Box
                                   sx={{
-                                    width: "25px",
-
-                                    fontWeight: 400,
-                                    fontSize: "10px",
-                                    lineHeight: "10px",
+                                    height: "25px",
+                                    textOverflow: "ellipsis",
+                                    width: "calc(100% - 24px)",
+                                    overflow: "hidden",
+                                    whiteSpace: "nowrap",
+                                    padding: "4px 12px",
+                                    "&:hover": {
+                                      backgroundColor: "#393939",
+                                      borderRadius: "4px",
+                                      cursor: "pointer",
+                                    },
                                   }}
-                                  key={device.deviceId}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenVideo(false);
+                                    props.setVideoDeviceId(device.deviceId);
+                                    props.setVideoLabelName(device.label);
+                                  }}
                                 >
-                                  {device.label}
-                                </Typography>
-                              </Box>
-                            );
-                          })}
+                                  <Typography
+                                    variant="h12"
+                                    sx={{
+                                      width: "25px",
+
+                                      fontWeight: 400,
+                                      fontSize: "10px",
+                                      lineHeight: "10px",
+                                      userSelect: "none",
+                                    }}
+                                    key={device.deviceId}
+                                  >
+                                    {device.label}
+                                  </Typography>
+                                </Box>
+                              );
+                            })}
                       </Box>
                     )}
                   <Camera
@@ -577,13 +585,19 @@ const Recorder = (props) => {
                       whiteSpace: "nowrap",
                       marginLeft: "10px",
                       width: "80px",
+                      userSelect: "none",
                     }}
                   >
                     {props.videoLabelName}
                   </Typography>
                   {props.videoDevices && props.videoDevices.length > 1 && (
                     <DropdownArrow
-                      sx={{ width: "20px", height: "7px", marginLeft: "25px" }}
+                      sx={{
+                        width: "20px",
+                        height: "7px",
+                        marginLeft: "16px",
+                        marginRight: "8px",
+                      }}
                     />
                   )}
                 </Box>
@@ -626,6 +640,7 @@ const Recorder = (props) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-evenly",
+                  marginRight: "8px",
                   color: "black",
                   "&:hover": {
                     cursor: "pointer",
@@ -652,6 +667,7 @@ const Recorder = (props) => {
                   sx={{
                     width: "40px",
                     height: "40px",
+                    marginRight: "8px",
                     "&:hover": {
                       cursor: "pointer",
                     },
@@ -664,6 +680,7 @@ const Recorder = (props) => {
                   sx={{
                     width: "40px",
                     height: "40px",
+                    marginRight: "8px",
                     borderRadius: "10px",
                     backgroundColor: "#232323",
                     display: "flex",
@@ -671,6 +688,7 @@ const Recorder = (props) => {
                     justifyContent: "center",
                     "&:hover": {
                       cursor: "pointer",
+                      backgroundColor: "#656565",
                     },
                   }}
                   onClick={props.pause}
@@ -691,7 +709,7 @@ const Recorder = (props) => {
                     cursor: "pointer",
                   },
                 }}
-                onClick={props.stop}
+                onClick={onClickStop}
               />
             </Box>
 
