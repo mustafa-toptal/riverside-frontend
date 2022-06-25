@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Box } from "@mui/material";
 
 import Recorder from "../../common/Recorder";
+import { Service } from "../../../utils/Service";
 
 const RESOLUTIONS = {
   "720P": {
@@ -37,6 +38,7 @@ export const VideoRecorder = (props) => {
   let videoRef = useRef(null);
 
   let chunks = [];
+  const service = new Service();
 
   useEffect(() => {
     setupStream();
@@ -128,6 +130,7 @@ export const VideoRecorder = (props) => {
   function stopRecording() {
     recorder.stop();
     setIsRecording(false);
+    console.log("Recording stopped");
   }
 
   function handleDataAvailable(e) {
@@ -136,14 +139,11 @@ export const VideoRecorder = (props) => {
 
   function handleStop(e) {
     const blob = new Blob(chunks, { type: "video/mp4" });
-
     recordedVideo.current.src = URL.createObjectURL(blob);
     recordedVideo.current.load();
     setRecordingAvailabe(true);
-
     stream.getTracks().forEach((track) => track.stop());
-    stopRecording();
-    console.log("Recording stopped");
+    // createImportTask(blob);
   }
 
   const download = async () => {
@@ -181,11 +181,133 @@ export const VideoRecorder = (props) => {
     setupStream(videoDeviceId, audioDeviceId, videoResolution);
   };
 
+  //freeconvert methods
+  const createImportTask = async (uploadedFile) => {
+    try {
+      const response = await service.post("import/upload", {}, true);
+      const { data } = response;
+      const url = data.result.form.url;
+      const serverParams = data.result.form.parameters;
+      const importId = data.id;
+      console.log(url, serverParams, importId);
+      // setProgress((progress) => progress + 25);
+      uploadedFile.name = `Riverside_${new Date().getTime()}.mp4`;
+      uploadFile(uploadedFile, url, serverParams, importId);
+    } catch (error) {
+      console.log("error: ", error);
+    }
+  };
+
+  const uploadFile = async (
+    uploadedFile,
+    serverUploadURL,
+    serverParams,
+    importId
+  ) => {
+    try {
+      const form = new FormData();
+      const { expires, size_limit, max_file_count, signature } = serverParams;
+      form.append("file", uploadedFile);
+      form.append("expires", expires);
+      form.append("size_limit", size_limit);
+      form.append("max_file_count", max_file_count);
+      form.append("signature", signature);
+
+      const response = await service.post(serverUploadURL, form, false, true);
+      const { data } = response;
+      if (data && data.msg === "ok") {
+        console.log("data.msg: ", data.msg);
+        // setProgress((progress) => progress + 25);
+        createConvertTask(importId);
+      } else {
+        console.log("data: ", data);
+        // setLoading(false);
+        // setShowErrorMessage(true);
+        // setMessage("");
+        // setErrorMessage("failed to upload file");
+      }
+    } catch (error) {
+      console.log("error: ", error);
+      // setLoading(false);
+      // setShowErrorMessage(true);
+      // setMessage("");
+      // setErrorMessage("failed to upload file");
+    }
+  };
+
+  const createConvertTask = async (importId) => {
+    try {
+      const postData = {
+        input: importId,
+        input_format: "mp4",
+        output_format: "mp4",
+        options: {
+          quality: 100,
+        },
+      };
+      // setMessage(animatedText("Converting file"));
+      const response = await service.post("convert", postData, true);
+      const { data } = response;
+      if (data && data.id) {
+        console.log("data.id: ", data.id);
+        // setProgress((progress) => progress + 25);
+        watchTask(data.id);
+      } else {
+        console.log("data: ", data);
+        // setLoading(false);
+        // setShowErrorMessage(true);
+        // setMessage("");
+        // setErrorMessage("failed to convert file");
+      }
+    } catch (error) {
+      console.log("error: ", error);
+      // setShowErrorMessage(true);
+      // setMessage("");
+      // setErrorMessage("failed to convert file");
+      // setLoading(false);
+    }
+  };
+
+  const watchTask = (taskId) => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await service.get(`tasks/${taskId}`, true);
+        const { data } = response;
+        if (data && data.status === "completed") {
+          clearInterval(interval);
+          // setMessage("Download your MP3 file.");
+          // setOutputUrl(data.result.url);
+          console.log("data.result.url: ", data.result.url);
+          // setLoading(false);
+          // setProgress(100);
+        } else if (!data) {
+          alert("error");
+          // clearInterval(interval);
+          // setLoading(false);
+          // setShowErrorMessage(true);
+          // setMessage("");
+          // setErrorMessage("failed to convert file");
+        } else {
+          // if (progress < 95) {
+          //   setProgress((progress) => progress + 5);
+          // }
+        }
+      } catch (error) {
+        console.log("error: ", error);
+        // clearInterval(interval);
+        // setLoading(false);
+        // setShowErrorMessage(true);
+        // setMessage("");
+        // setErrorMessage("failed to convert file");
+      }
+    }, 5000);
+  };
+
   const changeResolution = async (res) => {
     setVideoResolution(res);
     setupStream(videoDeviceId, audioDeviceId, res);
   };
-  console.log(videoResolution);
+
   return (
     <Box
       sx={{

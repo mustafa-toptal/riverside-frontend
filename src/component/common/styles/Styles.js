@@ -16,8 +16,9 @@ export const useTitleStyles = makeStyles({
   },
   mobileTitle: {
     fontWeight: "800",
-    fontSize: pxToRem(43.2),
+    fontSize: pxToRem(40),
     textAlign: "center",
+    lineHeight: pxToRem(48),
   },
   subTitleWrapper: {
     display: "flex",
@@ -35,10 +36,10 @@ export const useTitleStyles = makeStyles({
   },
   webTitle: {
     fontWeight: "800",
-    fontSize: pxToRem(65),
+    fontSize: pxToRem(50),
     width: pxToRem(765),
     textAlign: "center",
-    lineHeight: pxToRem(65),
+    lineHeight: pxToRem(55),
   },
   webSubtitle: {
     fontWeight: "700",

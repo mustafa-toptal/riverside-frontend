@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import SvgIcon from "@mui/material/SvgIcon";
+import { useResponsiveQuery } from "../utils/hooks/useResponsiveQuery";
 
 export const Setting = (props) => {
   const [fillColor, setFillColor] = useState("#232323");
+  const isMobile = useResponsiveQuery();
   return (
     <SvgIcon
       {...props}
@@ -13,7 +15,12 @@ export const Setting = (props) => {
       onMouseOver={() => setFillColor("#656565")}
       onMouseLeave={() => setFillColor("#232323")}
     >
-      <rect width="40" height="40" rx="10" fill={fillColor} />
+      <rect
+        width="40"
+        height="40"
+        rx="10"
+        fill={isMobile ? "rgba(0,0,0,0)" : fillColor}
+      />
       <path
         fill-rule="evenodd"
         clip-rule="evenodd"

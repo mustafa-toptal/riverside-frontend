@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { VideoStreamMerger } from "video-stream-merger";
+import { useMediaQuery } from "react-responsive";
 
 import { ScreenRecorder } from "./screen";
 import { VideoRecorder } from "./video";
 import { AudioRecorder } from "./audio";
 import { ScreenVideo } from "./screen-video";
-import { delay } from "../../utils/Helpers";
-import { WebTitle } from "../common/partials/WebTitle";
 import { FileFolders } from "../../icons/FileFolders";
 import { AudioWaves } from "../../icons/AudioWaves";
+import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 
 export function Recorders() {
   const [recorderType, setRecorderType] = useState("");
@@ -32,6 +32,21 @@ export function Recorders() {
   const audioRef = useRef(null);
   const videoRef = useRef(null);
   const screenRef = useRef(null);
+
+  const isMobile = useResponsiveQuery();
+  const shouldBreak = useMediaQuery({ query: `(max-width: 1000px)` });
+  const [boxWidth, setBoxWidth] = useState(220);
+  const [boxHeight, setBoxHeight] = useState(148);
+
+  useEffect(() => {
+    if (isMobile && boxWidth !== 144) {
+      setBoxHeight(97);
+      setBoxWidth(144);
+    } else if (!isMobile && boxWidth !== 200) {
+      setBoxHeight(148);
+      setBoxWidth(220);
+    }
+  }, [isMobile, boxWidth]);
 
   useEffect(() => {
     document.body.style = "background-color: #161C21";
@@ -351,14 +366,264 @@ export function Recorders() {
     );
   };
 
+  const renderMobileOverlay = () => {
+    if (!isMobile) {
+      return null;
+    }
+    return (
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          bottom: 0,
+          right: 0,
+          left: 0,
+          zIndex: 99999,
+          background: "rgba(0,0,0,0.7)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          borderRadius: "8px",
+        }}
+      >
+        <Typography
+          sx={{
+            textAlign: "center",
+            color: "#ffffff",
+            fontSize: "12px",
+            fontWeight: 400,
+            lineHeight: "15px",
+            width: "80%",
+          }}
+        >
+          Desktop-Only Feature
+        </Typography>
+      </Box>
+    );
+  };
+
+  const renderScreenAndVideo = () => {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          "&:hover": {
+            cursor: isMobile ? "not-allowed" : "pointer",
+          },
+          animationFillMode: "forwards",
+        }}
+        ref={multiMediaRef}
+        onClick={() =>
+          !isMobile &&
+          (recorderType !== "screenVideo" ? setupScreenAndCamera() : "")
+        }
+      >
+        <Box
+          sx={{
+            height: boxHeight,
+            width: boxWidth,
+            borderRadius: "8px",
+            backgroundColor: "#9599FF",
+            backgroundImage: `url(${require("../../utils/images/BgPattern.png")})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "contain",
+            position: "relative",
+          }}
+        >
+          {renderMobileOverlay()}
+          <FileFolders
+            sx={{
+              width: "26px",
+              height: isMobile ? "90%" : "120px",
+              float: "right",
+              marginRight: isMobile ? "5px" : "10px",
+              marginTop: isMobile ? "2%" : "38px",
+            }}
+            viewBox="0 0 22 120"
+          />
+          <Box
+            sx={{
+              backgroundSize: "contain",
+              backgroundImage: `url(${require("../../utils/images/ScreenWebcam.png")})`,
+              width: "79px",
+              height: "53px",
+              margin: isMobile ? "40px 0 15px 5px" : "85px 0 15px 5px",
+              borderRadius: "5px",
+              "&:hover": {
+                cursor: "pointer",
+              },
+            }}
+          ></Box>
+        </Box>
+        {isMobile ? (
+          <Typography
+            variant="h12"
+            sx={{
+              fontSize: "16px",
+              fontWeight: 400,
+              lineHeight: "23.56px",
+              letterSpacing: "0.01em",
+              textAlign: "center",
+              color: "#6a6a6a",
+              marginTop: "7px",
+              width: "80%",
+            }}
+          >
+            {"Screen & Webcam Rec"}
+          </Typography>
+        ) : (
+          renderLabel("Screen & Webcam Rec")
+        )}
+      </Box>
+    );
+  };
+  const renderAudio = () => {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          "&:hover": {
+            cursor: "pointer",
+          },
+          animationFillMode: "forwards",
+        }}
+        onClick={() => setRecorderType("audio")}
+        ref={audioRef}
+      >
+        <Box
+          sx={{
+            height: boxHeight,
+            width: boxWidth,
+            borderRadius: "8px",
+            backgroundColor: "#7D7AFF",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <AudioWaves
+            sx={{
+              width: "52px",
+              height: "38px",
+            }}
+          />
+        </Box>
+        {renderLabel("Audio Rec")}
+      </Box>
+    );
+  };
+  const renderWebCam = () => {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          "&:hover": {
+            cursor: "pointer",
+          },
+          animationFillMode: "forwards",
+        }}
+        onClick={() => setRecorderType("video")}
+        ref={videoRef}
+      >
+        <Box
+          sx={{
+            height: boxHeight,
+            width: boxWidth,
+            borderRadius: "8px",
+            backgroundColor: "#9599FF",
+            backgroundImage: `url(${require("../../utils/images/VideoRecording.png")})`,
+            backgroundSize: "contain",
+          }}
+        ></Box>
+        {renderLabel("Webcam Rec")}
+      </Box>
+    );
+  };
+  const renderScreen = () => {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          "&:hover": {
+            cursor: isMobile ? "not-allowed" : "pointer",
+          },
+          animationFillMode: "forwards",
+        }}
+        ref={screenRef}
+        onClick={() =>
+          !isMobile && (recorderType !== "screen" ? setupStream() : "")
+        }
+      >
+        <Box
+          sx={{
+            height: boxHeight,
+            width: boxWidth,
+            borderRadius: "8px",
+            backgroundColor: "#9599FF",
+            backgroundImage: `url(${require("../../utils/images/BgPattern.png")})`,
+            backgroundRepeat: "no-repeat",
+            position: "relative",
+            backgroundSize: "contain",
+          }}
+        >
+          {renderMobileOverlay()}
+          <FileFolders
+            sx={{
+              width: "26px",
+              float: "right",
+              height: isMobile ? "90%" : "120px",
+              marginRight: isMobile ? "5px" : "10px",
+              marginTop: isMobile ? "2%" : "38px",
+            }}
+            viewBox="0 0 22 120"
+          />
+        </Box>
+        {isMobile ? (
+          <Typography
+            variant="h12"
+            sx={{
+              fontSize: "16px",
+              fontWeight: 400,
+              lineHeight: "36px",
+              letterSpacing: "0.01em",
+              textAlign: "center",
+              color: "#6a6a6a",
+              marginTop: "7px",
+              width: "80%",
+            }}
+          >
+            Screen Rec
+          </Typography>
+        ) : (
+          renderLabel("Screen Rec")
+        )}
+      </Box>
+    );
+  };
+
   return (
     <>
+      <style>
+        {`#root{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }`}
+      </style>
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          marginTop: "-6%",
+          marginTop: isMobile ? "0px" : "-6%",
           "& .MuiTypography-h1": {
             fontSize: " 50px",
             lineHeight: "55px",
@@ -375,164 +640,101 @@ export function Recorders() {
       >
         {!recorderType && (
           <>
-            <WebTitle
-              sx={{ color: "#FFFFFF" }}
-              title="Multi-Layout Online Recorder"
-              subtitle="Pick a Layout for Recording"
-            />
+            <Grid container spacing={0}>
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "column",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontSize: isMobile ? "40px" : "50px",
+                    lineHeight: isMobile ? "48px" : "55px",
+                    color: "#ffffff",
+                    fontWeight: "800",
+                    textAlign: "center",
+                  }}
+                >
+                  Multi-Layout <br /> Online Recorder
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: isMobile ? "18px" : "24px",
+                    lineHeight: isMobile ? "26px" : "30px",
+                    color: "#ffffff",
+                    textAlign: "center",
+                    marginTop: "10px",
+                  }}
+                >
+                  Pick a Layout for Recording
+                </Typography>
+              </Grid>
+            </Grid>
             <Box
               ref={mainRef}
               sx={{
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                alignItems: isMobile ? "flex-start" : "center",
+                justifyContent: "flex-start",
                 marginTop: "7%",
-                width: "970px",
+                width: "100%",
               }}
             >
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  flexDirection: "column",
-                  "&:hover": {
-                    cursor: "pointer",
-                  },
-                  animationFillMode: "forwards",
+                  justifyContent: "space-between",
+                  flex: 1,
+                  marginRight: isMobile ? "8px" : "15px",
+                  flexDirection: shouldBreak ? "column-reverse" : "row",
                 }}
-                ref={multiMediaRef}
-                onClick={() =>
-                  recorderType !== "screenVideo" ? setupScreenAndCamera() : ""
-                }
               >
                 <Box
                   sx={{
-                    height: "148px",
-                    width: "220px",
-                    borderRadius: "8px",
-                    backgroundColor: "#9599FF",
-                    backgroundImage: `url(${require("../../utils/images/BgPattern.png")})`,
-                    backgroundRepeat: "no-repeat",
+                    marginRight: shouldBreak ? "0" : "15px",
                   }}
                 >
-                  <FileFolders
-                    sx={{
-                      width: "26px",
-                      height: "120px",
-                      float: "right",
-                      marginRight: "10px",
-                      marginTop: "38px",
-                    }}
-                    viewBox="0 0 22 120"
-                  />
-                  <Box
-                    sx={{
-                      backgroundSize: "contain",
-                      backgroundImage: `url(${require("../../utils/images/ScreenWebcam.png")})`,
-                      width: "79px",
-                      height: "53px",
-                      margin: "85px 0 15px 5px",
-                      borderRadius: "5px",
-                      "&:hover": {
-                        cursor: "pointer",
-                      },
-                    }}
-                  ></Box>
+                  {renderScreenAndVideo()}
                 </Box>
-                {renderLabel("Screen & Webcam Rec")}
+                <Box
+                  sx={{
+                    marginLeft: shouldBreak ? "0" : "15px",
+                    marginBottom: shouldBreak ? "15px" : 0,
+                  }}
+                >
+                  {renderAudio()}
+                </Box>
               </Box>
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  flexDirection: "column",
-                  "&:hover": {
-                    cursor: "pointer",
-                  },
-                  animationFillMode: "forwards",
+                  justifyContent: "space-between",
+                  flex: 1,
+                  marginLeft: isMobile ? "8px" : "15px",
+                  flexDirection: shouldBreak ? "column" : "row",
                 }}
-                onClick={() => setRecorderType("audio")}
-                ref={audioRef}
               >
                 <Box
                   sx={{
-                    height: "148px",
-                    width: "220px",
-                    borderRadius: "8px",
-                    backgroundColor: "#7D7AFF",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    marginRight: shouldBreak ? "0" : "15px",
+                    marginBottom: shouldBreak ? "15px" : 0,
                   }}
                 >
-                  <AudioWaves
-                    sx={{
-                      width: "52px",
-                      height: "38px",
-                    }}
-                  />
+                  {renderWebCam()}
                 </Box>
-                {renderLabel("Audio Rec")}
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  flexDirection: "column",
-                  "&:hover": {
-                    cursor: "pointer",
-                  },
-                  animationFillMode: "forwards",
-                }}
-                onClick={() => setRecorderType("video")}
-                ref={videoRef}
-              >
                 <Box
                   sx={{
-                    height: "148px",
-                    width: "220px",
-                    borderRadius: "8px",
-                    backgroundColor: "#9599FF",
-                    backgroundImage: `url(${require("../../utils/images/VideoRecording.png")})`,
-                  }}
-                ></Box>
-                {renderLabel("Webcam Rec")}
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  flexDirection: "column",
-                  "&:hover": {
-                    cursor: "pointer",
-                  },
-                  animationFillMode: "forwards",
-                }}
-                ref={screenRef}
-                onClick={() => (recorderType !== "screen" ? setupStream() : "")}
-              >
-                <Box
-                  sx={{
-                    height: "148px",
-                    width: "220px",
-                    borderRadius: "8px",
-                    backgroundColor: "#9599FF",
-                    backgroundImage: `url(${require("../../utils/images/BgPattern.png")})`,
-                    backgroundRepeat: "no-repeat",
+                    marginLeft: shouldBreak ? "0" : "15px",
                   }}
                 >
-                  <FileFolders
-                    sx={{
-                      width: "26px",
-                      height: "120px",
-                      float: "right",
-                      marginRight: "10px",
-                      marginTop: "38px",
-                    }}
-                    viewBox="0 0 22 120"
-                  />
+                  {renderScreen()}
                 </Box>
-                {renderLabel("Screen Rec")}
               </Box>
             </Box>
           </>

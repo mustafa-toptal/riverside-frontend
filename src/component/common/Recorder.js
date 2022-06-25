@@ -13,6 +13,7 @@ import { AudioPlay, AudioRecorderWaves } from "../../icons/AudioWaves";
 import Settings from "./partials/Settings";
 import { DropdownArrow } from "../../icons/Setting";
 import { isSafari } from "../../utils/Helpers";
+import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 
 const Recorder = (props) => {
   const [showCountDown, setShowCountDown] = useState(4);
@@ -24,8 +25,17 @@ const Recorder = (props) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [openVideo, setOpenVideo] = useState(false);
   const [containerHeight, setContainerHeight] = useState(471);
+  const isMobile = useResponsiveQuery();
 
   const intervalRef = useRef();
+
+  useEffect(() => {
+    if (isMobile) {
+      document.getElementById("root").style.alignItems = "flex-start";
+    } else {
+      document.getElementById("root").style.alignItems = "center";
+    }
+  }, [isMobile]);
 
   const record = (e) => {
     let count = 3;
@@ -132,7 +142,7 @@ const Recorder = (props) => {
   };
 
   return (
-    <Box sx={{ position: "relative" }}>
+    <Box sx={{ position: "relative", ...(isMobile && { width: "100vw" }) }}>
       {showCountDown > 0 && showCountDown <= 3 && (
         <Box
           sx={{
@@ -221,10 +231,13 @@ const Recorder = (props) => {
       )}
       <Box
         sx={{
-          width: "753px",
-          height: `${containerHeight}px`,
+          width: isMobile ? "100%" : "753px",
+          height:
+            props.isAudio && isMobile
+              ? `calc(100vh - 135px)`
+              : `${containerHeight}px`,
           backgroundColor: props.isAudio ? "#9599FF" : "#000000",
-          borderRadius: "16px 16px 0 0",
+          borderRadius: isMobile ? "0" : "16px 16px 0 0",
           opacity: props.isAudio && props.recordingAvailable ? "30%" : "100%",
         }}
         onClick={props.playAudio}
@@ -235,8 +248,8 @@ const Recorder = (props) => {
             muted
             aspect
             style={{
-              borderRadius: "16px 16px 0 0",
-              width: "753px",
+              borderRadius: isMobile ? "0" : "16px 16px 0 0",
+              width: isMobile ? "100%" : "753px",
               transform:
                 mirrorChecked && !(showCountDown > 0 && showCountDown <= 3)
                   ? "scaleX(-1)"
@@ -249,7 +262,7 @@ const Recorder = (props) => {
           ref={props.recordedVideoRef}
           controls
           style={{
-            borderRadius: "16px 16px 0 0",
+            borderRadius: isMobile ? "0" : "16px 16px 0 0",
             width: "100%",
             display:
               props.recordingAvailable && !props.isAudio ? "block" : "none",
@@ -266,7 +279,7 @@ const Recorder = (props) => {
       </Box>
       <Box
         sx={{
-          width: "753px",
+          width: isMobile ? "100%" : "753px",
           height: "85px",
           borderRadius: "0 0 16px 16px",
           backgroundColor: "#000000",
@@ -275,6 +288,9 @@ const Recorder = (props) => {
           alignItems: "center",
           flexDirection: "row",
           marginTop: 0,
+          ...(isMobile && {
+            justifyContent: "center",
+          }),
         }}
       >
         <Box
@@ -290,7 +306,14 @@ const Recorder = (props) => {
               cursor: "pointer",
               backgroundColor: "#656565",
             },
+            ...(isMobile && {
+              position: "fixed",
+              top: "0",
+              left: "0",
+              marginTop: "10px",
+            }),
           }}
+          onClick={() => window.location.reload()}
         >
           <Typography
             variant="h12"
@@ -300,7 +323,6 @@ const Recorder = (props) => {
               lineHeight: "12px",
               textAlign: "left",
             }}
-            onClick={() => window.location.reload()}
           >
             {"< Back"}
           </Typography>
@@ -317,7 +339,11 @@ const Recorder = (props) => {
                 justifyContent: props.videoDevices
                   ? "space-between"
                   : "space-evenly",
-                marginLeft: props.videoDevices ? "70px" : "155px",
+                marginLeft: isMobile
+                  ? "0"
+                  : props.videoDevices
+                  ? "70px"
+                  : "155px",
               }}
             >
               <Box
@@ -628,7 +654,7 @@ const Recorder = (props) => {
                 alignItems: "center",
                 flexDirection: "row",
                 justifyContent: "space-evenly",
-                marginLeft: "200px",
+                marginLeft: isMobile ? "0" : "200px",
               }}
             >
               <Box
@@ -734,7 +760,7 @@ const Recorder = (props) => {
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "space-between",
-                marginLeft: "190px",
+                marginLeft: isMobile ? "0" : "190px",
               }}
             >
               <Button

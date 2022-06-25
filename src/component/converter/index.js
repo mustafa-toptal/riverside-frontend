@@ -10,7 +10,6 @@ import { animatedText, delay } from "../../utils/Helpers";
 import { convert } from "./partials/Converter";
 import { AlertMessage } from "../common/AlertMessage";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
-
 import wavtomp3 from "../../utils/lottie-jsons/wavtomp3.json";
 import wavtomp3completed from "../../utils/lottie-jsons/wavtomp3completed.json";
 
@@ -30,6 +29,7 @@ const AudioConverter = () => {
   // const service = new Service();
 
   const createImportTask = async (uploadedFile) => {
+    console.log("uploadedFile: ", uploadedFile);
     try {
       // const response = await service.post("import/upload", {}, true);
       // const { data } = response;

@@ -4,9 +4,10 @@ import { Box, Typography } from "@mui/material";
 import { Close } from "../../icons/Cross";
 import Slider from "./Slider";
 import { isSafari } from "../../utils/Helpers";
+import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 
 export const Settings = (props) => {
-  console.log("props.videoResolution: ", props.videoResolution);
+  const isMobile = useResponsiveQuery();
   return (
     <>
       {props.open && (
@@ -22,6 +23,11 @@ export const Settings = (props) => {
             bottom: "40px",
             right: "0",
             paddingBottom: "10px",
+            ...(isMobile && {
+              top: 0,
+              bottom: "initial",
+              color: "#000000",
+            }),
           }}
         >
           <Close

@@ -3,6 +3,7 @@ import { Grid, Typography } from "@mui/material";
 
 import { renderTitle } from "../../../utils/Helpers";
 import { useTitleStyles } from "../styles/Styles";
+import { useResponsiveQuery } from "../../../utils/hooks/useResponsiveQuery";
 
 export const WebTitle = (props) => {
   const {
@@ -13,10 +14,11 @@ export const WebTitle = (props) => {
     ...restProps
   } = props;
   const styles = useTitleStyles();
+  const isMobile = useResponsiveQuery();
 
   return (
     <Grid container className={styles.titleWrapper} {...restProps}>
-      <Typography variant="h1" className={styles.webTitle}>
+      <Typography className={isMobile ? styles.mobileTitle : styles.webTitle}>
         {renderTitle(title, highlightedWordIndex)}
       </Typography>
       <Typography
