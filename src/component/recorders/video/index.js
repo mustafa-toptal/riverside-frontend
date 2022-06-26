@@ -33,6 +33,7 @@ export const VideoRecorder = (props) => {
   const [audioLabelName, setAudioLabelName] = useState("");
   const [videoResolution, setVideoResolution] = useState("720P");
   const [videoLabelName, setVideoLabelName] = useState("");
+  const [progress, setProgress] = useState(0);
 
   let recordedVideo = useRef(null);
   let videoRef = useRef(null);
@@ -143,16 +144,15 @@ export const VideoRecorder = (props) => {
     recordedVideo.current.load();
     setRecordingAvailabe(true);
     stream.getTracks().forEach((track) => track.stop());
-    // createImportTask(blob);
   }
 
   const download = async () => {
-    let elem = document.createElement("a");
-    elem.href = recordedVideo.current.src;
-    elem.download = `Riverside_${new Date().getTime()}.mp4`;
-    document.body.appendChild(elem);
-    elem.click();
-    document.body.removeChild(elem);
+    const blob = await fetch(recordedVideo.current.src).then((r) => r.blob());
+    console.log("blob: ", blob);
+    blob.name = "mustafa.mp4";
+    console.log("blob: ", blob);
+
+    createImportTask(blob);
   };
 
   const muteAudio = () => {
@@ -184,14 +184,18 @@ export const VideoRecorder = (props) => {
   //freeconvert methods
   const createImportTask = async (uploadedFile) => {
     try {
-      const response = await service.post("import/upload", {}, true);
+      const response = await service.post(
+        "import/upload",
+        { filename: `Riverside_${new Date().getTime()}.mp4` },
+        true
+      );
       const { data } = response;
       const url = data.result.form.url;
       const serverParams = data.result.form.parameters;
       const importId = data.id;
       console.log(url, serverParams, importId);
-      // setProgress((progress) => progress + 25);
-      uploadedFile.name = `Riverside_${new Date().getTime()}.mp4`;
+      setProgress((progress) => progress + 25);
+
       uploadFile(uploadedFile, url, serverParams, importId);
     } catch (error) {
       console.log("error: ", error);
@@ -207,7 +211,12 @@ export const VideoRecorder = (props) => {
     try {
       const form = new FormData();
       const { expires, size_limit, max_file_count, signature } = serverParams;
-      form.append("file", uploadedFile);
+      const file = new File(
+        [uploadedFile],
+        `Riverside_${new Date().getTime()}.mp4`,
+        { type: "video/mp4", lastModified: new Date() }
+      );
+      form.append("file", file);
       form.append("expires", expires);
       form.append("size_limit", size_limit);
       form.append("max_file_count", max_file_count);
@@ -217,7 +226,7 @@ export const VideoRecorder = (props) => {
       const { data } = response;
       if (data && data.msg === "ok") {
         console.log("data.msg: ", data.msg);
-        // setProgress((progress) => progress + 25);
+        setProgress((progress) => progress + 25);
         createConvertTask(importId);
       } else {
         console.log("data: ", data);
@@ -249,8 +258,7 @@ export const VideoRecorder = (props) => {
       const response = await service.post("convert", postData, true);
       const { data } = response;
       if (data && data.id) {
-        console.log("data.id: ", data.id);
-        // setProgress((progress) => progress + 25);
+        setProgress((progress) => progress + 25);
         watchTask(data.id);
       } else {
         console.log("data: ", data);
@@ -278,23 +286,28 @@ export const VideoRecorder = (props) => {
           // setMessage("Download your MP3 file.");
           // setOutputUrl(data.result.url);
           console.log("data.result.url: ", data.result.url);
+          let elem = document.createElement("a");
+          elem.href = data.result.url;
+          elem.download = `Riverside_${new Date().getTime()}.mp4`;
+          document.body.appendChild(elem);
+          elem.click();
+          document.body.removeChild(elem);
           // setLoading(false);
-          // setProgress(100);
+          setProgress(100);
         } else if (!data) {
-          alert("error");
-          // clearInterval(interval);
+          clearInterval(interval);
           // setLoading(false);
           // setShowErrorMessage(true);
           // setMessage("");
           // setErrorMessage("failed to convert file");
         } else {
-          // if (progress < 95) {
-          //   setProgress((progress) => progress + 5);
-          // }
+          if (progress < 95) {
+            setProgress((progress) => progress + 5);
+          }
         }
       } catch (error) {
         console.log("error: ", error);
-        // clearInterval(interval);
+        clearInterval(interval);
         // setLoading(false);
         // setShowErrorMessage(true);
         // setMessage("");
@@ -343,6 +356,7 @@ export const VideoRecorder = (props) => {
         isVideo={true}
         videoResolution={videoResolution}
         setVideoResolution={changeResolution}
+        progress={progress}
       />
     </Box>
   );
