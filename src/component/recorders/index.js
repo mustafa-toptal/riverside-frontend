@@ -51,6 +51,19 @@ export function Recorders() {
   useEffect(() => {
     document.body.style = "background-color: #161C21";
     setupListeners();
+    setupAudioVideoStream();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (recorderType === "screenVideo") {
+      setShowInfo(true);
+    } else {
+      setShowInfo(false);
+    }
+  }, [recorderType]);
+
+  async function setupAudioVideoStream() {
     let audioDevices = [];
     let videoDevices = [];
     navigator.mediaDevices
@@ -75,16 +88,7 @@ export function Recorders() {
       .catch((err) => {
         console.log("err: ", err);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (recorderType === "screenVideo") {
-      setShowInfo(true);
-    } else {
-      setShowInfo(false);
-    }
-  }, [recorderType]);
+  }
 
   async function setupStream(audioDevice) {
     try {
@@ -312,11 +316,15 @@ export function Recorders() {
 
   const retake = async () => {
     const prevState = recorderType;
+    setRecorderType("retake");
     if (prevState === "screenVideo") {
       setupScreenAndCamera();
     } else if (prevState === "screen") {
       setupStream();
     }
+    setTimeout(() => {
+      setRecorderType(prevState);
+    }, 500);
   };
 
   const setupListeners = () => {
@@ -755,12 +763,14 @@ export function Recorders() {
         {recorderType === "audio" && (
           <AudioRecorder audioDevices={audioDevices} retake={retake} />
         )}
-        {recorderType === "video" && (
+        {recorderType === "video" ? (
           <VideoRecorder
             audioDevices={audioDevices}
             videoDevices={videoDevices}
             retake={retake}
           />
+        ) : (
+          <></>
         )}
         {recorderType === "screen" && (
           <ScreenRecorder

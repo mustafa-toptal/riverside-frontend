@@ -247,6 +247,7 @@ const Recorder = (props) => {
             ref={props.videoRef}
             muted
             aspect
+            id="stream-video"
             style={{
               borderRadius: isMobile ? "0" : "16px 16px 0 0",
               width: isMobile ? "100%" : "753px",
@@ -331,14 +332,22 @@ const Recorder = (props) => {
           <>
             <Box
               sx={{
-                width: props.videoDevices ? "460px" : "300px",
+                width:
+                  isMobile && props.isVideo && !openAudio && !openVideo
+                    ? "220px"
+                    : props.videoDevices
+                    ? "460px"
+                    : "300px",
                 height: "40px",
                 display: "flex",
                 alignItems: "center",
                 flexDirection: "row",
-                justifyContent: props.videoDevices
-                  ? "space-between"
-                  : "space-evenly",
+                justifyContent:
+                  isMobile && props.isVideo
+                    ? "space-evenly"
+                    : props.videoDevices
+                    ? "space-between"
+                    : "space-evenly",
                 marginLeft: isMobile
                   ? "0"
                   : props.videoDevices
@@ -366,7 +375,10 @@ const Recorder = (props) => {
               {!!props.audioDevices.length && (
                 <Box
                   sx={{
-                    width: "180px",
+                    width:
+                      isMobile && props.isVideo && !openAudio
+                        ? "60px"
+                        : "180px",
                     height: "40px",
                     backgroundColor: "#232323",
                     display: "flex",
@@ -377,16 +389,24 @@ const Recorder = (props) => {
                     },
                     position: "relative",
                   }}
-                  onClick={() =>
+                  onClick={() => {
+                    setOpenVideo(false);
                     setOpenAudio((open) =>
                       props.audioDevices && props.audioDevices.length > 1
                         ? !open
                         : false
-                    )
-                  }
+                    );
+                  }}
                 >
                   <Mic
-                    sx={{ width: "14px", height: "22px", marginLeft: "20px" }}
+                    sx={{
+                      width: "14px",
+                      height: "22px",
+                      marginLeft:
+                        isMobile && props.isVideo && !openAudio
+                          ? "11px"
+                          : "20px",
+                    }}
                   />
                   <Typography
                     variant="h12"
@@ -408,7 +428,10 @@ const Recorder = (props) => {
                       sx={{
                         width: "20px",
                         height: "7px",
-                        marginLeft: "25px",
+                        marginLeft:
+                          isMobile && props.isVideo && !openAudio
+                            ? "0"
+                            : "25px",
                         marginRight: "8px",
                       }}
                     />
@@ -471,52 +494,13 @@ const Recorder = (props) => {
                   )}
                 </Box>
               )}
-
-              {/* {props.videoDevices && (
-                <Box
-                  sx={{
-                    width: "180px",
-                    height: "40px",
-                    borderRadius: "10px",
-                    backgroundColor: "#232323",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-evenly",
-                  }}
-                >
-                  <Camera sx={{ width: "21px", height: "15px" }} />
-                  <select
-                    style={{
-                      "-moz-appearance": "none",
-                      "-webkit-appearance": "none",
-                      appearance: "none",
-                      border: "0px",
-                      outline: "0px",
-                      backgroundColor: "#232323",
-                      width: "121px",
-                      height: "18px",
-                      color: "#FFFFFF",
-                      cursor: "pointer",
-                    }}
-                    onChange={(e) => {
-                      props.setVideoDeviceId(e.target.value);
-                    }}
-                  >
-                    {props.videoDevices &&
-                      props.videoDevices.map((device) => {
-                        return (
-                          <option value={device.deviceId} key={device.deviceId}>
-                            {device.label}
-                          </option>
-                        );
-                      })}
-                  </select>
-                </Box>
-              )} */}
               {props.videoDevices && (
                 <Box
                   sx={{
-                    width: "180px",
+                    width:
+                      isMobile && props.isVideo && !openVideo
+                        ? "60px"
+                        : "180px",
                     height: "40px",
                     backgroundColor: "#232323",
                     display: "flex",
@@ -532,7 +516,14 @@ const Recorder = (props) => {
                     },
                     position: "relative",
                   }}
-                  onClick={() => setOpenVideo((open) => !open)}
+                  onClick={() => {
+                    setOpenAudio(false);
+                    setOpenVideo((open) =>
+                      props.videoDevices && props.videoDevices.length > 1
+                        ? !open
+                        : false
+                    );
+                  }}
                 >
                   {openVideo &&
                     props.videoDevices &&
@@ -599,30 +590,47 @@ const Recorder = (props) => {
                       </Box>
                     )}
                   <Camera
-                    sx={{ width: "21px", height: "15px", marginLeft: "20px" }}
-                  />
-                  <Typography
-                    variant="h12"
                     sx={{
-                      fontSize: "10px",
-                      fontWeight: 400,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      marginLeft: "10px",
-                      width: "80px",
-                      userSelect: "none",
+                      width: "21px",
+                      height: "15px",
+                      marginLeft:
+                        isMobile && props.isVideo && !openVideo
+                          ? "11px"
+                          : "20px",
                     }}
-                  >
-                    {props.videoLabelName}
-                  </Typography>
+                  />
+                  {isMobile && props.isVideo && !openVideo ? (
+                    <></>
+                  ) : (
+                    <Typography
+                      variant="h12"
+                      sx={{
+                        fontSize: "10px",
+                        fontWeight: 400,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        marginLeft: "10px",
+                        width: "80px",
+                        userSelect: "none",
+                      }}
+                    >
+                      {props.videoLabelName}
+                    </Typography>
+                  )}
                   {props.videoDevices && props.videoDevices.length > 1 && (
                     <DropdownArrow
                       sx={{
                         width: "20px",
                         height: "7px",
-                        marginLeft: "16px",
-                        marginRight: "8px",
+                        marginLeft:
+                          isMobile && props.isVideo && !openVideo
+                            ? "5px"
+                            : "16px",
+                        marginRight:
+                          isMobile && props.isVideo && !openVideo
+                            ? "0px"
+                            : "8px",
                       }}
                     />
                   )}
