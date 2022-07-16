@@ -197,7 +197,7 @@ const Compressor = () => {
     <Grid>
       <Title
         title="Video Compressor"
-        subtitle="Free online video compressor to easily reduce the file size"
+        subtitle="Free online video compressor to easily reduce video file size."
         highlightedWordIndex={3}
         isMobile={isMobile}
         onFileSelect={handleFileChange}
@@ -207,6 +207,12 @@ const Compressor = () => {
         exportFile={exportFile}
         icon={renderIcon()}
         cancelTask={cancelTask}
+        subtitleStyles = {{
+          fontWeight:  `400 !important`,
+          fontSize: `${isMobile ? "18px":"14px"} !important`,
+          lineHeight: `${isMobile ? "28px":"48px"} !important`
+        }}
+        isCompressor = {true}
       />
       <AlertMessage
         open={showErrorMessage}

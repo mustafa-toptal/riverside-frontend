@@ -75,14 +75,14 @@ export const useTitleStyles = makeStyles({
   },
 });
 
-export const useFileUploadStyles = makeStyles({
+export const useFileUploadStyles = (isCompressor) => makeStyles({
   webStyles: {
     border: `${pxToRem(2.15238)} dashed #C6CCD9`,
     boxSizing: "border-box",
     borderRadius: pxToRem(21.5238),
-    width: pxToRem(497),
-    height: pxToRem(205),
-    marginTop: pxToRem(44),
+    width: isCompressor ? pxToRem(840) :pxToRem(497),
+    height: isCompressor ? pxToRem(188) :pxToRem(205),
+    marginTop: isCompressor ? pxToRem(16) :pxToRem(44),
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -96,7 +96,7 @@ export const useFileUploadStyles = makeStyles({
     border: "2px dashed #C6CCD9",
     boxSizing: "border-box",
     borderRadius: pxToRem(20),
-    marginTop: pxToRem(38),
+    marginTop: isCompressor ? pxToRem(30) : pxToRem(38),
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -106,7 +106,7 @@ export const useFileUploadStyles = makeStyles({
     display: "flex",
     alignItems: "center",
     height: pxToRem(40),
-    width: pxToRem(307),
+    width: isCompressor ? pxToRem(300) :pxToRem(307),
   },
   webText: {
     fontWeight: 400,

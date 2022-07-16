@@ -1,13 +1,22 @@
 import React from "react";
 import { Grid, Typography } from "@mui/material";
 
-import { renderTitle } from "../../../utils/Helpers";
+import { pxToRem, renderTitle } from "../../../utils/Helpers";
 import { useTitleStyles } from "../styles/Styles";
 
 export const MobileTitle = (props) => {
-  const { title, subtitle, highlightedWordIndex, isTranscription } = props;
+  const { title, subtitle, highlightedWordIndex, isTranscription, subtitleStyles={} , isCompressor = false } = props;
   const styles = useTitleStyles();
 
+  let subStyles = {...subtitleStyles};
+  let titleStyles = {};
+  if(isCompressor){
+    subStyles.width = "inherit !important"
+    subStyles.marginTop = "20px !important"
+    titleStyles.fontSize= "34px !important"
+  }
+  
+  
   return (
     <Grid container className={styles.titleWrapper}>
       <Typography
@@ -15,6 +24,7 @@ export const MobileTitle = (props) => {
         className={
           isTranscription ? styles.mobileTranscriptionTitle : styles.mobileTitle
         }
+        sx = {{...titleStyles}}
       >
         {renderTitle(title, highlightedWordIndex)}
       </Typography>
@@ -24,6 +34,7 @@ export const MobileTitle = (props) => {
             ? styles.transcriptionSubtitleWrapper
             : styles.subTitleWrapper
         }
+        sx = {isCompressor ? {width :"284px !important"} : {}}
       >
         <Typography
           variant="h6"
@@ -32,6 +43,7 @@ export const MobileTitle = (props) => {
               ? styles.mobileTranscrioptionSubtitle
               : styles.mobileSubtitle
           }
+          sx = {{...subStyles}}
         >
           {subtitle}
         </Typography>

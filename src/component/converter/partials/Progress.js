@@ -19,9 +19,13 @@ export const Progress = (props) => {
     hideTitle = false,
     dragEvent,
     isTranscription,
+    isCompressor
   } = props;
-  const styles = useFileUploadStyles();
+
+  const styles = useFileUploadStyles(isCompressor)();
+  
   const dropRef = useRef();
+
   useEffect(() => {
     if (dragEvent === "enter") {
       dropRef.current.style.backgroundColor = "#EBEEF6";

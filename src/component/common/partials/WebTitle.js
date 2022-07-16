@@ -11,6 +11,8 @@ export const WebTitle = (props) => {
     subtitle,
     highlightedWordIndex,
     isTranscription,
+    subtitleStyles={},
+    titleStyles = {},
     ...restProps
   } = props;
   const styles = useTitleStyles();
@@ -18,7 +20,9 @@ export const WebTitle = (props) => {
 
   return (
     <Grid container className={styles.titleWrapper} {...restProps}>
-      <Typography className={isMobile ? styles.mobileTitle : styles.webTitle}>
+      <Typography className={isMobile ? styles.mobileTitle : styles.webTitle}
+      sx = {{...titleStyles }}
+      >
         {renderTitle(title, highlightedWordIndex)}
       </Typography>
       <Typography
@@ -28,6 +32,7 @@ export const WebTitle = (props) => {
             ? styles.webSubtitle
             : styles.webTranscriptionSubtitle
         }
+        sx = {{...subtitleStyles }}
       >
         {subtitle}
       </Typography>

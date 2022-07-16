@@ -22,7 +22,9 @@ export const Title = (props) => {
     outputUrl,
     cancelTask,
     hideTitle,
+    subtitleStyles ={},
     isTranscription = false,
+    isCompressor = false
   } = props;
 
   const styles = useTitleStyles();
@@ -35,6 +37,8 @@ export const Title = (props) => {
           subtitle={subtitle}
           highlightedWordIndex={highlightedWordIndex}
           isTranscription={isTranscription}
+          subtitleStyles = {subtitleStyles}
+          isCompressor = {isCompressor}
         />
       ) : (
         <WebTitle
@@ -42,6 +46,8 @@ export const Title = (props) => {
           subtitle={subtitle}
           highlightedWordIndex={highlightedWordIndex}
           isTranscription={isTranscription}
+          subtitleStyles = {subtitleStyles}
+          
         />
       )}
       {message ? (
@@ -54,6 +60,7 @@ export const Title = (props) => {
           exportFile={exportFile}
           outputUrl={outputUrl}
           cancelTask={cancelTask}
+          isCompressor = {isCompressor}
         />
       ) : (
         <FileUpload
@@ -64,6 +71,7 @@ export const Title = (props) => {
           icon={icon}
           hideTitle={isMobile ? false : hideTitle}
           isTranscription={isTranscription}
+          isCompressor = {isCompressor}
         />
       )}
     </Grid>

@@ -12,6 +12,7 @@ export const FileUpload = (props) => {
     icon,
     hideTitle,
     isTranscription,
+    isCompressor = false
   } = props;
 
   const [dragEvent, setDragevent] = useState("");
@@ -49,6 +50,7 @@ export const FileUpload = (props) => {
           dragEvent={dragEvent}
           hideTitle={hideTitle}
           isTranscription={isTranscription}
+          isCompressor = {isCompressor}
         />
       </FileDrop>
       <input
