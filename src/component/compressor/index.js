@@ -13,6 +13,7 @@ import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 import wavtomp3 from "../../utils/lottie-jsons/wavtomp3.json";
 import wavtomp3completed from "../../utils/lottie-jsons/wavtomp3completed.json";
 import { Service } from "../../utils/Service";
+import AdvanceOptions from "./AdvanceOptions";
 
 const Compressor = () => {
   const [outputUrl, setOutputUrl] = useState("");
@@ -194,7 +195,7 @@ const Compressor = () => {
   };
 
   return (
-    <Grid>
+    <Grid sx={{ display: "flex", alignItems: "center", flexDirection: "column"}}>
       <Title
         title="Video Compressor"
         subtitle="Free online video compressor to easily reduce video file size."
@@ -214,6 +215,7 @@ const Compressor = () => {
         }}
         isCompressor = {true}
       />
+      <AdvanceOptions />
       <AlertMessage
         open={showErrorMessage}
         onClose={handleSnackBarClose}
