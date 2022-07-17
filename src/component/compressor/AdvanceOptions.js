@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -7,13 +7,21 @@ import {
   FormGroup,
   MenuItem,
   Select,
+  TextField,
   Typography,
 } from "@mui/material";
 
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 
-function AdvanceOptions() {
+function AdvanceOptions(props) {
   const isMobile = useResponsiveQuery();
+
+  const { options, setOptions, resetOptions } = props;
+
+  const getDynamicValues = (length) => {
+    return Array.from({ length }, (_, idx) => `${++idx}`);
+  };
+
   return (
     <Box
       sx={{
@@ -21,7 +29,7 @@ function AdvanceOptions() {
         width: isMobile ? "313px" : "840px",
         display: "flex",
         flexDirection: "column",
-        marginBottom: "20px"
+        marginBottom: "20px",
       }}
     >
       <Box>
@@ -59,26 +67,21 @@ function AdvanceOptions() {
           Video Codec
         </Typography>
         <Select
+          value={options.codec}
+          onChange={(e) => {
+            setOptions((options) => {
+              return { ...options, codec: e.target.value };
+            });
+          }}
           sx={{
             width: "100%",
             backgroundColor: "#FFFFFF",
             height: "40px",
             marginTop: "10px",
-            "&:hover": {
-              borderColor: "#c6ccd9",
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#c6ccd9",
-            },
-            select: {
-              "&:before": {
-                borderColor: "#c6ccd9",
-              },
-            },
           }}
         >
           <MenuItem value="h264">H264</MenuItem>
-          <MenuItem value="h265">H265</MenuItem>
+          <MenuItem value="libx265">H265</MenuItem>
         </Select>
         <Typography
           sx={{
@@ -96,12 +99,12 @@ function AdvanceOptions() {
       <Box
         sx={{
           display: "flex",
-          flexDirection: isMobile ? "column" :"row",
+          flexDirection: isMobile ? "column" : "row",
           justifyContent: "space-between",
           marginTop: "20px",
         }}
       >
-        <Box sx={{ width: isMobile ? "100%" :"45%" }}>
+        <Box sx={{ width: isMobile ? "100%" : "45%" }}>
           <Typography
             sx={{
               fontSize: "12px",
@@ -112,6 +115,12 @@ function AdvanceOptions() {
             Compression Method
           </Typography>
           <Select
+            value={options.method}
+            onChange={(e) => {
+              setOptions((options) => {
+                return { ...options, method: e.target.value };
+              });
+            }}
             sx={{
               width: "100%",
               backgroundColor: "#FFFFFF",
@@ -119,8 +128,9 @@ function AdvanceOptions() {
               marginTop: "10px",
             }}
           >
-            <MenuItem value="h264">H264</MenuItem>
-            <MenuItem value="h265">H265</MenuItem>
+            <MenuItem value="percent">Target a file size (Percentage)</MenuItem>
+            <MenuItem value="mb">Target a file size (MB)</MenuItem>
+            <MenuItem value="quality">Target a video quality</MenuItem>
           </Select>
           <Typography
             sx={{
@@ -144,43 +154,77 @@ function AdvanceOptions() {
             Choose "Target a video quality" when quality is of importance.
           </Typography>
         </Box>
-        <Box sx={{ width: isMobile ? "100%" :"45%" , marginTop: isMobile ? "20px" : "0px"}}>
+        <Box
+          sx={{
+            width: isMobile ? "100%" : "45%",
+            marginTop: isMobile ? "20px" : "0px",
+          }}
+        >
           <Typography
             sx={{
               fontSize: "12px",
               fontWeight: "800",
-              lineHeight: "16px",             
+              lineHeight: "16px",
             }}
           >
             Select Target Size
           </Typography>
-          <Select
-            sx={{
-              width: "100%",
-              backgroundColor: "#FFFFFF",
-              height: "40px",
-              marginTop: "10px",
-            }}
-          >
-            <MenuItem value="h264">H264</MenuItem>
-            <MenuItem value="h265">H265</MenuItem>
-          </Select>
-          <Typography
-            sx={{
-              fontSize: "10px",
-              fontWeight: "400",
-              lineHeight: "18px",
-              marginTop: "5px",
-              color: "rgba(55, 58, 65, 0.6)",
-            }}
-          >
-            Select a target file size as a percentage of the original. Smaller
-            values compress more. For example, a 100Mb file would become 25Mb if
-            you select 25%.
-          </Typography>
+          {options.method === "percent" && (
+            <Select
+              value={options.compressValue}
+              onChange={(e) => {
+                setOptions((options) => {
+                  return { ...options, compressValue: e.target.value };
+                });
+              }}
+              sx={{
+                width: "100%",
+                backgroundColor: "#FFFFFF",
+                height: "40px",
+                marginTop: "10px",
+              }}
+            >
+              {getDynamicValues(100).map((_, i) => {
+                return <MenuItem value={`${i + 1}%`}>{i + 1}%</MenuItem>;
+              })}
+            </Select>
+          )}
+          {options.method === "mb" && (
+            <TextField              
+              type="number"
+              value={options.compressValue}
+              onChange={(e) => {
+                setOptions((options) => {
+                  return { ...options, compressValue: e.target.value };
+                });
+              }}
+              sx={{
+                width: "100%",
+                backgroundColor: "#FFFFFF",
+                height: "40px",
+                marginTop: "10px",
+                "& .MuiOutlinedInput-root":{
+                  height: "40px",
+                }
+              }}
+            />
+          )}
+          
+            <Typography
+              sx={{
+                fontSize: "10px",
+                fontWeight: "400",
+                lineHeight: "18px",
+                marginTop: "5px",
+                color: "rgba(55, 58, 65, 0.6)",
+              }}
+            >
+              {options.method === "percent" ? `Select a target file size as a percentage of the original. Smaller values compress more. For example, a 100Mb file would become 25Mb if you select 25%.` : `Enter desired video file size in MB (Megabytes)`}
+            </Typography>
+          
         </Box>
       </Box>
-      <Box sx={{ width: isMobile ? "100%" :"60%" }}>
+      <Box sx={{ width: isMobile ? "100%" : "60%" }}>
         <Typography
           sx={{
             fontSize: "12px",
@@ -203,6 +247,12 @@ function AdvanceOptions() {
             }}
             control={
               <Checkbox
+                checked={options.oldDevices}
+                onChange={(e) => {
+                  setOptions((options) => {
+                    return { ...options, oldDevices: e.target.checked };
+                  });
+                }}
                 sx={{
                   borderRadius: "4px",
                   color: "#c6ccd9",
@@ -216,7 +266,16 @@ function AdvanceOptions() {
           />
         </FormGroup>
       </Box>
-      <Box sx={{ width: isMobile ? "100%" :"40%", marginTop: "20px", display: "flex", flexDirection: isMobile ? "column-reverse" :"row", alignItems: "center", justifyContent: isMobile ? "center" : "start" }}>
+      <Box
+        sx={{
+          width: isMobile ? "100%" : "40%",
+          marginTop: "20px",
+          display: "flex",
+          flexDirection: isMobile ? "column-reverse" : "row",
+          alignItems: "center",
+          justifyContent: isMobile ? "center" : "start",
+        }}
+      >
         <Button
           sx={{
             width: "55%",
@@ -240,19 +299,20 @@ function AdvanceOptions() {
           </Typography>
         </Button>
         <Typography
-            sx={{
-              color: "rgba(35, 34, 35, 1)",
-              fontWeight: 400,
-              fontSize: "12px",
-              lineHeight: "18px",
-              textDecoration: "underline",
-              marginLeft: isMobile ? "0px" :"26px",
-              marginBottom: isMobile ? "10px" : "0px",
-              cursor: "pointer"
-            }}
-          >
-            Reset all options
-          </Typography>
+          onClick={resetOptions}
+          sx={{
+            color: "rgba(35, 34, 35, 1)",
+            fontWeight: 400,
+            fontSize: "12px",
+            lineHeight: "18px",
+            textDecoration: "underline",
+            marginLeft: isMobile ? "0px" : "26px",
+            marginBottom: isMobile ? "10px" : "0px",
+            cursor: "pointer",
+          }}
+        >
+          Reset all options
+        </Typography>
       </Box>
     </Box>
   );

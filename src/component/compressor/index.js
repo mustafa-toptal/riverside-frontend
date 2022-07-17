@@ -15,6 +15,14 @@ import wavtomp3completed from "../../utils/lottie-jsons/wavtomp3completed.json";
 import { Service } from "../../utils/Service";
 import AdvanceOptions from "./AdvanceOptions";
 
+const defaultOptions = {
+  codec: "h264",
+  method: "percent",
+  compressValue: "60%",
+  oldDevices: false,
+  speed: "veryfast",
+};
+
 const Compressor = () => {
   const [outputUrl, setOutputUrl] = useState("");
   const [progress, setProgress] = useState(0);
@@ -22,6 +30,7 @@ const Compressor = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [message, setMessage] = useState("");
+  const [options, setOptions] = useState(defaultOptions);
 
   const isMobile = useResponsiveQuery();
   const service = new Service();
@@ -80,17 +89,33 @@ const Compressor = () => {
 
   const createConvertTask = async (importId, fileExtenstion) => {
     try {
-      const postData = {
+      let postData = {
         input: importId,
         output_format: fileExtenstion,
-        options: {
-          video_codec: "h264",
-          compress_video: "by_percentage",
-          video_compress_quality_percentage: 40,
-          isCompatibleWithOldDevices: false,
-        },
         type: "video",
       };
+      let compressorOptions = {
+        video_codec: options.codec,
+        isCompatibleWithOldDevices: options.oldDevices,
+      };
+
+      if (options.method === "percent") {
+        compressorOptions.compress_video = "by_percentage";
+        compressorOptions.video_compress_quality_percentage =
+          options.compressValue;
+      }
+
+      if (options.method === "mb") {
+        compressorOptions.compress_video = "by_size";
+        compressorOptions.video_compress_max_filesize = options.compressValue;
+      }
+
+      if (options.method === "quality") {
+        compressorOptions.compress_video = "by_video_quality";
+        compressorOptions.video_compress_crf_x264 = options.compressValue;
+        compressorOptions.video_compress_speed = options.speed;
+      }
+
       setMessage(animatedText("Compressing file"));
       const response = await service.post("compress", postData, true);
       const { data } = response;
@@ -194,6 +219,10 @@ const Compressor = () => {
     window.location.reload();
   };
 
+  const resetOptions = () => {
+    setOptions(defaultOptions)
+  }
+
   return (
     <Grid
       sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}
@@ -225,7 +254,11 @@ const Compressor = () => {
         }}
         isCompressor={true}
       />
-      <AdvanceOptions />
+      <AdvanceOptions
+        options={options}
+        setOptions={setOptions}
+        resetOptions={resetOptions}
+      />
       <AlertMessage
         open={showErrorMessage}
         onClose={handleSnackBarClose}
