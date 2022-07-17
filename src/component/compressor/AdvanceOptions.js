@@ -117,8 +117,18 @@ function AdvanceOptions(props) {
           <Select
             value={options.method}
             onChange={(e) => {
+              const value = e.target.value;
               setOptions((options) => {
-                return { ...options, method: e.target.value };
+                return {
+                  ...options,
+                  method: value,
+                  compressValue:
+                    value === "quality"
+                      ? "21"
+                      : value === "percent"
+                      ? "60%"
+                      : "",
+                };
               });
             }}
             sx={{
@@ -167,7 +177,9 @@ function AdvanceOptions(props) {
               lineHeight: "16px",
             }}
           >
-            Select Target Size
+            {options.method === "quality"
+              ? "Select Quality (CRF)"
+              : "Select Target Size"}
           </Typography>
           {options.method === "percent" && (
             <Select
@@ -189,8 +201,39 @@ function AdvanceOptions(props) {
               })}
             </Select>
           )}
+          {options.method === "quality" && (
+            <Select
+              value={options.compressValue}
+              onChange={(e) => {
+                setOptions((options) => {
+                  return { ...options, compressValue: e.target.value };
+                });
+              }}
+              sx={{
+                width: "100%",
+                backgroundColor: "#FFFFFF",
+                height: "40px",
+                marginTop: "10px",
+              }}
+            >
+              {getDynamicValues(34).map((_, i) => {
+                const val = i + 18;
+                return (
+                  <MenuItem value={`${val}`}>
+                    {val === 18
+                      ? "18 Best quality - large size"
+                      : val === 21
+                      ? "21 Good quality - medium size (Default)"
+                      : val === 28
+                      ? "28 Okay quality - small size"
+                      : val}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          )}
           {options.method === "mb" && (
-            <TextField              
+            <TextField
               type="number"
               value={options.compressValue}
               onChange={(e) => {
@@ -203,27 +246,79 @@ function AdvanceOptions(props) {
                 backgroundColor: "#FFFFFF",
                 height: "40px",
                 marginTop: "10px",
-                "& .MuiOutlinedInput-root":{
+                "& .MuiOutlinedInput-root": {
                   height: "40px",
-                }
+                },
               }}
             />
           )}
-          
-            <Typography
-              sx={{
-                fontSize: "10px",
-                fontWeight: "400",
-                lineHeight: "18px",
-                marginTop: "5px",
-                color: "rgba(55, 58, 65, 0.6)",
-              }}
-            >
-              {options.method === "percent" ? `Select a target file size as a percentage of the original. Smaller values compress more. For example, a 100Mb file would become 25Mb if you select 25%.` : `Enter desired video file size in MB (Megabytes)`}
-            </Typography>
-          
+
+          <Typography
+            sx={{
+              fontSize: "10px",
+              fontWeight: "400",
+              lineHeight: "18px",
+              marginTop: "5px",
+              color: "rgba(55, 58, 65, 0.6)",
+            }}
+          >
+            {options.method === "percent"
+              ? `Select a target file size as a percentage of the original. Smaller values compress more. For example, a 100Mb file would become 25Mb if you select 25%.`
+              : options.method === "mb"
+              ? `Enter desired video file size in MB (Megabytes)`
+              : `Higher CRF values compress more (at the expense of lower video quality)`}
+          </Typography>
         </Box>
       </Box>
+      {options.method === "quality" && (
+        <Box sx={{ width: "100%", marginTop: "20px" }}>
+          <Typography
+            sx={{
+              fontSize: "12px",
+              fontWeight: "800",
+              lineHeight: "16px",
+            }}
+          >
+            Compression Speed
+          </Typography>
+          <Select
+            value={options.speed}
+            onChange={(e) => {
+              setOptions((options) => {
+                return { ...options, speed: e.target.value };
+              });
+            }}
+            sx={{
+              width: "100%",
+              backgroundColor: "#FFFFFF",
+              height: "40px",
+              marginTop: "10px",
+            }}
+          >
+            <MenuItem value="ultrafast">Ultra fast</MenuItem>
+            <MenuItem value="superfast">Super fast</MenuItem>
+            <MenuItem value="veryfast">Very fast (Default)</MenuItem>
+            <MenuItem value="faster">Faster</MenuItem>
+            <MenuItem value="fast">Fast</MenuItem>
+            <MenuItem value="medium">Medium</MenuItem>
+            <MenuItem value="slow">Slow</MenuItem>
+            <MenuItem value="slower">Slower</MenuItem>
+            <MenuItem value="veryslow">Very Slow</MenuItem>
+          </Select>
+          <Typography
+            sx={{
+              fontSize: "10px",
+              fontWeight: "400",
+              lineHeight: "18px",
+              color: "rgba(55, 58, 65, 0.6)",
+              marginTop: "5px"
+            }}
+          >
+            Slower speeds yield better compression/quality. We recommend "Very Fast" which balance both quality
+            and speed.
+          </Typography>
+        </Box>
+      )}
       <Box sx={{ width: isMobile ? "100%" : "60%" }}>
         <Typography
           sx={{
