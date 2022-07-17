@@ -1,24 +1,25 @@
 import React from "react";
 import { Box, Snackbar, SnackbarContent } from "@mui/material";
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 import { Warning } from "../../icons/Warning";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 import { useAlertMessageStyles } from "./styles/Styles";
 
 const AlertContent = (props) => {
-  const { message, isMobile } = props;
+  const { message, isMobile, isSuccess } = props;
   const styles = useAlertMessageStyles(isMobile)();
 
   return (
     <Box className={styles.message}>
-      <Warning />
+      {isSuccess ? <CheckCircleOutlineIcon /> :<Warning />}
       {message}
     </Box>
   );
 };
 
 export const AlertMessage = (props) => {
-  const { open, onClose, message } = props;
+  const { open, onClose, message, isSuccess } = props;
   const isMobile = useResponsiveQuery();
   const styles = useAlertMessageStyles(isMobile)();
   return (
@@ -31,7 +32,13 @@ export const AlertMessage = (props) => {
     >
       <SnackbarContent
         className={styles.snackbarContent}
-        message={<AlertContent message={message} isMobile={isMobile} />}
+        message={
+          <AlertContent
+            message={message}
+            isMobile={isMobile}
+            isSuccess={isSuccess}
+          />
+        }
       />
     </Snackbar>
   );

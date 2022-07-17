@@ -30,7 +30,10 @@ const Compressor = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [message, setMessage] = useState("");
+  const [isSettingsApplied, setApplySettings] = useState(false);
   const [options, setOptions] = useState(defaultOptions);
+  const [showSettingNotification, setShowSettingNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   const isMobile = useResponsiveQuery();
   const service = new Service();
@@ -94,28 +97,37 @@ const Compressor = () => {
         output_format: fileExtenstion,
         type: "video",
       };
-      let compressorOptions = {
-        video_codec: options.codec,
-        isCompatibleWithOldDevices: options.oldDevices,
-      };
+      if (isSettingsApplied) {
+        let compressorOptions = {
+          video_codec: options.codec,
+          isCompatibleWithOldDevices: options.oldDevices,
+        };
 
-      if (options.method === "percent") {
-        compressorOptions.compress_video = "by_percentage";
-        compressorOptions.video_compress_quality_percentage =
-          options.compressValue;
+        if (options.method === "percent") {
+          compressorOptions.compress_video = "by_percentage";
+          compressorOptions.video_compress_quality_percentage =
+            options.compressValue;
+        }
+
+        if (options.method === "mb") {
+          compressorOptions.compress_video = "by_size";
+          compressorOptions.video_compress_max_filesize = options.compressValue;
+        }
+
+        if (options.method === "quality") {
+          compressorOptions.compress_video = "by_video_quality";
+          compressorOptions.video_compress_crf_x264 = options.compressValue;
+          compressorOptions.video_compress_speed = options.speed;
+        }
+        postData.options = compressorOptions;
+      } else {
+        postData.options = {
+          video_codec: "h264",
+          compress_video: "by_percentage",
+          video_compress_quality_percentage: "60%",
+          isCompatibleWithOldDevices: false,
+        };
       }
-
-      if (options.method === "mb") {
-        compressorOptions.compress_video = "by_size";
-        compressorOptions.video_compress_max_filesize = options.compressValue;
-      }
-
-      if (options.method === "quality") {
-        compressorOptions.compress_video = "by_video_quality";
-        compressorOptions.video_compress_crf_x264 = options.compressValue;
-        compressorOptions.video_compress_speed = options.speed;
-      }
-
       setMessage(animatedText("Compressing file"));
       const response = await service.post("compress", postData, true);
       const { data } = response;
@@ -172,6 +184,8 @@ const Compressor = () => {
   const handleSnackBarClose = () => {
     setErrorMessage("");
     setShowErrorMessage(false);
+    setShowSettingNotification(false);
+    setNotificationMessage("");
   };
 
   const exportFile = () => {
@@ -196,20 +210,8 @@ const Compressor = () => {
   };
 
   const renderIcon = () => {
-    let defaultOptions = {
-      loop: true,
-      autoplay: true,
-      rendererSettings: {
-        preserveAspectRatio: "xMidYMid slice",
-      },
-    };
-    if (loading) {
-      defaultOptions.animationData = wavtomp3;
-      return <Lottie options={defaultOptions} width={150} height={85} />;
-    } else if (outputUrl) {
-      defaultOptions.loop = false;
-      defaultOptions.animationData = wavtomp3completed;
-      return <Lottie options={defaultOptions} width={100} height={85} />;
+    if (loading || outputUrl) {
+      return <></>
     } else {
       return <Upload />;
     }
@@ -220,8 +222,14 @@ const Compressor = () => {
   };
 
   const resetOptions = () => {
-    setOptions(defaultOptions)
-  }
+    setOptions(defaultOptions);
+  };
+
+  const applySettings = () => {
+    setApplySettings(true);
+    setShowSettingNotification(true);
+    setNotificationMessage("Setting applied successfully");
+  };
 
   return (
     <Grid
@@ -258,11 +266,18 @@ const Compressor = () => {
         options={options}
         setOptions={setOptions}
         resetOptions={resetOptions}
+        applySettings={applySettings}
       />
       <AlertMessage
         open={showErrorMessage}
         onClose={handleSnackBarClose}
         message={errorMessage}
+      />
+      <AlertMessage
+        open={showSettingNotification}
+        onClose={handleSnackBarClose}
+        message={notificationMessage}
+        isSuccess
       />
     </Grid>
   );

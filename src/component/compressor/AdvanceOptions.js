@@ -16,7 +16,7 @@ import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 function AdvanceOptions(props) {
   const isMobile = useResponsiveQuery();
 
-  const { options, setOptions, resetOptions } = props;
+  const { options, setOptions, resetOptions, applySettings } = props;
 
   const getDynamicValues = (length) => {
     return Array.from({ length }, (_, idx) => `${++idx}`);
@@ -372,6 +372,7 @@ function AdvanceOptions(props) {
         }}
       >
         <Button
+        onClick = {applySettings}
           sx={{
             width: "55%",
             backgroundColor: "rgba(0, 0, 0, 1)",
@@ -390,7 +391,7 @@ function AdvanceOptions(props) {
               lineHeight: "18px",
             }}
           >
-            Apply from preset
+            Apply settings
           </Typography>
         </Button>
         <Typography

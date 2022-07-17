@@ -19,11 +19,11 @@ export const Progress = (props) => {
     hideTitle = false,
     dragEvent,
     isTranscription,
-    isCompressor
+    isCompressor,
   } = props;
 
   const styles = useFileUploadStyles(isCompressor)();
-  
+
   const dropRef = useRef();
 
   useEffect(() => {
@@ -78,7 +78,11 @@ export const Progress = (props) => {
         ) : (
           <>
             {renderChooseFile()} to{" "}
-            {isTranscription ? "start uploading" : "convert"}
+            {isTranscription
+              ? "start uploading"
+              : isCompressor
+              ? "compress"
+              : "convert"}
           </>
         )}
       </Typography>
@@ -118,7 +122,7 @@ export const Progress = (props) => {
             <Cross className={styles.cancelIcon} onClick={cancelTask} />
           </Grid>
         ) : (
-          <DownloadButton onClick={exportFile} />
+          <DownloadButton onClick={exportFile} isCompressor={isCompressor} />
         )}
       </Grid>
     );

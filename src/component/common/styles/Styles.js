@@ -132,7 +132,7 @@ export const useFileUploadStyles = (isCompressor) => makeStyles({
     justifyContent: "space-around",
     alignItems: "center",
     flexDirection: "column",
-    height: "80%",
+    height: isCompressor ? "45%" :"80%",
   },
   progressText: {
     fontWeight: "600",
@@ -166,13 +166,13 @@ export const useFileUploadStyles = (isCompressor) => makeStyles({
     },
   },
   downloadButton: {
-    backgroundColor: "#161C21",
+    backgroundColor: isCompressor ? "rgba(149, 153, 255, 1)" :"#161C21",
     color: "#FFFFFF",
     height: pxToRem(40),
     width: pxToRem(270),
     borderRadius: pxToRem(10),
     "&:hover": {
-      backgroundColor: "#161C21",
+      backgroundColor: isCompressor ? "rgba(149, 153, 255, 1)" :"#161C21",
     },
   },
   buttonTextWrapper: {

@@ -5,14 +5,15 @@ import { Download } from "../../../icons/Download";
 import { useFileUploadStyles } from "../styles/Styles";
 
 export const DownloadButton = (props) => {
-  const styles = useFileUploadStyles();
+  
   const {
     onClick,
     customWrapperStyles = {},
     customButtonStyles = {},
+    isCompressor = false,
     ...buttonProps
   } = props;
-
+  const styles = useFileUploadStyles(isCompressor)();
   return (
     <Button
       type="primary"
