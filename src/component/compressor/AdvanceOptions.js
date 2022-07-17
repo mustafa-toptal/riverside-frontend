@@ -10,12 +10,15 @@ import {
   Typography,
 } from "@mui/material";
 
+import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
+
 function AdvanceOptions() {
+  const isMobile = useResponsiveQuery();
   return (
     <Box
       sx={{
         marginTop: "20px",
-        width: "840px",
+        width: isMobile ? "313px" : "840px",
         display: "flex",
         flexDirection: "column",
         marginBottom: "20px"
@@ -93,12 +96,12 @@ function AdvanceOptions() {
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: isMobile ? "column" :"row",
           justifyContent: "space-between",
           marginTop: "20px",
         }}
       >
-        <Box sx={{ width: "45%" }}>
+        <Box sx={{ width: isMobile ? "100%" :"45%" }}>
           <Typography
             sx={{
               fontSize: "12px",
@@ -141,7 +144,7 @@ function AdvanceOptions() {
             Choose "Target a video quality" when quality is of importance.
           </Typography>
         </Box>
-        <Box sx={{ width: "45%" }}>
+        <Box sx={{ width: isMobile ? "100%" :"45%" , marginTop: isMobile ? "20px" : "0px"}}>
           <Typography
             sx={{
               fontSize: "12px",
@@ -177,7 +180,7 @@ function AdvanceOptions() {
           </Typography>
         </Box>
       </Box>
-      <Box sx={{ width: "60%" }}>
+      <Box sx={{ width: isMobile ? "100%" :"60%" }}>
         <Typography
           sx={{
             fontSize: "12px",
@@ -213,7 +216,7 @@ function AdvanceOptions() {
           />
         </FormGroup>
       </Box>
-      <Box sx={{ width: "40%", marginTop: "20px", display: "flex", flexDirection: "row", alignItems: "center" }}>
+      <Box sx={{ width: isMobile ? "100%" :"40%", marginTop: "20px", display: "flex", flexDirection: isMobile ? "column-reverse" :"row", alignItems: "center", justifyContent: isMobile ? "center" : "start" }}>
         <Button
           sx={{
             width: "55%",
@@ -243,7 +246,8 @@ function AdvanceOptions() {
               fontSize: "12px",
               lineHeight: "18px",
               textDecoration: "underline",
-              marginLeft: "26px",
+              marginLeft: isMobile ? "0px" :"26px",
+              marginBottom: isMobile ? "10px" : "0px",
               cursor: "pointer"
             }}
           >
