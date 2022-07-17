@@ -195,7 +195,17 @@ const Compressor = () => {
   };
 
   return (
-    <Grid sx={{ display: "flex", alignItems: "center", flexDirection: "column"}}>
+    <Grid
+      sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}
+    >
+      <style>
+        {`
+        #root{
+          overflow-y: scroll;
+          overflow-x: hidden;
+        }
+        `}
+      </style>
       <Title
         title="Video Compressor"
         subtitle="Free online video compressor to easily reduce video file size."
@@ -208,12 +218,12 @@ const Compressor = () => {
         exportFile={exportFile}
         icon={renderIcon()}
         cancelTask={cancelTask}
-        subtitleStyles = {{
-          fontWeight:  `400 !important`,
-          fontSize: `${isMobile ? "18px":"14px"} !important`,
-          lineHeight: `${isMobile ? "28px":"48px"} !important`
+        subtitleStyles={{
+          fontWeight: `400 !important`,
+          fontSize: `${isMobile ? "18px" : "14px"} !important`,
+          lineHeight: `${isMobile ? "28px" : "48px"} !important`,
         }}
-        isCompressor = {true}
+        isCompressor={true}
       />
       <AdvanceOptions />
       <AlertMessage
