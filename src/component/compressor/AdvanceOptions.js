@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Button,
-  Checkbox,
   FormControlLabel,
   FormGroup,
   MenuItem,
-  Select,
   TextField,
   Typography,
 } from "@mui/material";
@@ -76,14 +74,18 @@ function AdvanceOptions(props) {
             });
           }}
         >
-          <MenuItem value="h264">H264</MenuItem>
-          <MenuItem value="libx265">H265</MenuItem>
+          <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="h264">
+            H264
+          </MenuItem>
+          <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="libx265">
+            H265
+          </MenuItem>
         </Dropdown>
         <Typography
           sx={{
             fontSize: "10px",
             fontWeight: "400",
-            lineHeight: "18px",
+            lineHeight: "14px",
             marginTop: "5px",
             color: "rgba(55, 58, 65, 0.6)",
           }}
@@ -100,7 +102,7 @@ function AdvanceOptions(props) {
           marginTop: "20px",
         }}
       >
-        <Box sx={{ width: isMobile ? "100%" : "45%" }}>
+        <Box sx={{ width: isMobile ? "100%" : "49%" }}>
           <Typography
             sx={{
               fontSize: "12px",
@@ -128,15 +130,27 @@ function AdvanceOptions(props) {
               });
             }}
           >
-            <MenuItem value="percent">Target a file size (Percentage)</MenuItem>
-            <MenuItem value="mb">Target a file size (MB)</MenuItem>
-            <MenuItem value="quality">Target a video quality</MenuItem>
+            <MenuItem
+              sx={{ fontSize: "12px", fontWeight: 400 }}
+              value="percent"
+            >
+              Target a file size (Percentage)
+            </MenuItem>
+            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="mb">
+              Target a file size (MB)
+            </MenuItem>
+            <MenuItem
+              sx={{ fontSize: "12px", fontWeight: 400 }}
+              value="quality"
+            >
+              Target a video quality
+            </MenuItem>
           </Dropdown>
           <Typography
             sx={{
               fontSize: "10px",
               fontWeight: "400",
-              lineHeight: "18px",
+              lineHeight: "14px",
               marginTop: "5px",
               color: "rgba(55, 58, 65, 0.6)",
             }}
@@ -147,7 +161,7 @@ function AdvanceOptions(props) {
             sx={{
               fontSize: "10px",
               fontWeight: "400",
-              lineHeight: "18px",
+              lineHeight: "14px",
               color: "rgba(55, 58, 65, 0.6)",
             }}
           >
@@ -156,7 +170,7 @@ function AdvanceOptions(props) {
         </Box>
         <Box
           sx={{
-            width: isMobile ? "100%" : "45%",
+            width: isMobile ? "100%" : "49%",
             marginTop: isMobile ? "20px" : "0px",
           }}
         >
@@ -181,7 +195,14 @@ function AdvanceOptions(props) {
               }}
             >
               {getDynamicValues(100).map((_, i) => {
-                return <MenuItem value={`${i + 1}%`}>{i + 1}%</MenuItem>;
+                return (
+                  <MenuItem
+                    sx={{ fontSize: "12px", fontWeight: 400 }}
+                    value={`${i + 1}%`}
+                  >
+                    {i + 1}%
+                  </MenuItem>
+                );
               })}
             </Dropdown>
           )}
@@ -197,7 +218,10 @@ function AdvanceOptions(props) {
               {getDynamicValues(34).map((_, i) => {
                 const val = i + 18;
                 return (
-                  <MenuItem value={`${val}`}>
+                  <MenuItem
+                    sx={{ fontSize: "12px", fontWeight: 400 }}
+                    value={`${val}`}
+                  >
                     {val === 18
                       ? "18 Best quality - large size"
                       : val === 21
@@ -238,7 +262,7 @@ function AdvanceOptions(props) {
             sx={{
               fontSize: "10px",
               fontWeight: "400",
-              lineHeight: "18px",
+              lineHeight: "14px",
               marginTop: "5px",
               color: "rgba(55, 58, 65, 0.6)",
             }}
@@ -270,21 +294,51 @@ function AdvanceOptions(props) {
               });
             }}
           >
-            <MenuItem value="ultrafast">Ultra fast</MenuItem>
-            <MenuItem value="superfast">Super fast</MenuItem>
-            <MenuItem value="veryfast">Very fast (Default)</MenuItem>
-            <MenuItem value="faster">Faster</MenuItem>
-            <MenuItem value="fast">Fast</MenuItem>
-            <MenuItem value="medium">Medium</MenuItem>
-            <MenuItem value="slow">Slow</MenuItem>
-            <MenuItem value="slower">Slower</MenuItem>
-            <MenuItem value="veryslow">Very Slow</MenuItem>
+            <MenuItem
+              sx={{ fontSize: "12px", fontWeight: 400 }}
+              value="ultrafast"
+            >
+              Ultra fast
+            </MenuItem>
+            <MenuItem
+              sx={{ fontSize: "12px", fontWeight: 400 }}
+              value="superfast"
+            >
+              Super fast
+            </MenuItem>
+            <MenuItem
+              sx={{ fontSize: "12px", fontWeight: 400 }}
+              value="veryfast"
+            >
+              Very fast (Default)
+            </MenuItem>
+            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="faster">
+              Faster
+            </MenuItem>
+            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="fast">
+              Fast
+            </MenuItem>
+            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="medium">
+              Medium
+            </MenuItem>
+            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="slow">
+              Slow
+            </MenuItem>
+            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="slower">
+              Slower
+            </MenuItem>
+            <MenuItem
+              sx={{ fontSize: "12px", fontWeight: 400 }}
+              value="veryslow"
+            >
+              Very Slow
+            </MenuItem>
           </Dropdown>
           <Typography
             sx={{
               fontSize: "10px",
               fontWeight: "400",
-              lineHeight: "18px",
+              lineHeight: "14px",
               color: "rgba(55, 58, 65, 0.6)",
               marginTop: "5px",
             }}
@@ -313,10 +367,11 @@ function AdvanceOptions(props) {
                 color: "rgba(55, 58, 65, 1)",
                 fontSize: "12px",
                 fontWeight: 400,
-                marginLeft: "14px"
+                marginLeft: "14px",
+                lineHeight: "14px"
               },
             }}
-            control={              
+            control={
               options.oldDevices ? (
                 <CheckBoxChecked
                   sx={{ width: "20px", height: "20px", marginLeft: "10px" }}
@@ -381,7 +436,9 @@ function AdvanceOptions(props) {
             fontWeight: 400,
             fontSize: "12px",
             lineHeight: "18px",
-            textDecoration: "underline",
+            "&:hover":{
+              textDecoration: "underline",
+            },
             marginLeft: isMobile ? "0px" : "26px",
             marginBottom: isMobile ? "10px" : "0px",
             cursor: "pointer",

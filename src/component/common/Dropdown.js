@@ -12,7 +12,7 @@ function Dropdown({ children, onChange, value }) {
         PaperProps: {
           sx: {
             "& .MuiMenuItem-root.Mui-selected": {
-              backgroundColor: "#C6CCD9 !important",
+              backgroundColor: "#BBBCBE !important",
             },
 
             "& .MuiMenuItem-root:hover": {
@@ -32,6 +32,10 @@ function Dropdown({ children, onChange, value }) {
         "& .MuiOutlinedInput-notchedOutline": {
           border: "none !important",
         },
+        "& .MuiOutlinedInput-input":{
+          fontSize: "12px",
+          fontWeight: 400
+        },        
       }}
       IconComponent = {DropdownIcon}
      >

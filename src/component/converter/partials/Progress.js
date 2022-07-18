@@ -38,9 +38,9 @@ export const Progress = (props) => {
     return (
       <font
         color="#7d7aff"
+        id="choose-file"
         style={{
           fontWeight: "bolder",
-          textDecoration: "underline",
           cursor: "pointer",
         }}
       >
@@ -57,6 +57,7 @@ export const Progress = (props) => {
           marginTop: !isMobile ? pxToRem(12.8) : 0,
         }}
       >
+        <style>{`#choose-file:hover{text-decoration:underline}`}</style>
         <Typography variant="h6" className={styles.webText}>
           {text ? (
             text
