@@ -223,6 +223,8 @@ const Compressor = () => {
 
   const resetOptions = () => {
     setOptions(defaultOptions);
+    setShowSettingNotification(true);
+    setNotificationMessage("Setting restored");
   };
 
   const applySettings = () => {
@@ -240,6 +242,9 @@ const Compressor = () => {
         #root{
           overflow-y: scroll;
           overflow-x: hidden;
+        }
+        body{
+          background-color: #F6F6F6
         }
         `}
       </style>

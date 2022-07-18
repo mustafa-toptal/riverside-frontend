@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
+import Dropdown from "../common/Dropdown";
+import { CheckBoxChecked, CheckBoxUnchecked } from "../../icons/CheckBox";
 
 function AdvanceOptions(props) {
   const isMobile = useResponsiveQuery();
@@ -26,7 +28,7 @@ function AdvanceOptions(props) {
     <Box
       sx={{
         marginTop: "20px",
-        width: isMobile ? "313px" : "840px",
+        width: isMobile ? "313px" : "680px",
         display: "flex",
         flexDirection: "column",
         marginBottom: "20px",
@@ -66,23 +68,17 @@ function AdvanceOptions(props) {
         >
           Video Codec
         </Typography>
-        <Select
+        <Dropdown
           value={options.codec}
           onChange={(e) => {
             setOptions((options) => {
               return { ...options, codec: e.target.value };
             });
           }}
-          sx={{
-            width: "100%",
-            backgroundColor: "#FFFFFF",
-            height: "40px",
-            marginTop: "10px",
-          }}
         >
           <MenuItem value="h264">H264</MenuItem>
           <MenuItem value="libx265">H265</MenuItem>
-        </Select>
+        </Dropdown>
         <Typography
           sx={{
             fontSize: "10px",
@@ -114,7 +110,7 @@ function AdvanceOptions(props) {
           >
             Compression Method
           </Typography>
-          <Select
+          <Dropdown
             value={options.method}
             onChange={(e) => {
               const value = e.target.value;
@@ -131,17 +127,11 @@ function AdvanceOptions(props) {
                 };
               });
             }}
-            sx={{
-              width: "100%",
-              backgroundColor: "#FFFFFF",
-              height: "40px",
-              marginTop: "10px",
-            }}
           >
             <MenuItem value="percent">Target a file size (Percentage)</MenuItem>
             <MenuItem value="mb">Target a file size (MB)</MenuItem>
             <MenuItem value="quality">Target a video quality</MenuItem>
-          </Select>
+          </Dropdown>
           <Typography
             sx={{
               fontSize: "10px",
@@ -182,38 +172,26 @@ function AdvanceOptions(props) {
               : "Select Target Size"}
           </Typography>
           {options.method === "percent" && (
-            <Select
+            <Dropdown
               value={options.compressValue}
               onChange={(e) => {
                 setOptions((options) => {
                   return { ...options, compressValue: e.target.value };
                 });
-              }}
-              sx={{
-                width: "100%",
-                backgroundColor: "#FFFFFF",
-                height: "40px",
-                marginTop: "10px",
               }}
             >
               {getDynamicValues(100).map((_, i) => {
                 return <MenuItem value={`${i + 1}%`}>{i + 1}%</MenuItem>;
               })}
-            </Select>
+            </Dropdown>
           )}
           {options.method === "quality" && (
-            <Select
+            <Dropdown
               value={options.compressValue}
               onChange={(e) => {
                 setOptions((options) => {
                   return { ...options, compressValue: e.target.value };
                 });
-              }}
-              sx={{
-                width: "100%",
-                backgroundColor: "#FFFFFF",
-                height: "40px",
-                marginTop: "10px",
               }}
             >
               {getDynamicValues(34).map((_, i) => {
@@ -230,7 +208,7 @@ function AdvanceOptions(props) {
                   </MenuItem>
                 );
               })}
-            </Select>
+            </Dropdown>
           )}
           {options.method === "mb" && (
             <TextField
@@ -248,6 +226,9 @@ function AdvanceOptions(props) {
                 marginTop: "10px",
                 "& .MuiOutlinedInput-root": {
                   height: "40px",
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  border: "none",
                 },
               }}
             />
@@ -281,18 +262,12 @@ function AdvanceOptions(props) {
           >
             Compression Speed
           </Typography>
-          <Select
+          <Dropdown
             value={options.speed}
             onChange={(e) => {
               setOptions((options) => {
                 return { ...options, speed: e.target.value };
               });
-            }}
-            sx={{
-              width: "100%",
-              backgroundColor: "#FFFFFF",
-              height: "40px",
-              marginTop: "10px",
             }}
           >
             <MenuItem value="ultrafast">Ultra fast</MenuItem>
@@ -304,22 +279,22 @@ function AdvanceOptions(props) {
             <MenuItem value="slow">Slow</MenuItem>
             <MenuItem value="slower">Slower</MenuItem>
             <MenuItem value="veryslow">Very Slow</MenuItem>
-          </Select>
+          </Dropdown>
           <Typography
             sx={{
               fontSize: "10px",
               fontWeight: "400",
               lineHeight: "18px",
               color: "rgba(55, 58, 65, 0.6)",
-              marginTop: "5px"
+              marginTop: "5px",
             }}
           >
-            Slower speeds yield better compression/quality. We recommend "Very Fast" which balance both quality
-            and speed.
+            Slower speeds yield better compression/quality. We recommend "Very
+            Fast" which balance both quality and speed.
           </Typography>
         </Box>
       )}
-      <Box sx={{ width: isMobile ? "100%" : "60%" }}>
+      <Box sx={{ width: isMobile ? "100%" : "70%" }}>
         <Typography
           sx={{
             fontSize: "12px",
@@ -335,27 +310,32 @@ function AdvanceOptions(props) {
             sx={{
               marginTop: "14px",
               "& .MuiFormControlLabel-label": {
-                color: "rgba(55, 58, 65, 0.6)",
-                fontSize: "14px",
+                color: "rgba(55, 58, 65, 1)",
+                fontSize: "12px",
                 fontWeight: 400,
+                marginLeft: "14px"
               },
             }}
-            control={
-              <Checkbox
-                checked={options.oldDevices}
-                onChange={(e) => {
-                  setOptions((options) => {
-                    return { ...options, oldDevices: e.target.checked };
-                  });
-                }}
-                sx={{
-                  borderRadius: "4px",
-                  color: "#c6ccd9",
-                  "&.Mui-checked": {
-                    color: "#9599FF",
-                  },
-                }}
-              />
+            control={              
+              options.oldDevices ? (
+                <CheckBoxChecked
+                  sx={{ width: "20px", height: "20px", marginLeft: "10px" }}
+                  onClick={() => {
+                    setOptions((options) => {
+                      return { ...options, oldDevices: false };
+                    });
+                  }}
+                />
+              ) : (
+                <CheckBoxUnchecked
+                  sx={{ width: "20px", height: "20px", marginLeft: "10px" }}
+                  onClick={() => {
+                    setOptions((options) => {
+                      return { ...options, oldDevices: true };
+                    });
+                  }}
+                />
+              )
             }
             label="Only use this option if you plan to play the video on a really old device or if you are having playback issues (it compress less)"
           />
@@ -372,7 +352,7 @@ function AdvanceOptions(props) {
         }}
       >
         <Button
-        onClick = {applySettings}
+          onClick={applySettings}
           sx={{
             width: "55%",
             backgroundColor: "rgba(0, 0, 0, 1)",

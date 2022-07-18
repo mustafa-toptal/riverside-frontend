@@ -12,7 +12,9 @@ const AlertContent = (props) => {
 
   return (
     <Box className={styles.message}>
+      <Box className={styles.iconWrapper}>
       {isSuccess ? <CheckCircleOutlineIcon /> :<Warning />}
+      </Box>
       {message}
     </Box>
   );

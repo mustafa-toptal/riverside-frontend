@@ -80,7 +80,7 @@ export const useFileUploadStyles = (isCompressor) => makeStyles({
     border: `${pxToRem(2.15238)} dashed #C6CCD9`,
     boxSizing: "border-box",
     borderRadius: pxToRem(21.5238),
-    width: isCompressor ? pxToRem(840) :pxToRem(497),
+    width: isCompressor ? pxToRem(680) :pxToRem(497),
     height: isCompressor ? pxToRem(188) :pxToRem(205),
     marginTop: isCompressor ? pxToRem(16) :pxToRem(44),
     display: "flex",
@@ -90,7 +90,7 @@ export const useFileUploadStyles = (isCompressor) => makeStyles({
   },
   mobileStyles: {
     width: pxToRem(343),
-    height: pxToRem(255),
+    height: isCompressor ? pxToRem(180) :pxToRem(255),
     left: pxToRem(16),
     top: pxToRem(246),
     border: "2px dashed #C6CCD9",
@@ -262,7 +262,7 @@ export const useAlertMessageStyles = (isMobile) => {
         alignItems: "center",
         justifyContent: "center",
         "& .MuiSnackbarContent-message": {
-          width: isMobile ? "90%" : "75%",
+          // width: isMobile ? "90%" : "50%",
         },
       },
     },
@@ -278,5 +278,8 @@ export const useAlertMessageStyles = (isMobile) => {
       justifyContent: "space-evenly",
       color: "white",
     },
+    iconWrapper: {
+      marginRight: "10px"
+    }
   });
 };
