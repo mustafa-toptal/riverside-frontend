@@ -12,14 +12,14 @@ function Dropdown({ children, onChange, value }) {
         PaperProps: {
           sx: {
             "& .MuiMenuItem-root.Mui-selected": {
-              backgroundColor: "#BBBCBE !important",
+              backgroundColor: "rgba(187, 188, 190, 0.3) !important",
             },
 
             "& .MuiMenuItem-root:hover": {
               backgroundColor: "rgba(187, 188, 190, 0.3)",
             },
             "& .MuiMenuItem-root.Mui-selected:hover": {
-              backgroundColor: "rgba(187, 188, 190, 0.3)",
+              backgroundColor: "rgba(187, 188, 190, 0.4) !important",
             },
           },
         },

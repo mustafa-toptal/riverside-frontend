@@ -37,7 +37,7 @@ function AdvanceOptions(props) {
           variant="subtitle"
           sx={{
             lineHeight: "24px",
-            fontWeight: 700,
+            fontWeight: 800,
             fontSize: "20px",
           }}
         >
@@ -348,7 +348,7 @@ function AdvanceOptions(props) {
           </Typography>
         </Box>
       )}
-      <Box sx={{ width: isMobile ? "100%" : "70%" }}>
+      <Box sx={{ width: isMobile ? "100%" : "65%" }}>
         <Typography
           sx={{
             fontSize: "12px",
@@ -416,6 +416,7 @@ function AdvanceOptions(props) {
             "&:hover": {
               backgroundColor: "rgba(0, 0, 0, 0.8)",
             },
+            textTransform: "none"
           }}
         >
           <Typography
