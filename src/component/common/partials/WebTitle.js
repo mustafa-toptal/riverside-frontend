@@ -11,17 +11,23 @@ export const WebTitle = (props) => {
     subtitle,
     highlightedWordIndex,
     isTranscription,
-    subtitleStyles={},
-    titleStyles = {},
+    subtitleStyles = {},
+    isCompressor = false,
     ...restProps
   } = props;
   const styles = useTitleStyles();
   const isMobile = useResponsiveQuery();
+  
+  let titleStyles = {};
+  if (isCompressor) {
+    titleStyles.fontWeight = "900 !important";
+  }
 
   return (
     <Grid container className={styles.titleWrapper} {...restProps}>
-      <Typography className={isMobile ? styles.mobileTitle : styles.webTitle}
-      sx = {{...titleStyles }}
+      <Typography
+        className={isMobile ? styles.mobileTitle : styles.webTitle}
+        sx={{ ...titleStyles }}
       >
         {renderTitle(title, highlightedWordIndex)}
       </Typography>
@@ -32,7 +38,7 @@ export const WebTitle = (props) => {
             ? styles.webSubtitle
             : styles.webTranscriptionSubtitle
         }
-        sx = {{...subtitleStyles }}
+        sx={{ ...subtitleStyles }}
       >
         {subtitle}
       </Typography>

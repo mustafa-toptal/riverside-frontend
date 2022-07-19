@@ -14,6 +14,7 @@ export const MobileTitle = (props) => {
     subStyles.width = "inherit !important"
     subStyles.marginTop = "20px !important"
     titleStyles.fontSize= "34px !important"
+    titleStyles.fontWeight = "900 !important"
   }
   
   

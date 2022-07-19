@@ -47,7 +47,7 @@ export const Title = (props) => {
           highlightedWordIndex={highlightedWordIndex}
           isTranscription={isTranscription}
           subtitleStyles = {subtitleStyles}
-          
+          isCompressor = {isCompressor}
         />
       )}
       {message ? (

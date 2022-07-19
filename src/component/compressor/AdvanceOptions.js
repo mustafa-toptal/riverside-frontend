@@ -26,7 +26,7 @@ function AdvanceOptions(props) {
     <Box
       sx={{
         marginTop: "20px",
-        width: isMobile ? "313px" : "680px",
+        width: isMobile ? "343px" : "680px",
         display: "flex",
         flexDirection: "column",
         marginBottom: "20px",
@@ -74,10 +74,16 @@ function AdvanceOptions(props) {
             });
           }}
         >
-          <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="h264">
+          <MenuItem
+            sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
+            value="h264"
+          >
             H264
           </MenuItem>
-          <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="libx265">
+          <MenuItem
+            sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
+            value="libx265"
+          >
             H265
           </MenuItem>
         </Dropdown>
@@ -131,16 +137,19 @@ function AdvanceOptions(props) {
             }}
           >
             <MenuItem
-              sx={{ fontSize: "12px", fontWeight: 400 }}
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
               value="percent"
             >
               Target a file size (Percentage)
             </MenuItem>
-            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="mb">
+            <MenuItem
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
+              value="mb"
+            >
               Target a file size (MB)
             </MenuItem>
             <MenuItem
-              sx={{ fontSize: "12px", fontWeight: 400 }}
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
               value="quality"
             >
               Target a video quality
@@ -197,7 +206,10 @@ function AdvanceOptions(props) {
               {getDynamicValues(100).map((_, i) => {
                 return (
                   <MenuItem
-                    sx={{ fontSize: "12px", fontWeight: 400 }}
+                    sx={{
+                      fontSize: isMobile ? "16px" : "12px",
+                      fontWeight: 400,
+                    }}
                     value={`${i + 1}%`}
                   >
                     {i + 1}%
@@ -219,7 +231,10 @@ function AdvanceOptions(props) {
                 const val = i + 18;
                 return (
                   <MenuItem
-                    sx={{ fontSize: "12px", fontWeight: 400 }}
+                    sx={{
+                      fontSize: isMobile ? "16px" : "12px",
+                      fontWeight: 400,
+                    }}
                     value={`${val}`}
                   >
                     {val === 18
@@ -295,40 +310,55 @@ function AdvanceOptions(props) {
             }}
           >
             <MenuItem
-              sx={{ fontSize: "12px", fontWeight: 400 }}
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
               value="ultrafast"
             >
               Ultra fast
             </MenuItem>
             <MenuItem
-              sx={{ fontSize: "12px", fontWeight: 400 }}
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
               value="superfast"
             >
               Super fast
             </MenuItem>
             <MenuItem
-              sx={{ fontSize: "12px", fontWeight: 400 }}
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
               value="veryfast"
             >
               Very fast (Default)
             </MenuItem>
-            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="faster">
+            <MenuItem
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
+              value="faster"
+            >
               Faster
             </MenuItem>
-            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="fast">
+            <MenuItem
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
+              value="fast"
+            >
               Fast
             </MenuItem>
-            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="medium">
+            <MenuItem
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
+              value="medium"
+            >
               Medium
             </MenuItem>
-            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="slow">
+            <MenuItem
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
+              value="slow"
+            >
               Slow
             </MenuItem>
-            <MenuItem sx={{ fontSize: "12px", fontWeight: 400 }} value="slower">
+            <MenuItem
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
+              value="slower"
+            >
               Slower
             </MenuItem>
             <MenuItem
-              sx={{ fontSize: "12px", fontWeight: 400 }}
+              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
               value="veryslow"
             >
               Very Slow
@@ -368,7 +398,7 @@ function AdvanceOptions(props) {
                 fontSize: "12px",
                 fontWeight: 400,
                 marginLeft: "14px",
-                lineHeight: "16px"
+                lineHeight: "16px",
               },
             }}
             control={
@@ -416,7 +446,7 @@ function AdvanceOptions(props) {
             "&:hover": {
               backgroundColor: "rgba(0, 0, 0, 0.8)",
             },
-            textTransform: "none"
+            textTransform: "none",
           }}
         >
           <Typography
@@ -437,7 +467,7 @@ function AdvanceOptions(props) {
             fontWeight: 400,
             fontSize: "12px",
             lineHeight: "18px",
-            "&:hover":{
+            "&:hover": {
               textDecoration: "underline",
             },
             marginLeft: isMobile ? "0px" : "26px",

@@ -2,8 +2,10 @@ import React from "react";
 
 import { Select } from "@mui/material";
 import { DropdownIcon } from "../../icons/DropdownIcon";
+import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 
 function Dropdown({ children, onChange, value }) {
+  const isMobile = useResponsiveQuery();
   return (
     <Select
       value={value}
@@ -32,13 +34,13 @@ function Dropdown({ children, onChange, value }) {
         "& .MuiOutlinedInput-notchedOutline": {
           border: "none !important",
         },
-        "& .MuiOutlinedInput-input":{
-          fontSize: "12px",
-          fontWeight: 400
-        },        
+        "& .MuiOutlinedInput-input": {
+          fontSize: isMobile ? "16px" : "12px",
+          fontWeight: 400,
+        },
       }}
-      IconComponent = {DropdownIcon}
-     >
+      IconComponent={DropdownIcon}
+    >
       {children}
     </Select>
   );
