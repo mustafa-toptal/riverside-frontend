@@ -368,7 +368,7 @@ function AdvanceOptions(props) {
                 fontSize: "12px",
                 fontWeight: 400,
                 marginLeft: "14px",
-                lineHeight: "14px"
+                lineHeight: "16px"
               },
             }}
             control={
