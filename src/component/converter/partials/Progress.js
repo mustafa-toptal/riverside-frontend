@@ -28,7 +28,7 @@ export const Progress = (props) => {
 
   useEffect(() => {
     if (dragEvent === "enter") {
-      dropRef.current.style.backgroundColor = "#EBEEF6";
+      dropRef.current.style.backgroundColor = isCompressor ? "rgba(225, 225, 225, 0.6)" :"#EBEEF6";
     } else if (dragEvent === "leave" || dragEvent === "drop") {
       dropRef.current.style.backgroundColor = "inherit";
     }

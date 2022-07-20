@@ -45,7 +45,7 @@ const Compressor = () => {
       const url = data.result.form.url;
       const serverParams = data.result.form.parameters;
       const importId = data.id;
-      setProgress((progress) => progress + 25);
+      setProgress((progress) => progress + 5);
       uploadFile(uploadedFile, url, serverParams, importId, fileExtenstion);
     } catch (error) {
       setErrorMessage("Failed to upload file");
@@ -54,6 +54,12 @@ const Compressor = () => {
       setLoading(false);
     }
   };
+
+  const sanatizeFileName = (name) => {
+    const nameArr = name.split(".");
+    const ext = nameArr[nameArr.length - 1];
+    return (name.replace(/[^a-zA-Z0-9 ]/g, '') + "." + ext).replaceAll(" ", "");
+  }
 
   const uploadFile = async (
     uploadedFile,
@@ -65,7 +71,13 @@ const Compressor = () => {
     try {
       const form = new FormData();
       const { expires, size_limit, max_file_count, signature } = serverParams;
-      form.append("file", uploadedFile);
+      const file = new File(
+        [uploadedFile],
+        sanatizeFileName(uploadedFile.name),
+        { type: uploadedFile.type, lastModified:uploadedFile.lastModified }
+      );
+      console.log(file)
+      form.append("file", file);
       form.append("expires", expires);
       form.append("size_limit", size_limit);
       form.append("max_file_count", max_file_count);
@@ -74,7 +86,7 @@ const Compressor = () => {
       const response = await service.post(serverUploadURL, form, false, true);
       const { data } = response;
       if (data && data.msg === "ok") {
-        setProgress((progress) => progress + 25);
+        setProgress((progress) => progress + 10);
         createConvertTask(importId, fileExtenstion);
       } else {
         setLoading(false);
@@ -132,7 +144,7 @@ const Compressor = () => {
       const response = await service.post("compress", postData, true);
       const { data } = response;
       if (data && data.id) {
-        setProgress((progress) => progress + 25);
+        setProgress((progress) => progress + 5);
         watchTask(data.id);
       } else {
         setLoading(false);
@@ -153,11 +165,11 @@ const Compressor = () => {
       try {
         const response = await service.get(`tasks/${taskId}`, true);
         const { data } = response;
+        let localProgress = progress;
         if (data && data.status === "completed") {
           clearInterval(interval);
           setMessage("Download your compressed file.");
           setOutputUrl(data.result.url);
-          console.log("data.result.url: ", data.result.url);
           setLoading(false);
           setProgress(100);
         } else if (!data || (data && data.status === "failed")) {
@@ -167,7 +179,8 @@ const Compressor = () => {
           setMessage("");
           setErrorMessage("failed to compress file");
         } else {
-          if (progress < 95) {
+          if (localProgress < 95) {
+            localProgress = localProgress + 5
             setProgress((progress) => progress + 5);
           }
         }

@@ -9,7 +9,7 @@ export const DropdownIcon = (props) => {
       viewBox={props.viewBox || "0 0 16 6"}
       width="16px"
       height="10px"
-      sx={{width: "9px"}}
+      sx={{width: "12px", marginRight: "10px"}}
     >
       <path
         d="M1 1.5L8 8.5L15 1.5"

@@ -11,7 +11,7 @@ export const MobileTitle = (props) => {
   let subStyles = {...subtitleStyles};
   let titleStyles = {};
   if(isCompressor){
-    subStyles.width = "inherit !important"
+    subStyles.width = "270px !important"
     subStyles.marginTop = "20px !important"
     titleStyles.fontSize= "34px !important"
     titleStyles.fontWeight = "900 !important"
