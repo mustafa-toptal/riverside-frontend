@@ -271,7 +271,7 @@ function AdvanceOptions(props) {
                   border: "none",
                 },
                 "& .MuiOutlinedInput-input": {
-                  fontSize: "12px !important",
+                  fontSize: isMobile? "16px !important" :"12px !important",
                 },
               }}
             />
