@@ -263,11 +263,15 @@ function AdvanceOptions(props) {
                 backgroundColor: "#FFFFFF",
                 height: "40px",
                 marginTop: "10px",
+                
                 "& .MuiOutlinedInput-root": {
                   height: "40px",
                 },
                 "& .MuiOutlinedInput-notchedOutline": {
                   border: "none",
+                },
+                "& .MuiOutlinedInput-input": {
+                  fontSize: "12px !important",
                 },
               }}
             />
