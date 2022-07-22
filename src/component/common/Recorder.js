@@ -782,7 +782,7 @@ const Recorder = (props) => {
                     backgroundColor: "#656565",
                   },
                   textTransform: "none !important",
-                  background: props.isVideo
+                  background: props.showDownloadProgress
                     ? `linear-gradient(90deg, #7D7AFF ${props.progress}%, #232323 ${props.progress}%)`
                     : "",
                 }}

@@ -357,6 +357,7 @@ export const VideoRecorder = (props) => {
         videoResolution={videoResolution}
         setVideoResolution={changeResolution}
         progress={progress}
+        showDownloadProgress={true}
       />
     </Box>
   );
