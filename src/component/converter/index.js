@@ -29,15 +29,7 @@ const AudioConverter = () => {
   // const service = new Service();
 
   const createImportTask = async (uploadedFile) => {
-    console.log("uploadedFile: ", uploadedFile);
     try {
-      // const response = await service.post("import/upload", {}, true);
-      // const { data } = response;
-      // const url = data.result.form.url;
-      // const serverParams = data.result.form.parameters;
-      // const importId = data.id;
-      // setProgress((progress) => progress + 25);
-      // uploadFile(uploadedFile, url, serverParams, importId);
 
       const interval = setInterval(() => {
         setProgress((progress) => {
@@ -67,102 +59,6 @@ const AudioConverter = () => {
       setLoading(false);
     }
   };
-
-  // const uploadFile = async (
-  //   uploadedFile,
-  //   serverUploadURL,
-  //   serverParams,
-  //   importId
-  // ) => {
-  //   try {
-  //     const form = new FormData();
-  //     const { expires, size_limit, max_file_count, signature } = serverParams;
-  //     form.append("file", uploadedFile);
-  //     form.append("expires", expires);
-  //     form.append("size_limit", size_limit);
-  //     form.append("max_file_count", max_file_count);
-  //     form.append("signature", signature);
-
-  //     const response = await service.post(serverUploadURL, form, false, true);
-  //     const { data } = response;
-  //     if (data && data.msg === "ok") {
-  //       setProgress((progress) => progress + 25);
-  //       createConvertTask(importId);
-  //     } else {
-  //       setLoading(false);
-  //       setShowErrorMessage(true);
-  //       setMessage("");
-  //       setErrorMessage("failed to upload file");
-  //     }
-  //   } catch (error) {
-  //     setLoading(false);
-  //     setShowErrorMessage(true);
-  //     setMessage("");
-  //     setErrorMessage("failed to upload file");
-  //   }
-  // };
-
-  // const createConvertTask = async (importId) => {
-  //   try {
-  //     const postData = {
-  //       input: importId,
-  //       input_format: inputFormat,
-  //       output_format: outputFormat,
-  //       options: {
-  //         quality: 75,
-  //       },
-  //     };
-  //     setMessage(animatedText("Converting file"));
-  //     const response = await service.post("convert", postData, true);
-  //     const { data } = response;
-  //     if (data && data.id) {
-  //       setProgress((progress) => progress + 25);
-  //       watchTask(data.id);
-  //     } else {
-  //       setLoading(false);
-  //       setShowErrorMessage(true);
-  //       setMessage("");
-  //       setErrorMessage("failed to convert file");
-  //     }
-  //   } catch (error) {
-  //     setShowErrorMessage(true);
-  //     setMessage("");
-  //     setErrorMessage("failed to convert file");
-  //     setLoading(false);
-  //   }
-  // };
-
-  // const watchTask = (taskId) => {
-  //   const interval = setInterval(async () => {
-  //     try {
-  //       const response = await service.get(`tasks/${taskId}`, true);
-  //       const { data } = response;
-  //       if (data && data.status === "completed") {
-  //         clearInterval(interval);
-  //         setMessage("Download your MP3 file.");
-  //         setOutputUrl(data.result.url);
-  //         setLoading(false);
-  //         setProgress(100);
-  //       } else if (!data) {
-  //         clearInterval(interval);
-  //         setLoading(false);
-  //         setShowErrorMessage(true);
-  //         setMessage("");
-  //         setErrorMessage("failed to convert file");
-  //       } else {
-  //         if (progress < 95) {
-  //           setProgress((progress) => progress + 5);
-  //         }
-  //       }
-  //     } catch (error) {
-  //       clearInterval(interval);
-  //       setLoading(false);
-  //       setShowErrorMessage(true);
-  //       setMessage("");
-  //       setErrorMessage("failed to convert file");
-  //     }
-  //   }, 5000);
-  // };
 
   const handleSnackBarClose = () => {
     setErrorMessage("");

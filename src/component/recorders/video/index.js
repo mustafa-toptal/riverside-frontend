@@ -199,7 +199,7 @@ export const VideoRecorder = (props) => {
         const serverParams = data.result.form.parameters;
         const importId = data.id;
         console.log(url, serverParams, importId);
-        setProgress((progress) => progress + 25);
+        setProgress((progress) => progress + 5);
 
         uploadFile(uploadedFile, url, serverParams, importId);
       } catch (error) {
@@ -234,7 +234,7 @@ export const VideoRecorder = (props) => {
       const { data } = response;
       if (data && data.msg === "ok") {
         console.log("data.msg: ", data.msg);
-        setProgress((progress) => progress + 25);
+        setProgress((progress) => progress + 10);
         createConvertTask(importId);
       } else {
         console.log("data: ", data);
@@ -260,7 +260,7 @@ export const VideoRecorder = (props) => {
       const response = await service.post("convert", postData, true);
       const { data } = response;
       if (data && data.id) {
-        setProgress((progress) => progress + 25);
+        setProgress((progress) => progress + 5);
         watchTask(data.id);
       } else {
         console.log("data: ", data);
@@ -277,6 +277,7 @@ export const VideoRecorder = (props) => {
       try {
         const response = await service.get(`tasks/${taskId}`, true);
         const { data } = response;
+        let localProgress = progress;
         if (data && data.status === "completed") {
           clearInterval(interval);
           // setMessage("Download your MP3 file.");
@@ -294,8 +295,9 @@ export const VideoRecorder = (props) => {
           clearInterval(interval);
           downloadVideo();
         } else {
-          if (progress < 95) {
-            setProgress((progress) => progress + 5);
+          if (localProgress < 95) {
+            localProgress = localProgress + 7
+            setProgress((progress) => progress + 7);
           }
         }
       } catch (error) {

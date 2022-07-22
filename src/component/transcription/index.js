@@ -81,17 +81,6 @@ const Transcription = () => {
     }
   }, [changeProgress]);
 
-  // useEffect(() => {
-  //   service
-  //     .delete(
-  //       `deleteMediaS3/9cb7f0a0-0db4-4aa3-9f43-c6beaae1c621Scent%20of%20a%20Woman%20_%20_I'll%20Show%20You%20Out%20of%20Order!_.mp4`
-  //     )
-  //     .then((res) => {
-  //       console.log("res.data.headers: ", res.data.headers);
-  //       deleteFile(res.data.headers);
-  //     });
-  // }, []);
-
   const handleError = (errorMessage, uploadingInterval) => {
     if (uploadingInterval) {
       clearInterval(uploadingInterval);
@@ -172,14 +161,10 @@ const Transcription = () => {
     };
     if (loading) {
       defaultOptions.animationData = transcription;
-      return <Lottie options={defaultOptions} width={200} height={85} />;
-
-      // return <TranscriptionIcon sx={{ width: "188px", height: "58px" }} />;
-    } else if (isTranscriptionDone) {
+     } else if (isTranscriptionDone) {
       defaultOptions.loop = false;
       defaultOptions.animationData = transcriptioncompleted;
       return <Lottie options={defaultOptions} width={180} height={85} />;
-      // return <DownloadSrt sx={{ width: "71px", height: "49px" }} />;
     } else if (isMobile) {
       return <Upload />;
     } else {
@@ -205,7 +190,6 @@ const Transcription = () => {
       service
         .get("getTranscriptionById/" + id + "?type=" + value)
         .then((res) => {
-          // setTranscriptionData(res.data);
           const blob = new Blob([res.data], { type: "text/csv" });
           const elem = window.document.createElement("a");
           elem.href = window.URL.createObjectURL(blob);
