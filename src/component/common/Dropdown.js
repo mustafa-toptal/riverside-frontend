@@ -25,6 +25,7 @@ function Dropdown({ children, onChange, value }) {
             },
           },
         },
+        disableScrollLock: true,
       }}
       sx={{
         width: "100%",
