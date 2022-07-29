@@ -252,7 +252,10 @@ const Compressor = () => {
     >
       <style>
         {`
-       
+        #root{
+          overflow-y: scroll;
+          overflow-x: hidden;
+        }
         body{
           background-color: #F6F6F6
         }
