@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -15,11 +15,29 @@ import { CheckBoxChecked, CheckBoxUnchecked } from "../../icons/CheckBox";
 
 function AdvanceOptions(props) {
   const isMobile = useResponsiveQuery();
+  const [showIsApplied, setShowIsApplied] = useState(false);
+  const [isSettingRestored, setIsSettingRestored] = useState(false);
 
   const { options, setOptions, resetOptions, applySettings } = props;
 
   const getDynamicValues = (length) => {
     return Array.from({ length }, (_, idx) => `${++idx}`);
+  };
+
+  const setSettings = () => {
+    setShowIsApplied(true);
+    applySettings();
+    setTimeout(() => {
+      setShowIsApplied(false);
+    }, 1000);
+  };
+
+  const restoreOptions = () => {
+    setIsSettingRestored(true);
+    resetOptions();
+    setTimeout(() => {
+      setIsSettingRestored(false);
+    }, 1000);
   };
 
   return (
@@ -263,7 +281,7 @@ function AdvanceOptions(props) {
                 backgroundColor: "#FFFFFF",
                 height: "40px",
                 marginTop: "10px",
-                
+
                 "& .MuiOutlinedInput-root": {
                   height: "40px",
                 },
@@ -271,7 +289,7 @@ function AdvanceOptions(props) {
                   border: "none",
                 },
                 "& .MuiOutlinedInput-input": {
-                  fontSize: isMobile? "16px !important" :"12px !important",
+                  fontSize: isMobile ? "16px !important" : "12px !important",
                 },
               }}
             />
@@ -441,7 +459,7 @@ function AdvanceOptions(props) {
         }}
       >
         <Button
-          onClick={applySettings}
+          onClick={setSettings}
           sx={{
             width: "55%",
             backgroundColor: "rgba(0, 0, 0, 1)",
@@ -461,11 +479,11 @@ function AdvanceOptions(props) {
               lineHeight: "18px",
             }}
           >
-            Apply settings
+            {!showIsApplied ? "Apply settings" : "Setting applied"}
           </Typography>
         </Button>
         <Typography
-          onClick={resetOptions}
+          onClick={restoreOptions}
           sx={{
             color: "rgba(35, 34, 35, 1)",
             fontWeight: 400,
@@ -479,7 +497,7 @@ function AdvanceOptions(props) {
             cursor: "pointer",
           }}
         >
-          Reset all options
+          {isSettingRestored ? "Option restored" : "Reset all options"}
         </Typography>
       </Box>
     </Box>
