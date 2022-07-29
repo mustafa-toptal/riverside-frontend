@@ -58,8 +58,8 @@ const Compressor = () => {
   const sanatizeFileName = (name) => {
     const nameArr = name.split(".");
     const ext = nameArr[nameArr.length - 1];
-    return (name.replace(/[^a-zA-Z0-9 ]/g, '') + "." + ext).replaceAll(" ", "");
-  }
+    return (name.replace(/[^a-zA-Z0-9 ]/g, "") + "." + ext).replaceAll(" ", "");
+  };
 
   const uploadFile = async (
     uploadedFile,
@@ -74,9 +74,9 @@ const Compressor = () => {
       const file = new File(
         [uploadedFile],
         sanatizeFileName(uploadedFile.name),
-        { type: uploadedFile.type, lastModified:uploadedFile.lastModified }
+        { type: uploadedFile.type, lastModified: uploadedFile.lastModified }
       );
-      console.log(file)
+      console.log(file);
       form.append("file", file);
       form.append("expires", expires);
       form.append("size_limit", size_limit);
@@ -180,7 +180,7 @@ const Compressor = () => {
           setErrorMessage("failed to compress file");
         } else {
           if (localProgress < 95) {
-            localProgress = localProgress + 5
+            localProgress = localProgress + 5;
             setProgress((progress) => progress + 5);
           }
         }
@@ -224,7 +224,7 @@ const Compressor = () => {
 
   const renderIcon = () => {
     if (loading || outputUrl) {
-      return <></>
+      return <></>;
     } else {
       return <Upload />;
     }
@@ -252,10 +252,7 @@ const Compressor = () => {
     >
       <style>
         {`
-        #root{
-          overflow-y: scroll;
-          overflow-x: hidden;
-        }
+       
         body{
           background-color: #F6F6F6
         }
