@@ -340,6 +340,7 @@ function AdvanceOptions(props) {
               setOpenCodec(false);
               setOpenQuality(false);
               setOpenSpeed((prev) => !prev);
+              document.getElementById("custom-dropdown").scrollIntoView();
             }}
             options={[
               { name: "Ultra fast", value: "ultrafast" },

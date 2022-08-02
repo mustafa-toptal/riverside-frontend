@@ -52,8 +52,10 @@ const Dropdown = ({
   options = [],
   onChange = () => {},
   onClick = () => {},
+  ...rest
 }) => {
   const isMobile = useResponsiveQuery();
+  console.log("isMobile: ", isMobile);
   return (
     <Box
       sx={{
@@ -65,6 +67,7 @@ const Dropdown = ({
         position: "relative",
       }}
       onClick={onClick}
+      {...rest}
     >
       <DropdownIcon
         sx={{
@@ -80,6 +83,10 @@ const Dropdown = ({
           fontWeight: 400,
           padding: "10px 10px 0px 13px",
           textTransform: "capitalize",
+          textOverflow: "clip",
+          overflow: "hidden",
+          width: "80%",
+          whiteSpace: "nowrap",
         }}
       >
         {options &&
@@ -90,6 +97,7 @@ const Dropdown = ({
       </Typography>
       {open && (
         <Box
+          id={"custom-dropdown"}
           sx={{
             position: "absolute",
             zIndex: 9999999,
@@ -121,6 +129,10 @@ const Dropdown = ({
                   },
                   backgroundColor:
                     data.value === value ? "rgba(187, 188, 190, 0.3)" : "",
+                  textOverflow: "clip",
+                  overflow: "hidden",
+                  width: "80%",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {data.name}
