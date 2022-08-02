@@ -1,17 +1,11 @@
 import React, { useState } from "react";
 import { Grid } from "@mui/material";
-import Lottie from "react-lottie";
 
 import { Title } from "../common/Title";
-// import { WavToMp3 } from "../../icons/WavToMp3";
-// import { DownloadMp3 } from "../../icons/DownloadMp3";
 import { Upload } from "../../icons/Upload";
-import { animatedText, delay } from "../../utils/Helpers";
-// import { compress } from "./partials/Converter";
+import { animatedText } from "../../utils/Helpers";
 import { AlertMessage } from "../common/AlertMessage";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
-import wavtomp3 from "../../utils/lottie-jsons/wavtomp3.json";
-import wavtomp3completed from "../../utils/lottie-jsons/wavtomp3completed.json";
 import { Service } from "../../utils/Service";
 import AdvanceOptions from "./AdvanceOptions";
 
@@ -34,6 +28,8 @@ const Compressor = () => {
   const [options, setOptions] = useState(defaultOptions);
   const [showSettingNotification, setShowSettingNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
+  const [openCompressionMethod, setOpenCompressionMethod] = useState(false);
+  const [openCodec, setOpenCodec] = useState(false);
 
   const isMobile = useResponsiveQuery();
   const service = new Service();
@@ -246,9 +242,15 @@ const Compressor = () => {
     setNotificationMessage("Setting applied successfully");
   };
 
+  const restoreDropDowns = () => {
+    setOpenCompressionMethod(false);
+    setOpenCodec(false);
+  };
+
   return (
     <Grid
       sx={{ display: "flex", alignItems: "center", flexDirection: "column" }}
+      onClick={restoreDropDowns}
     >
       <style>
         {`
@@ -285,6 +287,11 @@ const Compressor = () => {
         setOptions={setOptions}
         resetOptions={resetOptions}
         applySettings={applySettings}
+        restoreDropDowns={restoreDropDowns}
+        openCompressionMethod={openCompressionMethod}
+        setOpenCompressionMethod={setOpenCompressionMethod}
+        openCodec={openCodec}
+        setOpenCodec={setOpenCodec}
       />
       <AlertMessage
         open={showErrorMessage}
