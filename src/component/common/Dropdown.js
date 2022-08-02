@@ -131,7 +131,6 @@ const Dropdown = ({
                     data.value === value ? "rgba(187, 188, 190, 0.3)" : "",
                   textOverflow: "clip",
                   overflow: "hidden",
-                  width: "80%",
                   whiteSpace: "nowrap",
                 }}
               >
