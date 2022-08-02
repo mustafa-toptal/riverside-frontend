@@ -30,6 +30,8 @@ const Compressor = () => {
   const [notificationMessage, setNotificationMessage] = useState("");
   const [openCompressionMethod, setOpenCompressionMethod] = useState(false);
   const [openCodec, setOpenCodec] = useState(false);
+  const [openQuality, setOpenQuality] = useState(false);
+  const [openSpeed, setOpenSpeed] = useState(false);
 
   const isMobile = useResponsiveQuery();
   const service = new Service();
@@ -245,6 +247,8 @@ const Compressor = () => {
   const restoreDropDowns = () => {
     setOpenCompressionMethod(false);
     setOpenCodec(false);
+    setOpenQuality(false);
+    setOpenSpeed(false);
   };
 
   return (
@@ -292,6 +296,10 @@ const Compressor = () => {
         setOpenCompressionMethod={setOpenCompressionMethod}
         openCodec={openCodec}
         setOpenCodec={setOpenCodec}
+        openQuality={openQuality}
+        setOpenQuality={setOpenQuality}
+        setOpenSpeed={setOpenSpeed}
+        openSpeed={openSpeed}
       />
       <AlertMessage
         open={showErrorMessage}

@@ -82,8 +82,10 @@ const Dropdown = ({
           textTransform: "capitalize",
         }}
       >
-        {options && options.length
-          ? options.filter((data) => data.value === value)[0].name
+        {options &&
+        options.length &&
+        options.filter((data) => data.value == value).length
+          ? options.filter((data) => data.value == value)[0].name
           : value}
       </Typography>
       {open && (
@@ -96,6 +98,8 @@ const Dropdown = ({
             marginTop: "15px",
             borderRadius: "4px",
             boxShadow: "0 3px 10px rgb(0 0 0 / 30%)",
+            maxHeight: "200px",
+            overflowY: options && options.length > 7 ? "scroll" : "none",
           }}
         >
           {options.map((data, index) => {

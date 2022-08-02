@@ -12,6 +12,7 @@ import {
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 import Dropdown from "../common/Dropdown";
 import { CheckBoxChecked, CheckBoxUnchecked } from "../../icons/CheckBox";
+import { Check } from "../../icons/Check";
 
 function AdvanceOptions(props) {
   const isMobile = useResponsiveQuery();
@@ -27,6 +28,10 @@ function AdvanceOptions(props) {
     setOpenCompressionMethod,
     openCodec,
     setOpenCodec,
+    openQuality,
+    setOpenQuality,
+    openSpeed,
+    setOpenSpeed,
   } = props;
 
   const getDynamicValues = (length) => {
@@ -108,6 +113,9 @@ function AdvanceOptions(props) {
               e.stopPropagation();
             }
             setOpenCodec((prev) => !prev);
+            setOpenCompressionMethod(false);
+            setOpenQuality(false);
+            setOpenSpeed(false);
           }}
           options={[
             { name: "H264", value: "h264" },
@@ -153,6 +161,9 @@ function AdvanceOptions(props) {
                 e.stopPropagation();
               }
               setOpenCompressionMethod((prev) => !prev);
+              setOpenCodec(false);
+              setOpenQuality(false);
+              setOpenSpeed(false);
             }}
             onChange={(e) => {
               const value = e;
@@ -215,61 +226,46 @@ function AdvanceOptions(props) {
               ? "Select Quality (CRF)"
               : "Select Target Size"}
           </Typography>
-          {options.method === "percent" && (
+          {(options.method === "percent" || options.method === "quality") && (
             <Dropdown
-              open
+              open={openQuality}
               value={options.compressValue}
               onChange={(e) => {
                 setOptions((options) => {
                   return { ...options, compressValue: e };
                 });
+                setOpenQuality(false);
               }}
-            >
-              {getDynamicValues(100).map((_, i) => {
-                return (
-                  <MenuItem
-                    sx={{
-                      fontSize: isMobile ? "16px" : "12px",
-                      fontWeight: 400,
-                    }}
-                    value={`${i + 1}%`}
-                  >
-                    {i + 1}%
-                  </MenuItem>
-                );
-              })}
-            </Dropdown>
-          )}
-          {options.method === "quality" && (
-            <Dropdown
-              value={options.compressValue}
-              onChange={(e) => {
-                setOptions((options) => {
-                  return { ...options, compressValue: e };
-                });
+              onClick={(e) => {
+                if (e && e.stopPropagation) {
+                  e.stopPropagation();
+                }
+                setOpenCompressionMethod(false);
+                setOpenCodec(false);
+                setOpenQuality((prev) => !prev);
+                setOpenSpeed(false);
               }}
-            >
-              {getDynamicValues(34).map((_, i) => {
-                const val = i + 18;
-                return (
-                  <MenuItem
-                    sx={{
-                      fontSize: isMobile ? "16px" : "12px",
-                      fontWeight: 400,
-                    }}
-                    value={`${val}`}
-                  >
-                    {val === 18
-                      ? "18 Best quality - large size"
-                      : val === 21
-                      ? "21 Good quality - medium size (Default)"
-                      : val === 28
-                      ? "28 Okay quality - small size"
-                      : val}
-                  </MenuItem>
-                );
-              })}
-            </Dropdown>
+              options={
+                options.method === "percent"
+                  ? getDynamicValues(100).map((_, i) => {
+                      return { value: `${i + 1}%`, name: `${i + 1}%` };
+                    })
+                  : options.method === "quality"
+                  ? getDynamicValues(34).map((_, i) => {
+                      const val = i + 18;
+                      const name =
+                        val === 18
+                          ? "18 Best quality - large size"
+                          : val === 21
+                          ? "21 Good quality - medium size (Default)"
+                          : val === 28
+                          ? "28 Okay quality - small size"
+                          : val;
+                      return { name, value: val };
+                    })
+                  : []
+              }
+            />
           )}
           {options.method === "mb" && (
             <TextField
@@ -328,68 +324,35 @@ function AdvanceOptions(props) {
             Compression Speed
           </Typography>
           <Dropdown
+            open={openSpeed}
             value={options.speed}
             onChange={(e) => {
               setOptions((options) => {
                 return { ...options, speed: e };
               });
+              setOpenSpeed(false);
             }}
-          >
-            <MenuItem
-              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
-              value="ultrafast"
-            >
-              Ultra fast
-            </MenuItem>
-            <MenuItem
-              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
-              value="superfast"
-            >
-              Super fast
-            </MenuItem>
-            <MenuItem
-              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
-              value="veryfast"
-            >
-              Very fast (Default)
-            </MenuItem>
-            <MenuItem
-              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
-              value="faster"
-            >
-              Faster
-            </MenuItem>
-            <MenuItem
-              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
-              value="fast"
-            >
-              Fast
-            </MenuItem>
-            <MenuItem
-              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
-              value="medium"
-            >
-              Medium
-            </MenuItem>
-            <MenuItem
-              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
-              value="slow"
-            >
-              Slow
-            </MenuItem>
-            <MenuItem
-              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
-              value="slower"
-            >
-              Slower
-            </MenuItem>
-            <MenuItem
-              sx={{ fontSize: isMobile ? "16px" : "12px", fontWeight: 400 }}
-              value="veryslow"
-            >
-              Very Slow
-            </MenuItem>
-          </Dropdown>
+            onClick={(e) => {
+              if (e && e.stopPropagation) {
+                e.stopPropagation();
+              }
+              setOpenCompressionMethod(false);
+              setOpenCodec(false);
+              setOpenQuality(false);
+              setOpenSpeed((prev) => !prev);
+            }}
+            options={[
+              { name: "Ultra fast", value: "ultrafast" },
+              { name: "Super fast", value: "superfast" },
+              { name: "Very fast (Default)", value: "veryfast" },
+              { name: "Faster", value: "faster" },
+              { name: "Fast", value: "fast" },
+              { name: "Medium", value: "medium" },
+              { name: "Slow", value: "slow" },
+              { name: "Slower", value: "slower" },
+              { name: "Very Slow", value: "veryslow" },
+            ]}
+          />
           <Typography
             sx={{
               fontSize: "10px",
@@ -466,13 +429,15 @@ function AdvanceOptions(props) {
           onClick={setSettings}
           sx={{
             width: "55%",
-            backgroundColor: "rgba(0, 0, 0, 1)",
+            backgroundColor: showIsApplied ? "#31343C" : "rgba(0, 0, 0, 1)",
             borderRadius: "10px",
             height: "50px",
             "&:hover": {
               backgroundColor: "rgba(0, 0, 0, 0.8)",
             },
             textTransform: "none",
+            display: "flex",
+            alignItems: "center",
           }}
         >
           <Typography
@@ -485,6 +450,11 @@ function AdvanceOptions(props) {
           >
             {!showIsApplied ? "Apply settings" : "Setting applied"}
           </Typography>
+          {showIsApplied ? (
+            <Check sx={{ width: "19px", height: "19px", marginLeft: "5px" }} />
+          ) : (
+            ""
+          )}
         </Button>
         <Typography
           onClick={restoreOptions}
