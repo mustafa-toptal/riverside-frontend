@@ -647,41 +647,7 @@ export function Recorders() {
         }}
       >
         {!recorderType && (
-          <>
-            <Grid container spacing={0}>
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  flexDirection: "column",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: isMobile ? "40px" : "50px",
-                    lineHeight: isMobile ? "48px" : "55px",
-                    color: "#ffffff",
-                    fontWeight: "800",
-                    textAlign: "center",
-                  }}
-                >
-                  Multi-Layout <br /> Online Recorder
-                </Typography>
-                <Typography
-                  sx={{
-                    fontSize: isMobile ? "18px" : "24px",
-                    lineHeight: isMobile ? "26px" : "30px",
-                    color: "#ffffff",
-                    textAlign: "center",
-                    marginTop: "10px",
-                  }}
-                >
-                  Pick a Layout for Recording
-                </Typography>
-              </Grid>
-            </Grid>
+          <>  
             <Box
               ref={mainRef}
               sx={{
