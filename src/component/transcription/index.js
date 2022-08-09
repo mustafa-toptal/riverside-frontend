@@ -161,6 +161,7 @@ const Transcription = () => {
     };
     if (loading) {
       defaultOptions.animationData = transcription;
+      return <Lottie options={defaultOptions} width={200} height={85} />;
      } else if (isTranscriptionDone) {
       defaultOptions.loop = false;
       defaultOptions.animationData = transcriptioncompleted;
