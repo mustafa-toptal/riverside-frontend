@@ -33,6 +33,11 @@ function App() {
         <Route path="transcription" element={<Transcription />} />
         <Route path="converter" element={<AudioConverter />} />
         <Route path="recorder" element={<Recorders />} />
+        <Route path="audio-recorder" element={<Recorders title={"Audio Recorder Online"} subtitle = "Record high-quality audio with Riverside’s remote audio recording software. Easy, reliable recording from anywhere."/>} />
+        {/* <Route path="webcam-recorder" element={<Recorders title={"Webcam Recorder Online"} subtitle = "Record high-quality video with Riverside’s remote video recording software. Easy, reliable recording from anywhere."/>} />
+        <Route path="screen-recorder" element={<Recorders title={"Screen Recorder Online"} subtitle = "Record high-quality screen with Riverside’s remote screen recording software. Easy, reliable recording from anywhere."/>} />
+        <Route path="screen-webcam-recorder" element={<Recorders title={<>Screen & Webcam <br/> Recorder Online</>} subtitle = "Record high-quality audio with Riverside’s remote audio recording software. Easy, reliable recording from anywhere."/>} /> */}
+
         <Route path="compressor" element={<Compressor />} />
       </Routes>
     </BrowserRouter>
