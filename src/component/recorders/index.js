@@ -11,7 +11,7 @@ import { FileFolders } from "../../icons/FileFolders";
 import { AudioWaves } from "../../icons/AudioWaves";
 import { useResponsiveQuery } from "../../utils/hooks/useResponsiveQuery";
 
-export function Recorders({title, subtitle}) {
+export function Recorders() {
   const [recorderType, setRecorderType] = useState("");
   const [audioDevices, setAudioDevices] = useState([]);
   const [videoDevices, setVideoDevices] = useState([]);
@@ -37,6 +37,17 @@ export function Recorders({title, subtitle}) {
   const shouldBreak = useMediaQuery({ query: `(max-width: 1000px)` });
   const [boxWidth, setBoxWidth] = useState(220);
   const [boxHeight, setBoxHeight] = useState(148);
+
+  const params = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams, prop) => searchParams.get(prop),
+  });
+
+  const title = params.title;
+  const subtitle = params.subtitle;
+  const marginTop = params.marginTop;
+  const titleWidth = params.titleWidth;
+  const subTitleWidth = params.subTitleWidth;
+  const boxGap = params.boxGap
 
   useEffect(() => {
     if (isMobile && boxWidth !== 144) {
@@ -420,7 +431,7 @@ export function Recorders({title, subtitle}) {
           "&:hover": {
             cursor: isMobile ? "not-allowed" : "pointer",
           },
-          animationFillMode: "forwards",
+          animationFillMode: "forwards",         
         }}
         ref={multiMediaRef}
         onClick={() =>
@@ -631,7 +642,7 @@ export function Recorders({title, subtitle}) {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          marginTop: isMobile ? "0px" : "-6%",
+          marginTop : marginTop ? `${marginTop}px` : isMobile ? "0px" : "-6%",
           "& .MuiTypography-h1": {
             fontSize: " 50px",
             lineHeight: "55px",
@@ -647,8 +658,8 @@ export function Recorders({title, subtitle}) {
         }}
       >
         {!recorderType && (
-          <>  
-          <Grid container spacing={0}>
+          <>
+            <Grid container spacing={0}>
               <Grid
                 item
                 xs={12}
@@ -665,9 +676,16 @@ export function Recorders({title, subtitle}) {
                     color: "#ffffff",
                     fontWeight: "800",
                     textAlign: "center",
+                    width: titleWidth ? `${titleWidth}px` : "auto"
                   }}
                 >
-                  {title ? title : <>Multi-Layout <br /> Online Recorder</>}
+                  {title ? (
+                    title
+                  ) : (
+                    <>
+                      Multi-Layout <br /> Online Recorder
+                    </>
+                  )}
                 </Typography>
                 <Typography
                   sx={{
@@ -676,7 +694,7 @@ export function Recorders({title, subtitle}) {
                     color: "#ffffff",
                     textAlign: "center",
                     marginTop: "10px",
-                    maxWidth: "500px"
+                    maxWidth:  subTitleWidth ? `${subTitleWidth}px` : "500px",
                   }}
                 >
                   {subtitle ? subtitle : "Pick a Layout for Recording"}
@@ -689,7 +707,7 @@ export function Recorders({title, subtitle}) {
                 display: "flex",
                 alignItems: isMobile ? "flex-start" : "center",
                 justifyContent: "flex-start",
-                marginTop: "7%",
+                marginTop: boxGap ? `${boxGap}px` : "7%",
                 width: "100%",
               }}
             >
