@@ -47,7 +47,7 @@ export function Recorders() {
   const marginTop = params.marginTop;
   const titleWidth = params.titleWidth;
   const subTitleWidth = params.subTitleWidth;
-  const boxGap = params.boxGap
+  const boxGap = params.boxGap;
 
   useEffect(() => {
     if (isMobile && boxWidth !== 144) {
@@ -431,7 +431,7 @@ export function Recorders() {
           "&:hover": {
             cursor: isMobile ? "not-allowed" : "pointer",
           },
-          animationFillMode: "forwards",         
+          animationFillMode: "forwards",
         }}
         ref={multiMediaRef}
         onClick={() =>
@@ -642,7 +642,7 @@ export function Recorders() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          marginTop : marginTop ? `${marginTop}px` : isMobile ? "0px" : "-6%",
+          marginTop: marginTop ? `${marginTop}px` : isMobile ? "0px" : "-6%",
           "& .MuiTypography-h1": {
             fontSize: " 50px",
             lineHeight: "55px",
@@ -676,7 +676,7 @@ export function Recorders() {
                     color: "#ffffff",
                     fontWeight: "800",
                     textAlign: "center",
-                    width: titleWidth ? `${titleWidth}px` : "auto"
+                    width: titleWidth ? `${titleWidth}px` : "auto",
                   }}
                 >
                   {title ? (
@@ -694,7 +694,7 @@ export function Recorders() {
                     color: "#ffffff",
                     textAlign: "center",
                     marginTop: "10px",
-                    maxWidth:  subTitleWidth ? `${subTitleWidth}px` : "500px",
+                    maxWidth: subTitleWidth ? `${subTitleWidth}px` : "500px",
                   }}
                 >
                   {subtitle ? subtitle : "Pick a Layout for Recording"}
@@ -708,7 +708,7 @@ export function Recorders() {
                 alignItems: isMobile ? "flex-start" : "center",
                 justifyContent: "flex-start",
                 marginTop: boxGap ? `${boxGap}px` : "7%",
-                width: "100%",
+                // width: "100%",
               }}
             >
               <Box
